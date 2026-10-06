@@ -88,7 +88,7 @@ function App() {
           { 
             ma_van_don: trackingCode, 
             so_can_ho: roomNumber, 
-            trang_thai_tram: 'DA_NHAN_TAI_TRAM'
+            trang_thai_hang: 'Hàng đã được giao đến trạm'
           }
         ])
 
