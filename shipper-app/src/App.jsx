@@ -86,9 +86,9 @@ function App() {
         .from('packages')
         .insert([
           { 
-            tracking_code: trackingCode, 
-            room_number: roomNumber, 
-            status: 'WAITING_FOR_PICKUP'
+            ma_van_don: trackingCode, 
+            so_can_ho: roomNumber, 
+            trang_thai_tram: 'DA_NHAN_TAI_TRAM'
           }
         ])
 
