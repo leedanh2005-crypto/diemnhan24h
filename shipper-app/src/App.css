@@ -1,0 +1,246 @@
+/* d:\ý tưởng kd\shipper-app\src\App.css */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #121212;
+  color: #ffffff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height - fix iOS address bar */
+  width: 100vw;
+}
+
+/* TOP: Camera Area */
+.camera-section {
+  height: 35%;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  border-bottom: 2px solid #333;
+  overflow: hidden;
+}
+
+#reader {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+#reader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* Hide default html5-qrcode UI elements */
+#reader__scan_region {
+  min-height: unset !important;
+}
+
+#reader__scan_region video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+#reader__dashboard {
+  display: none !important;
+}
+
+#reader img {
+  display: none !important;
+}
+
+.camera-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.7);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #4ade80;
+  font-weight: bold;
+  z-index: 10;
+}
+
+.camera-error {
+  color: #ef4444;
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  position: absolute;
+  z-index: 10;
+}
+
+/* MIDDLE: Info Area */
+.info-section {
+  height: 20%;
+  padding: 10px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1e1e1e;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 1px solid #333;
+}
+
+.info-label {
+  color: #888;
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+.info-value {
+  font-weight: bold;
+  font-size: 15px;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.value-missing {
+  color: #fbbf24;
+  font-style: italic;
+  font-weight: normal;
+}
+
+.value-ok {
+  color: #4ade80;
+}
+
+/* BOTTOM: Numpad Area */
+.numpad-section {
+  height: 45%;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.numpad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  flex-grow: 1;
+}
+
+.num-btn {
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 10px;
+  font-size: 26px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.num-btn:active {
+  background-color: #555;
+  transform: scale(0.95);
+}
+
+.num-btn.delete {
+  background-color: #3f1d1d;
+  color: #ef4444;
+  font-size: 28px;
+}
+
+.num-btn.delete:active {
+  background-color: #5c2020;
+}
+
+.num-btn.letter {
+  background-color: #1e3a5f;
+  color: #60a5fa;
+  font-size: 22px;
+}
+
+.num-btn.letter:active {
+  background-color: #2a4f7f;
+}
+
+.submit-btn {
+  background-color: #333;
+  color: #666;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: not-allowed;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.submit-btn.active {
+  background-color: #16a34a;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(22, 163, 74, 0.4);
+}
+
+.submit-btn.active:active {
+  background-color: #15803d;
+  transform: scale(0.98);
+}
+
+.submit-btn.loading {
+  background-color: #ca8a04;
+  color: white;
+  cursor: wait;
+}
+
+/* Modal / Notification Overlay */
+.status-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.status-overlay.success {
+  background: rgba(0, 80, 0, 0.95);
+}
+
+.status-overlay.error {
+  background: rgba(80, 0, 0, 0.95);
+}
+
+.status-icon {
+  font-size: 80px;
+}
+
+.status-text {
+  font-size: 22px;
+  font-weight: bold;
+}
