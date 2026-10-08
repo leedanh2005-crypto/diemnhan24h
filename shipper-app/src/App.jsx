@@ -86,9 +86,9 @@ function App() {
         .from('packages')
         .insert([
           { 
-            ma_van_don: trackingCode, 
-            so_can_ho: roomNumber, 
-            trang_thai_hang: 'Hàng đã được giao đến trạm'
+            "Mã vận đơn": trackingCode, 
+            "Số căn hộ": roomNumber, 
+            "Trạng thái tại trạm PICKO": 'Hàng đã được giao đến trạm'
           }
         ])
 
