@@ -2561,7 +2561,7 @@ function exportCsv() {
 
 /* ===== L. LẤY HÀNG BẰNG MÃ QR ===== */
 const pk = { sel: new Set(), ticket: null, timer: null };
-const isAtStation = o => o.stationStatus === 'AT_STATION';
+// isAtStation is declared globally above
 const isPending = o => o.stationStatus === 'PICKUP_REQUESTED';
 const QR_IC = '<svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20h1"/></svg>';
 const CHK_IC = '<svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>';
