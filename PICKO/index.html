@@ -1150,6 +1150,7 @@ body:not([data-view="location"]) .v-location { display: none !important; }
   <div class="logo"><img src="/logos/podo-logo-h.png" alt="PODO - SMART PARCEL HUB" class="podo-nav-logo"></div>
   <nav class="menu only-in" id="menu">
     <button data-nav="orders" class="active"><svg class="ic"><use href="#i-list"/></svg>Đơn hàng</button>
+    <button data-nav="location"><svg class="ic" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>Vị trí ô kệ<span class="pill" id="locCount" hidden>0</span></button>
     <button data-nav="connect"><svg class="ic"><use href="#i-link"/></svg>Kết nối<span class="pill" id="connCount">0/4</span></button>
     <button data-nav="returns"><svg class="ic" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>Trả hàng<span class="pill" id="rtCount" hidden>0</span></button>
     <button data-nav="reports"><svg class="ic"><use href="#i-chart"/></svg>Chi tiêu</button>
@@ -1487,6 +1488,9 @@ async function loadStats() {
 }
 
 /* ===== D. ĐƠN HÀNG ===== */
+function isAtStation(o) {
+  return !!(o && (o.stationStatus === "AT_STATION" || o.displayStatus === "Tại trạm"));
+}
 function renderSkeleton() {
   $('#ordersBody').innerHTML = Array.from({length:4}, () => `<tr>${'<td><div class="sk"></div></td>'.repeat(8)}</tr>`).join('');
 }
@@ -1496,6 +1500,7 @@ async function loadOrders() {
     const d = await api('/api/orders');
     orders = (Array.isArray(d) ? d : (d.orders || [])).map(normalize);
     renderOrders(); renderBell(); if (document.body.dataset.view === 'reports') renderReport();
+    if (document.body.dataset.view === 'location') renderLocationView();
   } catch {
     orders = []; renderBell();
     const errorHTML = `<tr><td colspan="8"><div class="empty">${icon('inbox')}<div>Không tải được đơn hàng. Hãy mở trang qua <b>http://localhost:3000</b> (chạy <code>node server.js</code>). <button class="link" id="retry">Thử lại</button></div></div></td></tr>`;
@@ -1844,11 +1849,12 @@ function setActive(key) { $$('#menu button').forEach(b => b.classList.toggle('ac
 function go(key) {
   closeAll();
   if (key === 'connect') { renderConnections(); return openM('mConnect'); }
-  const view = key === 'reports' ? 'reports' : key === 'returns' ? 'returns' : 'orders';
+  const view = (key === 'reports' || key === 'returns' || key === 'location') ? key : 'orders';
   document.body.dataset.view = view;
   setActive(view);
   if (view === 'reports') loadBudget().then(renderReport);
   if (view === 'returns') { renderReturns(); loadReturnsData(); }
+  if (view === 'location') renderLocationView();
   if (view === 'orders') renderGreenTree();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -2693,8 +2699,9 @@ window.resetDemoPkg = async function() {
   try {
     const res = await api('/api/orders/reset-demo', { method: 'POST' });
     toast(res.message || 'Đã reset kiện Đèn bàn LED về trạng thái chờ lấy hàng!', 'ok');
-    loadOrders();
+    await loadOrders();
     loadStats();
+    if (document.body.dataset.view === 'location') renderLocationView();
   } catch (e) {
     toast('Không thể reset đơn', 'err');
   }
@@ -3349,7 +3356,7 @@ loadOrders = function () { const p = _loadOrdersBase.apply(this, arguments); loa
   renderSkeleton(); renderBell();
   loadStats(); 
   loadOrders();
-  setInterval(loadOrders, 3000);
+  setInterval(loadOrders, 60000); // Tự động làm mới/cập nhật trạng thái định kỳ 1 phút / lần (thay vì vài giây)
 })();
 </script>
 </body>

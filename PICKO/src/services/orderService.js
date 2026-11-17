@@ -199,12 +199,12 @@ class OrderService {
       );
     } catch (e) {}
 
-    // 🔄 TỰ ĐỘNG RESET SAU 6 GIÂY (khi thẻ iTag kêu xong & Kiosk quay lại màn hình chính)
+    // 🔄 TỰ ĐỘNG RESET SAU 1 PHÚT (60 GIÂY)
     // Đưa SPXVN091234567 về lại trạng thái "Hàng đã được giao đến trạm" để bạn có thể thử liên tục nhiều lần!
     setTimeout(async () => {
       await this.resetDemoOrder();
-      console.log('🔄 [Tự động reset] Đã đưa kiện ĐÈN BÀN LED về trạng thái sẵn sàng tại trạm cho lượt thử tiếp theo!');
-    }, 6000);
+      console.log('🔄 [Tự động reset] Đã đưa kiện ĐÈN BÀN LED về trạng thái sẵn sàng tại trạm sau 1 phút!');
+    }, 60000);
 
     return {
       success: true,
