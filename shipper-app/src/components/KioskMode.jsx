@@ -41,7 +41,7 @@ export function KioskMode() {
 
       if (isCleaningUp || !isMountedRef.current) return
 
-      const config = { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 }
+      const config = { fps: 12, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 }
 
       try {
         const html5QrCode = new Html5Qrcode('kiosk-reader')
@@ -414,35 +414,78 @@ export function KioskMode() {
       </div>
       {bleMessage && <div className="ble-toast-msg">{bleMessage}</div>}
 
-      {/* 2. Scanner Viewport (Ẩn khi đang hiển thị card xác nhận để tập trung) */}
+      {/* 2. Scanner Viewport: Khung viền Tablet màu trắng sang trọng */}
       {!pendingToken && !scanResult && (
         <section className="kiosk-scanner-container">
-          <div className="kiosk-camera-frame">
-            <div id="kiosk-reader"></div>
-
-            <div className="kiosk-target-frame">
-              <div className="kiosk-corner top-left"></div>
-              <div className="kiosk-corner top-right"></div>
-              <div className="kiosk-corner bottom-left"></div>
-              <div className="kiosk-corner bottom-right"></div>
-              <div className="kiosk-laser-line"></div>
+          <div className="tablet-camera-enclosure kiosk-tablet">
+            {/* Bezel trên: Cảm biến & Ống kính trước của máy tính bảng */}
+            <div className="tablet-bezel-top">
+              <span className="tablet-sensor-dot" title="Cảm biến ánh sáng"></span>
+              <span className="tablet-lens-dot" title="Ống kính Camera trước"></span>
+              <span className="tablet-mic-hole" title="Micro thu âm"></span>
             </div>
 
-            {cameraError && (
-              <div className="camera-alert">
-                <p>⚠️ {cameraError}</p>
-                <button
-                  className="retry-cam-btn"
-                  onClick={() => setFacingMode(prev => prev === 'environment' ? 'user' : 'environment')}
-                >
-                  Thử lại Camera
-                </button>
+            {/* Màn hình Tablet */}
+            <div className="tablet-screen-bezel">
+              <div className="kiosk-camera-frame">
+                <div id="kiosk-reader"></div>
+
+                {/* Các ô công cụ màu trắng sang trọng kiểu Tablet Camera */}
+                <div className="tablet-floating-hud">
+                  <div className="tablet-hud-top">
+                    <div className="luxury-white-badge">
+                      <span className="live-dot-indigo"></span>
+                      <span className="badge-title">QUÉT QR CƯ DÂN</span>
+                    </div>
+                    <div className="tablet-hud-actions">
+                      <button
+                        type="button"
+                        className="luxury-white-btn"
+                        onClick={toggleCamera}
+                        title="Đổi camera trước/sau"
+                      >
+                        🔄 <span className="btn-label">{facingMode === 'environment' ? 'Cam sau' : 'Cam trước'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Khung định vị ngắm QR màu trắng sang trọng */}
+                  <div className="kiosk-target-frame">
+                    <div className="kiosk-corner top-left"></div>
+                    <div className="kiosk-corner top-right"></div>
+                    <div className="kiosk-corner bottom-left"></div>
+                    <div className="kiosk-corner bottom-right"></div>
+                    <div className="kiosk-laser-line"></div>
+                  </div>
+
+                  {cameraError && (
+                    <div className="camera-alert">
+                      <p>⚠️ {cameraError}</p>
+                      <button
+                        className="retry-cam-btn"
+                        onClick={() => setFacingMode(prev => prev === 'environment' ? 'user' : 'environment')}
+                      >
+                        Thử lại Camera
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Ô chip thông tin ở đáy khung ngắm */}
+                  <div className="tablet-hud-bottom">
+                    <span className="tablet-mode-chip">ĐƯA MÃ QR VÀO KHUNG</span>
+                  </div>
+                </div>
               </div>
-            )}
+            </div>
+
+            {/* Bezel dưới: Thanh Home indicator phong cách iPad */}
+            <div className="tablet-bezel-bottom">
+              <div className="tablet-home-indicator"></div>
+            </div>
           </div>
 
           <div className="kiosk-scan-tip">
-            💡 Giữ điện thoại cách camera 15-20cm để nhận diện nhanh nhất
+            💡 Giữ điện thoại cách camera 15-20cm để nhận diện tức thì
           </div>
         </section>
       )}

@@ -227,20 +227,97 @@
   flex: 1;
 }
 
-/* 3. CAMERA CARD STYLING */
-.camera-card {
-  border-radius: 16px;
-  overflow: hidden;
-  background: #000;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+/* ========================================================
+   3. LUXURY TABLET CAMERA ENCLOSURE (IPAD PRO STYLE)
+   ======================================================== */
+.tablet-camera-enclosure {
+  background: linear-gradient(155deg, #ffffff 0%, #f8fafc 45%, #e2e8f0 100%);
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  border-radius: 28px;
+  padding: 10px 10px 12px 10px;
+  box-shadow: 
+    0 22px 50px -12px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(255, 255, 255, 0.35),
+    inset 0 2px 3px rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(15, 23, 42, 0.08);
   position: relative;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
 }
 
+/* Tablet Bezel Top with Simulated Lens & Sensors */
+.tablet-bezel-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 2px 0 8px 0;
+  min-height: 14px;
+}
+
+.tablet-sensor-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #94a3b8;
+  opacity: 0.6;
+}
+
+.tablet-lens-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #38bdf8 0%, #0f172a 65%, #020617 100%);
+  border: 1.5px solid #64748b;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.4), inset 0 0 2px #000;
+  position: relative;
+}
+
+.tablet-lens-dot::after {
+  content: '';
+  position: absolute;
+  top: 1.5px;
+  left: 1.5px;
+  width: 2.5px;
+  height: 2.5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.tablet-mic-hole {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #64748b;
+  opacity: 0.5;
+}
+
+/* Tablet Inner Screen Bezel */
+.tablet-screen-bezel {
+  border-radius: 20px;
+  overflow: hidden;
+  background: #000;
+  border: 1.5px solid #1e293b;
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.9);
+  position: relative;
+}
+
+/* Fallback for legacy camera-card */
+.camera-card {
+  border-radius: 24px;
+  overflow: hidden;
+  background: #000;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+}
+
+/* Camera Viewport (Tăng chiều cao từ 185px -> clamp 270px-310px) */
 .camera-wrapper {
   position: relative;
   width: 100%;
-  height: 185px;
+  height: clamp(270px, 44vh, 310px);
   background: #05070c;
   display: flex;
   align-items: center;
@@ -272,6 +349,124 @@
   display: none !important;
 }
 
+/* Tablet Bezel Bottom with Home Indicator */
+.tablet-bezel-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.tablet-home-indicator {
+  width: 80px;
+  height: 4px;
+  background: rgba(100, 116, 139, 0.35);
+  border-radius: 99px;
+  transition: background 0.2s;
+}
+
+/* ========================================================
+   CÁC Ô ĐIỀU KHIỂN MÀU TRẮNG SANG TRỌNG (LUXURY WHITE CELLS)
+   ======================================================== */
+.tablet-floating-hud {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 10px 12px 10px;
+}
+
+.tablet-hud-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.tablet-hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Ô Huy hiệu màu trắng sứ sang trọng */
+.luxury-white-badge {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 6px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 
+    0 4px 14px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 #ffffff;
+}
+
+.live-dot-green {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulse-dot 1.5s infinite;
+}
+
+.live-dot-indigo {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #6366f1;
+  box-shadow: 0 0 8px #6366f1;
+  animation: pulse-dot 1.5s infinite;
+}
+
+/* Các Ô nút bấm màu trắng sang trọng */
+.luxury-white-btn {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 6px 12px;
+  border-radius: 99px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid rgba(203, 213, 225, 0.95);
+  cursor: pointer;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 #ffffff;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.luxury-white-btn:hover {
+  background: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+.luxury-white-btn:active {
+  transform: translateY(1px) scale(0.97);
+  background: #f1f5f9;
+}
+
+.btn-label {
+  letter-spacing: 0.2px;
+}
+
+/* Legacy tools support */
 .camera-header-tools {
   position: absolute;
   top: 8px;
@@ -288,22 +483,22 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 4px 8px;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  padding: 5px 11px;
   border-radius: 20px;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.3px;
-  color: #4ade80;
+  color: #0f172a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .live-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #4ade80;
+  background: #10b981;
   animation: pulse-dot 1.5s infinite;
 }
 
@@ -315,30 +510,105 @@
 
 .cam-control-btn {
   pointer-events: auto;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #e2e8f0;
+  background: #ffffff;
+  border: 1px solid rgba(203, 213, 225, 0.95);
+  color: #0f172a;
   font-size: 11px;
-  font-weight: 600;
-  padding: 4px 9px;
+  font-weight: 700;
+  padding: 5px 11px;
   border-radius: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .cam-control-btn:hover {
-  background: rgba(30, 41, 59, 0.95);
-  color: #fff;
+  background: #f8fafc;
+  color: #000;
+}
+
+/* Ô chip hiển thị chế độ dưới đáy khung ngắm */
+.tablet-hud-bottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tablet-mode-chip {
+  pointer-events: auto;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #f8fafc;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+/* ========================================================
+   KHUNG NGẮM CAMERA MÁY TÍNH BẢNG (WHITE RETICLE BRACKETS)
+   ======================================================== */
+.tablet-viewfinder-brackets {
+  position: absolute;
+  inset: 18px 24px;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vf-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-color: #ffffff;
+  border-style: solid;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.85);
+}
+
+.vf-corner.vf-tl {
+  top: 0; left: 0;
+  border-width: 3.5px 0 0 3.5px;
+  border-top-left-radius: 8px;
+}
+
+.vf-corner.vf-tr {
+  top: 0; right: 0;
+  border-width: 3.5px 3.5px 0 0;
+  border-top-right-radius: 8px;
+}
+
+.vf-corner.vf-bl {
+  bottom: 0; left: 0;
+  border-width: 0 0 3.5px 3.5px;
+  border-bottom-left-radius: 8px;
+}
+
+.vf-corner.vf-br {
+  bottom: 0; right: 0;
+  border-width: 0 3.5px 3.5px 0;
+  border-bottom-right-radius: 8px;
+}
+
+.scan-aim-line {
+  width: 90%;
+  height: 2.5px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.95) 30%, #10b981 50%, rgba(255,255,255,0.95) 70%, transparent);
+  box-shadow: 0 0 12px #10b981, 0 0 4px #ffffff;
+  animation: sweep 2.2s infinite ease-in-out;
 }
 
 .scan-aim-reticle {
   position: absolute;
   inset: 15px;
   pointer-events: none;
-  border: 1.5px dashed rgba(16, 185, 129, 0.4);
+  border: 2px dashed rgba(255, 255, 255, 0.6);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -348,7 +618,7 @@
 .aim-line {
   width: 90%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #10b981, transparent);
+  background: linear-gradient(90deg, transparent, #ffffff 40%, #10b981 50%, #ffffff 60%, transparent);
   box-shadow: 0 0 10px #10b981;
   animation: sweep 2s infinite ease-in-out;
 }
@@ -362,7 +632,7 @@
 .camera-alert {
   position: absolute;
   inset: 0;
-  background: rgba(15, 23, 42, 0.92);
+  background: rgba(15, 23, 42, 0.94);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -376,14 +646,15 @@
 }
 
 .retry-cam-btn {
-  background: #334155;
-  color: #fff;
-  border: none;
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid rgba(203, 213, 225, 0.95);
   padding: 6px 14px;
-  border-radius: 8px;
+  border-radius: 99px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* 4. SHIPPER INFO CARDS */
@@ -844,63 +1115,74 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  width: 100%;
+}
+
+.kiosk-tablet {
+  max-width: 360px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .kiosk-camera-frame {
-  width: 280px;
-  height: 280px;
+  width: 100%;
+  height: clamp(280px, 78vw, 330px);
+  max-height: 330px;
   background: #000;
-  border-radius: 24px;
+  border-radius: 20px;
   position: relative;
   overflow: hidden;
-  border: 2px solid #312e81;
-  box-shadow: 0 0 30px rgba(99, 102, 241, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 25px rgba(99, 102, 241, 0.25);
 }
 
 .kiosk-target-frame {
   position: absolute;
-  inset: 30px;
+  inset: 24px;
   pointer-events: none;
 }
 
 .kiosk-corner {
   position: absolute;
-  width: 24px;
-  height: 24px;
-  border-color: #818cf8;
+  width: 26px;
+  height: 26px;
+  border-color: #ffffff !important;
   border-style: solid;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.85);
 }
 
 .kiosk-corner.top-left {
   top: 0; left: 0;
-  border-width: 3px 0 0 3px;
-  border-top-left-radius: 8px;
+  border-width: 4px 0 0 4px;
+  border-top-left-radius: 10px;
 }
 
 .kiosk-corner.top-right {
   top: 0; right: 0;
-  border-width: 3px 3px 0 0;
-  border-top-right-radius: 8px;
+  border-width: 4px 4px 0 0;
+  border-top-right-radius: 10px;
 }
 
 .kiosk-corner.bottom-left {
   bottom: 0; left: 0;
-  border-width: 0 0 3px 3px;
-  border-bottom-left-radius: 8px;
+  border-width: 0 0 4px 4px;
+  border-bottom-left-radius: 10px;
 }
 
 .kiosk-corner.bottom-right {
   bottom: 0; right: 0;
-  border-width: 0 3px 3px 0;
-  border-bottom-right-radius: 8px;
+  border-width: 0 4px 4px 0;
+  border-bottom-right-radius: 10px;
 }
 
 .kiosk-laser-line {
   position: absolute;
   left: 0; right: 0;
-  height: 2px;
-  background: #818cf8;
-  box-shadow: 0 0 12px #818cf8;
+  height: 2.5px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.95) 30%, #818cf8 50%, rgba(255,255,255,0.95) 70%, transparent);
+  box-shadow: 0 0 14px #818cf8, 0 0 5px #ffffff;
   animation: laser-sweep 2.2s infinite ease-in-out;
 }
 
@@ -914,10 +1196,10 @@
   font-size: 12px;
   color: #94a3b8;
   text-align: center;
-  background: rgba(15, 23, 42, 0.8);
-  padding: 6px 14px;
+  background: rgba(15, 23, 42, 0.85);
+  padding: 6px 16px;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* KIOSK CONFIRM CARD */

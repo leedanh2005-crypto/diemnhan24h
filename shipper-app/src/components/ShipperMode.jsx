@@ -54,9 +54,9 @@ export function ShipperMode() {
         await html5QrCode.start(
           { facingMode },
           {
-            fps: 12,
-            qrbox: { width: 260, height: 160 },
-            aspectRatio: 1.6
+            fps: 15,
+            qrbox: { width: 280, height: 180 },
+            aspectRatio: 1.35
           },
           (decodedText) => {
             if (!isMountedRef.current) return
@@ -256,40 +256,79 @@ export function ShipperMode() {
 
   return (
     <div className="mode-view shipper-view">
-      {/* 1. Camera Section */}
-      <section className="camera-card">
-        <div className="camera-wrapper">
-          <div id="shipper-reader"></div>
+      {/* 1. Camera Section: Khung viền Tablet màu trắng sang trọng */}
+      <section className="tablet-camera-enclosure shipper-tablet">
+        {/* Bezel trên: Cảm biến & Ống kính trước của máy tính bảng */}
+        <div className="tablet-bezel-top">
+          <span className="tablet-sensor-dot" title="Cảm biến ánh sáng"></span>
+          <span className="tablet-lens-dot" title="Ống kính Camera trước"></span>
+          <span className="tablet-mic-hole" title="Micro thu âm"></span>
+        </div>
 
-          <div className="camera-header-tools">
-            <span className="camera-badge">
-              <span className="live-dot"></span> QUÉT MÃ VẬN ĐƠN (BARCODE / QR)
-            </span>
-            <button
-              type="button"
-              className="cam-control-btn"
-              onClick={toggleCamera}
-              title="Đổi camera trước/sau"
-            >
-              🔄 {facingMode === 'environment' ? 'Cam sau' : 'Cam trước'}
-            </button>
-          </div>
+        {/* Khung viền màn hình tablet */}
+        <div className="tablet-screen-bezel">
+          <div className="camera-wrapper">
+            <div id="shipper-reader"></div>
 
-          {cameraError && (
-            <div className="camera-alert">
-              <p>⚠️ {cameraError}</p>
-              <button
-                className="retry-cam-btn"
-                onClick={() => setFacingMode(prev => prev === 'environment' ? 'environment' : 'environment')}
-              >
-                Thử lại Camera
-              </button>
+            {/* Các ô công cụ màu trắng sang trọng kiểu Tablet Camera */}
+            <div className="tablet-floating-hud">
+              <div className="tablet-hud-top">
+                <div className="luxury-white-badge">
+                  <span className="live-dot-green"></span>
+                  <span className="badge-title">MÁY QUÉT BARCODE</span>
+                </div>
+                <div className="tablet-hud-actions">
+                  <button
+                    type="button"
+                    className="luxury-white-btn"
+                    onClick={toggleCamera}
+                    title="Đổi camera trước/sau"
+                  >
+                    🔄 <span className="btn-label">{facingMode === 'environment' ? 'Cam sau' : 'Cam trước'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="luxury-white-btn"
+                    onClick={() => setIsManualInput(true)}
+                    title="Nhập mã vận đơn bằng tay"
+                  >
+                    ✏️ <span className="btn-label">Nhập tay</span>
+                  </button>
+                </div>
+              </div>
+
+              {cameraError && (
+                <div className="camera-alert">
+                  <p>⚠️ {cameraError}</p>
+                  <button
+                    className="retry-cam-btn"
+                    onClick={() => setFacingMode(prev => prev === 'environment' ? 'user' : 'environment')}
+                  >
+                    Thử lại Camera
+                  </button>
+                </div>
+              )}
+
+              {/* Khung ngắm vạch trắng Pro sắc nét */}
+              <div className="tablet-viewfinder-brackets">
+                <span className="vf-corner vf-tl"></span>
+                <span className="vf-corner vf-tr"></span>
+                <span className="vf-corner vf-bl"></span>
+                <span className="vf-corner vf-br"></span>
+                <div className="scan-aim-line"></div>
+              </div>
+
+              {/* Ô chip thông tin ở đáy khung ngắm */}
+              <div className="tablet-hud-bottom">
+                <span className="tablet-mode-chip">TỰ ĐỘNG NHẬN DIỆN MÃ</span>
+              </div>
             </div>
-          )}
-
-          <div className="scan-aim-reticle">
-            <div className="aim-line"></div>
           </div>
+        </div>
+
+        {/* Bezel dưới: Thanh Home indicator phong cách iPad */}
+        <div className="tablet-bezel-bottom">
+          <div className="tablet-home-indicator"></div>
         </div>
       </section>
 
