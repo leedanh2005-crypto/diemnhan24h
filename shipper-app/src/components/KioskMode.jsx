@@ -41,7 +41,7 @@ export function KioskMode() {
 
       if (isCleaningUp || !isMountedRef.current) return
 
-      const config = { fps: 12, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 }
+      const config = { fps: 12, aspectRatio: 1.0 }
 
       try {
         const html5QrCode = new Html5Qrcode('kiosk-reader')

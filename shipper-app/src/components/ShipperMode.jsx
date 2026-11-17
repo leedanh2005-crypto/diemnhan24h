@@ -55,7 +55,6 @@ export function ShipperMode() {
           { facingMode },
           {
             fps: 15,
-            qrbox: { width: 280, height: 180 },
             aspectRatio: 1.35
           },
           (decodedText) => {
