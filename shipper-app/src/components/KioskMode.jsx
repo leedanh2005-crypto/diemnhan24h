@@ -11,6 +11,7 @@ export function KioskMode() {
   const [tokenInfo, setTokenInfo] = useState(null) // Thông tin kiện hàng tìm được từ Supabase
   const [cameraError, setCameraError] = useState('')
   const [facingMode, setFacingMode] = useState('environment')
+  const [cameraKey, setCameraKey] = useState(0)
   const [isManualInput, setIsManualInput] = useState(false)
   const [manualToken, setManualToken] = useState('')
   const [bleStatus, setBleStatus] = useState({ isConnected: false, deviceName: '' })
@@ -37,78 +38,117 @@ export function KioskMode() {
         } catch (e) {
           console.warn('Lỗi dọn dẹp camera kiosk:', e)
         }
+        scannerRef.current = null
       }
 
       if (isCleaningUp || !isMountedRef.current) return
 
-      const config = { fps: 12, aspectRatio: 1.0 }
-
       try {
+        // 1. Quét danh sách camera vật lý từ thiết bị
+        let cameras = []
+        try {
+          cameras = await Html5Qrcode.getCameras()
+        } catch (camErr) {
+          console.warn('Lấy danh sách camera thiết bị (kiosk):', camErr)
+        }
+
+        if (isCleaningUp || !isMountedRef.current) return
+
+        // 2. Xây dựng danh sách candidate configs ưu tiên deviceId trước, sau đó đến facingMode
+        const candidateConfigs = []
+
+        if (cameras && cameras.length > 0) {
+          if (facingMode === 'environment') {
+            const rearCam = cameras.find(c => /(back|rear|environment|sau|world)/i.test(c.label || ''))
+            if (rearCam) {
+              candidateConfigs.push(rearCam.id)
+            }
+            cameras.forEach(c => {
+              if (!candidateConfigs.includes(c.id)) {
+                candidateConfigs.push(c.id)
+              }
+            })
+          } else {
+            const frontCam = cameras.find(c => /(front|user|trước|webcam|integrated|facetime)/i.test(c.label || ''))
+            if (frontCam) {
+              candidateConfigs.push(frontCam.id)
+            }
+            cameras.forEach(c => {
+              if (!candidateConfigs.includes(c.id)) {
+                candidateConfigs.push(c.id)
+              }
+            })
+          }
+        }
+
+        candidateConfigs.push({ facingMode })
+        candidateConfigs.push({ facingMode: facingMode === 'environment' ? 'user' : 'environment' })
+
         const html5QrCode = new Html5Qrcode('kiosk-reader')
         scannerRef.current = html5QrCode
 
-        await html5QrCode.start(
-          { facingMode },
-          config,
-          (decodedText) => {
-            if (!isMountedRef.current) return
-            const cleanText = decodedText.trim()
-            if (cleanText === lastScannedRef.current) return
+        const config = {
+          fps: 12
+          // Không khóa cứng aspectRatio để tương thích hoàn toàn webcam laptop/PC
+        }
 
-            lastScannedRef.current = cleanText
-            playBeep('confirm')
+        const onScanSuccess = (decodedText) => {
+          if (!isMountedRef.current) return
+          const cleanText = decodedText.trim()
+          if (cleanText === lastScannedRef.current) return
 
-            // Tạm dừng quét
-            if (scannerRef.current && scannerRef.current.isScanning) {
-              scannerRef.current.pause()
-            }
+          lastScannedRef.current = cleanText
+          playBeep('confirm')
 
-            setPendingToken(cleanText)
-            inspectToken(cleanText)
-          },
-          () => {}
-        )
-        setCameraError('')
-      } catch (err) {
-        console.warn('Lỗi camera sau của Kiosk, thử cam trước...', err)
-        try {
-          if (isCleaningUp || !isMountedRef.current) return
-          const html5QrCode = new Html5Qrcode('kiosk-reader')
-          scannerRef.current = html5QrCode
-          await html5QrCode.start(
-            { facingMode: 'user' },
-            config,
-            (decodedText) => {
-              if (!isMountedRef.current) return
-              const cleanText = decodedText.trim()
-              if (cleanText === lastScannedRef.current) return
-
-              lastScannedRef.current = cleanText
-              playBeep('confirm')
-
-              if (scannerRef.current && scannerRef.current.isScanning) {
-                scannerRef.current.pause()
-              }
-
-              setPendingToken(cleanText)
-              inspectToken(cleanText)
-            },
-            () => {}
-          )
-          setFacingMode('user')
-          setCameraError('')
-        } catch (err2) {
-          console.error('Không thể mở camera kiosk:', err2)
-          if (isMountedRef.current) {
-            setCameraError('Không thể mở Camera Kiosk. Vui lòng cho phép quyền truy cập.')
+          // Tạm dừng quét khi nhận được mã QR hợp lệ
+          if (scannerRef.current && scannerRef.current.isScanning) {
+            scannerRef.current.pause()
           }
+
+          setPendingToken(cleanText)
+          inspectToken(cleanText)
+        }
+
+        const onScanFailure = () => {}
+
+        let started = false
+        let lastError = null
+
+        for (const camConf of candidateConfigs) {
+          if (isCleaningUp || !isMountedRef.current) return
+          try {
+            await html5QrCode.start(camConf, config, onScanSuccess, onScanFailure)
+            started = true
+            setCameraError('')
+            console.log('Kiosk camera mở thành công với cấu hình:', camConf)
+            break
+          } catch (err) {
+            console.warn('Kiosk thử camera thất bại:', camConf, err)
+            lastError = err
+            try {
+              if (html5QrCode.isScanning) {
+                await html5QrCode.stop()
+              }
+              await html5QrCode.clear()
+            } catch (_) {}
+          }
+        }
+
+        if (!started && isMountedRef.current) {
+          console.error('Không thể mở camera kiosk:', lastError)
+          setCameraError('Không thể mở Camera Kiosk. Vui lòng kiểm tra quyền Camera trong trình duyệt hoặc kết nối webcam.')
+        }
+      } catch (err) {
+        console.error('Lỗi scanner kiosk:', err)
+        if (isMountedRef.current) {
+          setCameraError('Không thể mở Camera Kiosk. Vui lòng cấp quyền camera hoặc bấm Thử lại.')
         }
       }
     }
 
     const timer = setTimeout(() => {
       initScanner()
-    }, 100)
+    }, 150)
 
     return () => {
       isCleaningUp = true
@@ -121,13 +161,21 @@ export function KioskMode() {
           }
           scannerRef.current.clear().catch(() => {})
         } catch (e) {}
+        scannerRef.current = null
       }
     }
-  }, [facingMode])
+  }, [facingMode, cameraKey])
 
   // Đổi Camera
   const toggleCamera = () => {
     setFacingMode(prev => (prev === 'environment' ? 'user' : 'environment'))
+    setCameraKey(prev => prev + 1)
+  }
+
+  // Thử lại Camera
+  const handleRetryCamera = () => {
+    setCameraError('')
+    setCameraKey(prev => prev + 1)
   }
 
   // Lắng nghe trạng thái thẻ BLE
@@ -463,7 +511,7 @@ export function KioskMode() {
                       <p>⚠️ {cameraError}</p>
                       <button
                         className="retry-cam-btn"
-                        onClick={() => setFacingMode(prev => prev === 'environment' ? 'user' : 'environment')}
+                        onClick={handleRetryCamera}
                       >
                         Thử lại Camera
                       </button>

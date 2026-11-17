@@ -11,6 +11,7 @@ export function ShipperMode() {
   const [statusMessage, setStatusMessage] = useState('')
   const [cameraError, setCameraError] = useState('')
   const [facingMode, setFacingMode] = useState('environment') // 'environment' | 'user'
+  const [cameraKey, setCameraKey] = useState(0) // Kích hoạt thử lại camera khi cần
   const [isManualInput, setIsManualInput] = useState(false)
   const [manualCode, setManualCode] = useState('')
   const [recentScans, setRecentScans] = useState(() => {
@@ -43,56 +44,126 @@ export function ShipperMode() {
         } catch (e) {
           console.warn('Lỗi dọn dẹp camera cũ:', e)
         }
+        scannerRef.current = null
       }
 
       if (isCleaningUp || !isMountedRef.current) return
 
       try {
+        // 1. Quét danh sách camera vật lý từ thiết bị
+        let cameras = []
+        try {
+          cameras = await Html5Qrcode.getCameras()
+        } catch (camErr) {
+          console.warn('Lấy danh sách camera thiết bị:', camErr)
+        }
+
+        if (isCleaningUp || !isMountedRef.current) return
+
+        // 2. Xây dựng danh sách candidate configs ưu tiên deviceId trước, sau đó đến facingMode
+        const candidateConfigs = []
+
+        if (cameras && cameras.length > 0) {
+          if (facingMode === 'environment') {
+            const rearCam = cameras.find(c => /(back|rear|environment|sau|world)/i.test(c.label || ''))
+            if (rearCam) {
+              candidateConfigs.push(rearCam.id)
+            }
+            cameras.forEach(c => {
+              if (!candidateConfigs.includes(c.id)) {
+                candidateConfigs.push(c.id)
+              }
+            })
+          } else {
+            const frontCam = cameras.find(c => /(front|user|trước|webcam|integrated|facetime)/i.test(c.label || ''))
+            if (frontCam) {
+              candidateConfigs.push(frontCam.id)
+            }
+            cameras.forEach(c => {
+              if (!candidateConfigs.includes(c.id)) {
+                candidateConfigs.push(c.id)
+              }
+            })
+          }
+        }
+
+        // Bổ sung các phương án fallback theo facingMode (chuẩn cho mobile & laptop)
+        candidateConfigs.push({ facingMode })
+        candidateConfigs.push({ facingMode: facingMode === 'environment' ? 'user' : 'environment' })
+
+        // 3. Khởi tạo Html5Qrcode instance
         const html5QrCode = new Html5Qrcode('shipper-reader')
         scannerRef.current = html5QrCode
 
-        await html5QrCode.start(
-          { facingMode },
-          {
-            fps: 15,
-            aspectRatio: 1.35
-          },
-          (decodedText) => {
-            if (!isMountedRef.current) return
-            const cleanText = decodedText.trim()
-            if (cleanText === lastScannedRef.current) return
+        const scanConfig = {
+          fps: 15
+          // Không khóa aspectRatio để tương thích tối đa webcam máy tính & điện thoại
+        }
 
-            lastScannedRef.current = cleanText
-            setTrackingCode(cleanText)
-            playBeep('success')
+        const onScanSuccess = (decodedText) => {
+          if (!isMountedRef.current) return
+          const cleanText = decodedText.trim()
+          if (cleanText === lastScannedRef.current) return
 
-            // Gợi ý số phòng nếu đơn đã có sẵn trong hệ thống (như đơn Shopee kết nối)
-            supabase
-              .from('packages')
-              .select('"Số căn hộ"')
-              .eq('Mã vận đơn', cleanText)
-              .maybeSingle()
-              .then(({ data }) => {
-                if (data && data["Số căn hộ"]) {
-                  setRoomNumber(data["Số căn hộ"])
-                }
-              })
-              .catch(() => {})
+          lastScannedRef.current = cleanText
+          setTrackingCode(cleanText)
+          playBeep('success')
 
-            // Reset debounce sau 3 giây
-            setTimeout(() => {
-              if (lastScannedRef.current === cleanText) {
-                lastScannedRef.current = ''
+          // Gợi ý số phòng nếu đơn đã có sẵn trong hệ thống (như đơn Shopee kết nối)
+          supabase
+            .from('packages')
+            .select('"Số căn hộ"')
+            .eq('Mã vận đơn', cleanText)
+            .maybeSingle()
+            .then(({ data }) => {
+              if (data && data["Số căn hộ"]) {
+                setRoomNumber(data["Số căn hộ"])
               }
-            }, 3000)
-          },
-          () => {} // Bỏ qua lỗi lặp mỗi frame
-        )
-        setCameraError('')
+            })
+            .catch(() => {})
+
+          // Reset debounce sau 3 giây
+          setTimeout(() => {
+            if (lastScannedRef.current === cleanText) {
+              lastScannedRef.current = ''
+            }
+          }, 3000)
+        }
+
+        const onScanFailure = () => {}
+
+        // 4. Thử lần lượt các cấu hình camera cho đến khi thành công
+        let started = false
+        let lastError = null
+
+        for (const config of candidateConfigs) {
+          if (isCleaningUp || !isMountedRef.current) return
+          try {
+            await html5QrCode.start(config, scanConfig, onScanSuccess, onScanFailure)
+            started = true
+            setCameraError('')
+            console.log('Camera Shipper mở thành công với cấu hình:', config)
+            break
+          } catch (err) {
+            console.warn('Không thể mở camera với cấu hình:', config, err)
+            lastError = err
+            try {
+              if (html5QrCode.isScanning) {
+                await html5QrCode.stop()
+              }
+              await html5QrCode.clear()
+            } catch (_) {}
+          }
+        }
+
+        if (!started && isMountedRef.current) {
+          console.error('Tất cả camera đều không mở được:', lastError)
+          setCameraError('Không thể mở Camera. Vui lòng cho phép quyền Camera trong trình duyệt hoặc kiểm tra webcam kết nối.')
+        }
       } catch (err) {
-        console.error('Camera error:', err)
+        console.error('Lỗi scanner shipper:', err)
         if (isMountedRef.current) {
-          setCameraError('Không thể mở Camera. Vui lòng cấp quyền hoặc đổi camera.')
+          setCameraError('Không thể mở Camera. Vui lòng kiểm tra quyền truy cập hoặc bấm Thử lại.')
         }
       }
     }
@@ -100,7 +171,7 @@ export function ShipperMode() {
     // Delay nhỏ để DOM render xong element #shipper-reader
     const timer = setTimeout(() => {
       initScanner()
-    }, 100)
+    }, 150)
 
     return () => {
       isCleaningUp = true
@@ -113,13 +184,21 @@ export function ShipperMode() {
           }
           scannerRef.current.clear().catch(() => {})
         } catch (e) {}
+        scannerRef.current = null
       }
     }
-  }, [facingMode])
+  }, [facingMode, cameraKey])
 
   // Đổi Camera trước / sau
   const toggleCamera = () => {
     setFacingMode(prev => (prev === 'environment' ? 'user' : 'environment'))
+    setCameraKey(prev => prev + 1)
+  }
+
+  // Thử lại Camera
+  const handleRetryCamera = () => {
+    setCameraError('')
+    setCameraKey(prev => prev + 1)
   }
 
   // Numpad handlers
@@ -301,7 +380,7 @@ export function ShipperMode() {
                   <p>⚠️ {cameraError}</p>
                   <button
                     className="retry-cam-btn"
-                    onClick={() => setFacingMode(prev => prev === 'environment' ? 'user' : 'environment')}
+                    onClick={handleRetryCamera}
                   >
                     Thử lại Camera
                   </button>
