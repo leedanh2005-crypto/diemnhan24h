@@ -1048,6 +1048,79 @@ tbody tr:hover{background:#f8fafc}
 .gt-card{border:1px solid rgba(5,150,105,0.15)!important;border-radius:var(--r)!important;box-shadow:var(--sh)!important}
 .pk-banner{border-radius:var(--r)!important;border:1px solid rgba(5,150,105,0.2)!important;background:linear-gradient(115deg,#fff 0%,#f0fdf4 60%,#ecfdf5 100%)!important}
 
+
+/* ===== TAB VỊ TRÍ HÀNG (SMART SHELF LOCATION GRID) ===== */
+body[data-view="location"] .v-orders,
+body[data-view="location"] .v-reports,
+body[data-view="location"] .v-returns { display: none !important; }
+body:not([data-view="location"]) .v-location { display: none !important; }
+
+.v-location { animation: fadeIn .3s ease; margin-bottom: 64px; }
+.loc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; margin: 28px 0 22px; }
+.loc-tag { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 999px; background: #ecfdf5; color: #047857; font-size: 12.5px; font-weight: 700; border: 1px solid rgba(5,150,105,0.2); margin-bottom: 8px; }
+.loc-head h2 { font-size: 26px; font-weight: 800; color: var(--ink); letter-spacing: -0.5px; }
+.loc-head p { color: var(--muted); font-size: 14.5px; margin-top: 4px; }
+.loc-tools { display: flex; gap: 10px; align-items: center; }
+
+/* THẺ TÓM TẮT ĐỊNH VỊ KIỆN HÀNG */
+.loc-package-card { background: #ffffff; border: 1.5px solid rgba(5,150,105,0.25); border-radius: 20px; box-shadow: 0 4px 20px -2px rgba(5,150,105,0.12), 0 2px 6px rgba(15,23,42,0.04); padding: 22px 26px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; position: relative; overflow: hidden; }
+.loc-package-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: linear-gradient(180deg, #059669, #10b981); }
+.lpc-left { max-width: 650px; }
+.lpc-badge-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.lpc-market-badge { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 3px 10px; font-size: 12px; font-weight: 700; color: #ee4d2d; display: inline-flex; align-items: center; gap: 6px; }
+.lpc-slot-pill { background: #0f172a; color: #ffffff; border-radius: 8px; padding: 3px 10px; font-size: 12px; font-weight: 700; letter-spacing: 0.3px; }
+.lpc-chip-pill { background: #ecfdf5; color: #047857; border: 1px solid rgba(5,150,105,0.3); border-radius: 8px; padding: 3px 10px; font-size: 12px; font-weight: 700; font-family: ui-monospace, monospace; }
+.lpc-title { font-size: 18px; font-weight: 800; color: var(--ink); margin-bottom: 6px; }
+.lpc-meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.lpc-meta span b { color: var(--ink); font-weight: 600; }
+.lpc-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* SƠ ĐỒ KỆ TRẠM PODO THỰC TẾ */
+.loc-shelf-container { background: #ffffff; border: 1px solid rgba(15,23,42,0.08); border-radius: 24px; box-shadow: var(--sh); padding: 28px 32px; margin-bottom: 32px; }
+.shelf-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(15,23,42,0.06); padding-bottom: 14px; }
+.shelf-header h3 { font-size: 18px; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 10px; }
+.shelf-legend { display: flex; align-items: center; gap: 18px; font-size: 12.5px; color: var(--muted); font-weight: 600; }
+.leg-item { display: flex; align-items: center; gap: 6px; }
+.leg-dot { width: 10px; height: 10px; border-radius: 3px; }
+.leg-mine { background: #059669; box-shadow: 0 0 0 2px #ecfdf5; }
+.leg-empty { background: #f1f5f9; border: 1px solid #cbd5e1; }
+.leg-other { background: #e2e8f0; }
+
+.shelf-frame { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 16px; position: relative; }
+.shelf-level-row { display: flex; flex-direction: column; gap: 6px; }
+.shelf-level-label { font-size: 11.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; padding-left: 4px; }
+.shelf-slots-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media(max-width: 768px) { .shelf-slots-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.shelf-slot { background: #ffffff; border: 1px solid rgba(15,23,42,0.08); border-radius: 14px; padding: 14px 16px; min-height: 105px; display: flex; flex-direction: column; justify-content: space-between; transition: all .2s ease; position: relative; }
+.shelf-slot.slot-empty { background: #ffffff; opacity: 0.7; }
+.shelf-slot.slot-empty:hover { opacity: 1; border-color: #cbd5e1; }
+.shelf-slot.slot-mine { background: #f0fdf4; border: 2px solid #059669; box-shadow: 0 6px 24px -2px rgba(5,150,105,0.22); opacity: 1; z-index: 2; }
+.shelf-slot.slot-other { background: #f8fafc; opacity: 0.5; cursor: not-allowed; }
+
+.slot-code { font-size: 13px; font-weight: 800; color: var(--muted); font-family: ui-monospace, monospace; display: flex; justify-content: space-between; align-items: center; }
+.slot-mine .slot-code { color: #047857; }
+.slot-body { margin: 6px 0; }
+.slot-prod-name { font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.slot-tag-label { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; background: #ecfdf5; color: #047857; padding: 2px 7px; border-radius: 6px; margin-top: 4px; }
+.slot-foot { display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: var(--muted); }
+.slot-mine .slot-foot { color: #047857; font-weight: 600; }
+
+.btn-slot-ping { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; background: #059669; color: #ffffff; border: none; cursor: pointer; transition: all .15s ease; display: inline-flex; align-items: center; gap: 4px; }
+.btn-slot-ping:hover { background: #047857; transform: scale(1.05); }
+
+/* HIỆU ỨNG SONAR PING KHI BẤM BÍP BÍP */
+@keyframes sonar-wave {
+  0% { box-shadow: 0 0 0 0 rgba(5,150,105,0.8), 0 0 10px rgba(16,185,129,0.5); transform: scale(1); }
+  50% { box-shadow: 0 0 0 18px rgba(5,150,105,0), 0 0 28px rgba(16,185,129,0.8); transform: scale(1.03); }
+  100% { box-shadow: 0 0 0 0 rgba(5,150,105,0), 0 0 10px rgba(16,185,129,0.5); transform: scale(1); }
+}
+.sonar-ping {
+  animation: sonar-wave 0.8s ease-in-out infinite !important;
+  border-color: #10b981 !important;
+  background: #f0fdf4 !important;
+}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
@@ -1121,6 +1194,10 @@ tbody tr:hover{background:#f8fafc}
         <span>Lấy hàng ngay</span>
         <span class="action-count-pill" id="heroAtStationCount">0</span>
       </button>
+      <button class="btn btn-concierge-sec" data-nav="location">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>Vị trí ô kệ</span>
+      </button>
       <button class="btn btn-concierge-sec" data-nav="returns">
         <svg class="ic" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
         <span>Trả hàng</span>
@@ -1193,6 +1270,7 @@ tbody tr:hover{background:#f8fafc}
 
 <section class="v-reports" id="reportRoot"></section>
 <section class="v-returns" id="returnRoot"></section>
+<section class="v-location" id="locationRoot"></section>
 
 <div class="sec-head v-orders" id="orders">
   <div>
@@ -1433,6 +1511,7 @@ function renderOrders() {
     const doneCount = orders.filter(o => o.stationStatus === 'RECEIVED' || (statusInfo(o.displayStatus) && statusInfo(o.displayStatus).tab === 'done')).length;
 
     const elHeroAt = document.getElementById('heroAtStationCount'); if (elHeroAt) elHeroAt.textContent = atStationCount;
+    const elLocPill = document.getElementById('locCount'); if (elLocPill) { elLocPill.textContent = atStationCount; elLocPill.hidden = !atStationCount; }
     const elBtnQuick = document.getElementById('btnQuickPickup'); if (elBtnQuick) elBtnQuick.style.display = atStationCount ? 'inline-flex' : 'none';
     const elS1 = document.getElementById('cStatStation'); if (elS1) elS1.textContent = atStationCount;
     const elS2 = document.getElementById('cStatShip'); if (elS2) elS2.textContent = shipCount;
@@ -1476,7 +1555,7 @@ function renderOrders() {
       <td><div class="row-act"><button class="btn btn-o" data-detail="${i}">Chi tiết</button>${
         o.trackingCode ? `<button class="btn btn-o" data-barcode="${esc(o.trackingCode)}" data-room="${esc(o.apartment || '1204')}" data-prod="${esc(o.product)}" title="Hiện mã vạch để Shipper quét">🏷️ Barcode</button>` : ''
       }${
-        o.stationStatus === 'AT_STATION' ? `<button class="btn btn-p" data-pk-one="${esc(o.orderId)}">Lấy hàng</button>`
+        o.stationStatus === 'AT_STATION' ? `<button class="btn btn-o" onclick="go('location')" title="Xem vị trí ô kệ trên sơ đồ trạm">📍 Ô A-03</button><button class="btn btn-p" data-pk-one="${esc(o.orderId)}">Lấy hàng</button>`
         : o.stationStatus === 'PICKUP_REQUESTED' ? `<button class="btn btn-o" data-pk-view="${esc(o.orderId)}">Mã QR</button>` : ''
       }</div></td></tr>`;
   }).join('');
@@ -1977,6 +2056,290 @@ function loadBudget() {
     if (raw) budget = { monthly:0, alertAt:80, perOrder:0, categories:{}, ...JSON.parse(raw) };
   } catch {}
   return Promise.resolve();
+}
+
+
+/* ===== G. TÍNH NĂNG ĐỊNH VỊ VÀ TÌM KIẾM HÀNG TẠI TRẠM ===== */
+function playBeeperSound() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const now = ctx.currentTime;
+    // 3 tiếng bíp sắc nét: bíp... bíp... bíp...
+    [0, 0.16, 0.32].forEach(t => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1760, now + t); // Tần số 1760Hz chuẩn âm thanh định vị
+      gain.gain.setValueAtTime(0.28, now + t);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + t + 0.09);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + t);
+      osc.stop(now + t + 0.1);
+    });
+  } catch (err) {
+    console.warn('AudioContext error:', err);
+  }
+}
+
+window.pingLocationChip = function(chipCode, slotName) {
+  playBeeperSound();
+  toast('🔊 Đang phát tín hiệu đến chip ' + chipCode + ' tại Ô ' + slotName + '! Thẻ iTag đang nhấp nháy.', 'ok');
+  const slotEl = document.getElementById('slot-' + slotName.replace(/[^a-zA-Z0-9]/g, ''));
+  if (slotEl) {
+    slotEl.classList.add('sonar-ping');
+    slotEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => slotEl.classList.remove('sonar-ping'), 4000);
+  }
+};
+
+window.pingAllChips = function() {
+  playBeeperSound();
+  toast('🔊 Đang phát tín hiệu tìm kiếm tất cả kiện hàng của Căn hộ 1204!', 'ok');
+  document.querySelectorAll('.slot-mine').forEach(el => {
+    el.classList.add('sonar-ping');
+    setTimeout(() => el.classList.remove('sonar-ping'), 4000);
+  });
+};
+
+function renderLocationView() {
+  const root = document.getElementById('locationRoot');
+  if (!root) return;
+
+  const atStationOrders = orders.filter(isAtStation);
+  const activeReturns = (typeof rt !== 'undefined' && rt.list) ? rt.list.filter(r => r.status === 'AT_STATION') : [];
+
+  // Cập nhật huy hiệu trên menu
+  const totalAt = atStationOrders.length + activeReturns.length;
+  const badgeEl = document.getElementById('locCount');
+  if (badgeEl) { badgeEl.textContent = totalAt; badgeEl.hidden = !totalAt; }
+
+  const headHtml = `
+    <div class="loc-head">
+      <div>
+        <div class="loc-tag">
+          <span class="live-dot"></span>
+          <span>Sơ đồ Kệ Trạm PODO · Sảnh Tháp Diamond</span>
+        </div>
+        <h2>Vị trí kiện hàng tại Trạm</h2>
+        <p>Hệ thống định vị ô kệ thời gian thực và điều khiển thẻ chip iTag của Căn hộ 1204</p>
+      </div>
+      <div class="loc-tools">
+        ${totalAt > 0 ? `
+          <button class="btn btn-p" onclick="pingAllChips()">
+            <svg class="ic" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            <span>Phát tín hiệu chuông (Bíp bíp)</span>
+          </button>
+        ` : `
+          <button class="btn btn-o" onclick="resetDemoPkg()">
+            <span>🔄 Thử nghiệm kiện hàng mẫu</span>
+          </button>
+        `}
+      </div>
+    </div>
+  `;
+
+  let cardsHtml = '';
+  if (totalAt > 0) {
+    cardsHtml = '<div class="loc-cards-list">' + atStationOrders.map(o => {
+      const slot = 'A-03';
+      const chip = 'CP-0186';
+      return `
+        <div class="loc-package-card">
+          <div class="lpc-left">
+            <div class="lpc-badge-row">
+              <span class="lpc-market-badge">${mkBadge(o.marketplace)}</span>
+              <span class="lpc-slot-pill">📍 Kệ A · Tầng 2 · Ô ${slot}</span>
+              <span class="lpc-chip-pill">🏷️ Chip ${chip}</span>
+            </div>
+            <h4 class="lpc-title">${esc(o.product)}</h4>
+            <div class="lpc-meta">
+              <span>Mã vận đơn: <b>${esc(o.trackingCode || '--')}</b></span>
+              <span>Mã đơn: <b>${esc(o.orderCode || '--')}</b></span>
+              <span>Đến trạm lúc: <b>${when(o.updatedAt)}</b></span>
+            </div>
+          </div>
+          <div class="lpc-actions">
+            <button class="btn btn-emerald" onclick="pingLocationChip('${chip}', '${slot}')">
+              <svg class="ic" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              <span>Bíp bíp & Nháy đèn</span>
+            </button>
+            <button class="btn btn-p" data-pk-one="${esc(o.orderId)}">
+              <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+              <span>Mã QR lấy hàng</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('') + activeReturns.map(r => {
+      const slot = 'B-02';
+      const chip = r.chip || 'CP-3048';
+      return `
+        <div class="loc-package-card">
+          <div class="lpc-left">
+            <div class="lpc-badge-row">
+              <span class="lpc-market-badge">${mkBadge(r.marketplace)}</span>
+              <span class="lpc-slot-pill">📍 Kệ B · Tầng 1 · Ô ${slot}</span>
+              <span class="lpc-chip-pill" style="background:#fef3c7;color:#92400e;border-color:rgba(217,119,6,0.3)">🏷️ Kiện gửi trả · Chip ${chip}</span>
+            </div>
+            <h4 class="lpc-title">${esc((r.items && r.items[0] && r.items[0].productName) || 'Kiện hàng gửi trả')}</h4>
+            <div class="lpc-meta">
+              <span>Mã vận đơn trả: <b>${esc(r.trackingCode)}</b></span>
+              <span>Mã đơn gốc: <b>${esc(r.orderCode)}</b></span>
+              <span>Trạng thái: <b>Đã gửi tại trạm</b></span>
+            </div>
+          </div>
+          <div class="lpc-actions">
+            <button class="btn btn-emerald" onclick="pingLocationChip('${chip}', '${slot}')">
+              <svg class="ic" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              <span>Bíp bíp & Nháy đèn</span>
+            </button>
+            <button class="btn btn-o" data-rt-handover="${esc(r.id)}">
+              <span>Mã bàn giao shipper</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('') + '</div>';
+  } else {
+    cardsHtml = `
+      <div class="rp-empty" style="margin-bottom:28px">
+        <svg class="ic" style="width:48px;height:48px;color:#10b981" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+        <h3>Chưa có kiện hàng lưu tại trạm</h3>
+        <p>Căn hộ 1204 hiện chưa có kiện hàng nào tại trạm PODO. Khi shipper giao kiện đến trạm, vị trí ô kệ thông minh và chip iTag sẽ tự động hiển thị tại đây.</p>
+        <button class="btn btn-p" onclick="resetDemoPkg()">🔄 Tạo kiện mẫu tại trạm để xem thử nghiệm</button>
+      </div>
+    `;
+  }
+
+  // Sơ đồ Kệ A (Kiện giao đến)
+  const hasA03 = atStationOrders.length > 0;
+  const a03Prod = hasA03 ? esc(atStationOrders[0].product) : '';
+
+  // Sơ đồ Kệ B (Kiện gửi trả)
+  const hasB02 = activeReturns.length > 0;
+  const b02Prod = hasB02 ? esc((activeReturns[0].items && activeReturns[0].items[0] && activeReturns[0].items[0].productName) || 'Kiện trả hàng') : '';
+
+  const shelfHtml = `
+    <div class="loc-shelf-container">
+      <div class="shelf-header">
+        <h3>
+          <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+          <span>Kệ A – Khu vực hàng giao đến (Tiêu chuẩn & Hàng mát)</span>
+        </h3>
+        <div class="shelf-legend">
+          <div class="leg-item"><span class="leg-dot leg-mine"></span><span>Kiện Căn 1204</span></div>
+          <div class="leg-item"><span class="leg-dot leg-other"></span><span>Căn hộ khác</span></div>
+          <div class="leg-item"><span class="leg-dot leg-empty"></span><span>Ô trống</span></div>
+        </div>
+      </div>
+
+      <div class="shelf-frame">
+        <!-- TẦNG 3 -->
+        <div class="shelf-level-row">
+          <div class="shelf-level-label">Tầng 3 (Tầng trên - Kiện nhẹ)</div>
+          <div class="shelf-slots-grid">
+            <div class="shelf-slot slot-empty"><div class="slot-code">A-09</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Ô trống</div></div><div class="slot-foot">Sẵn sàng</div></div>
+            <div class="shelf-slot slot-other"><div class="slot-code">A-10</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Căn 0802</div></div><div class="slot-foot">Đã lưu</div></div>
+            <div class="shelf-slot slot-empty"><div class="slot-code">A-11</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Ô trống</div></div><div class="slot-foot">Sẵn sàng</div></div>
+            <div class="shelf-slot slot-other"><div class="slot-code">A-12</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Căn 1506</div></div><div class="slot-foot">Đã lưu</div></div>
+          </div>
+        </div>
+
+        <!-- TẦNG 2 -->
+        <div class="shelf-level-row">
+          <div class="shelf-level-label">Tầng 2 (Tầng giữa - Ngang tầm tay)</div>
+          <div class="shelf-slots-grid">
+            <div class="shelf-slot slot-other"><div class="slot-code">A-05</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Căn 0411</div></div><div class="slot-foot">Đã lưu</div></div>
+            <div class="shelf-slot slot-empty"><div class="slot-code">A-06</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Ô trống</div></div><div class="slot-foot">Sẵn sàng</div></div>
+            
+            <!-- Ô A-03 CỦA CĂN HỘ 1204 -->
+            ${hasA03 ? `
+              <div class="shelf-slot slot-mine" id="slot-A03">
+                <div class="slot-code">
+                  <span>A-03</span>
+                  <span class="live-dot" style="width:8px;height:8px"></span>
+                </div>
+                <div class="slot-body">
+                  <div class="slot-prod-name">📦 ${a03Prod}</div>
+                  <span class="slot-tag-label">🏷️ Chip CP-0186</span>
+                </div>
+                <div class="slot-foot">
+                  <span>Căn hộ 1204</span>
+                  <button class="btn-slot-ping" onclick="pingLocationChip('CP-0186', 'A-03')">🔊 Bíp bíp</button>
+                </div>
+              </div>
+            ` : `
+              <div class="shelf-slot slot-empty"><div class="slot-code">A-03</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Ô trống</div></div><div class="slot-foot">Sẵn sàng</div></div>
+            `}
+
+            <div class="shelf-slot slot-other"><div class="slot-code">A-08</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Căn 1904</div></div><div class="slot-foot">Đã lưu</div></div>
+          </div>
+        </div>
+
+        <!-- TẦNG 1 -->
+        <div class="shelf-level-row">
+          <div class="shelf-level-label">Tầng 1 (Tầng dưới - Kiện nặng)</div>
+          <div class="shelf-slots-grid">
+            <div class="shelf-slot slot-empty"><div class="slot-code">A-01</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Ô trống</div></div><div class="slot-foot">Sẵn sàng</div></div>
+            <div class="shelf-slot slot-other"><div class="slot-code">A-02</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Căn 0205</div></div><div class="slot-foot">Đã lưu</div></div>
+            <div class="shelf-slot slot-empty"><div class="slot-code">A-04</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Ô trống</div></div><div class="slot-foot">Sẵn sàng</div></div>
+            <div class="shelf-slot slot-other"><div class="slot-code">A-07</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Căn 1108</div></div><div class="slot-foot">Đã lưu</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KỆ B – KHU VỰC GỬI TRẢ HÀNG -->
+    <div class="loc-shelf-container">
+      <div class="shelf-header">
+        <h3>
+          <svg class="ic" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
+          <span>Kệ B – Khu vực gửi trả hàng chờ Shipper thu gom</span>
+        </h3>
+        <div class="shelf-legend">
+          <div class="leg-item"><span class="leg-dot leg-mine"></span><span>Kiện trả Căn 1204</span></div>
+          <div class="leg-item"><span class="leg-dot leg-empty"></span><span>Ô trống</span></div>
+        </div>
+      </div>
+
+      <div class="shelf-frame">
+        <div class="shelf-level-row">
+          <div class="shelf-level-label">Ngăn gửi trả hàng PODO</div>
+          <div class="shelf-slots-grid">
+            <div class="shelf-slot slot-empty"><div class="slot-code">B-01</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Ô trống</div></div><div class="slot-foot">Sẵn sàng</div></div>
+            
+            <!-- Ô B-02 KIỆN TRẢ HÀNG -->
+            ${hasB02 ? `
+              <div class="shelf-slot slot-mine" id="slot-B02" style="border-color:#d97706;background:#fffbeb">
+                <div class="slot-code" style="color:#b45309">
+                  <span>B-02</span>
+                  <span class="live-dot" style="background:#f59e0b;box-shadow:0 0 0 0 rgba(245,158,11,0.7)"></span>
+                </div>
+                <div class="slot-body">
+                  <div class="slot-prod-name">🔄 ${b02Prod}</div>
+                  <span class="slot-tag-label" style="background:#fef3c7;color:#92400e">🏷️ Chip CP-3048</span>
+                </div>
+                <div class="slot-foot" style="color:#b45309">
+                  <span>Chờ shipper lấy</span>
+                  <button class="btn-slot-ping" style="background:#d97706" onclick="pingLocationChip('CP-3048', 'B-02')">🔊 Bíp bíp</button>
+                </div>
+              </div>
+            ` : `
+              <div class="shelf-slot slot-empty"><div class="slot-code">B-02</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Ô trống</div></div><div class="slot-foot">Sẵn sàng</div></div>
+            `}
+
+            <div class="shelf-slot slot-empty"><div class="slot-code">B-03</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Ô trống</div></div><div class="slot-foot">Sẵn sàng</div></div>
+            <div class="shelf-slot slot-empty"><div class="slot-code">B-04</div><div class="slot-body"><div class="slot-prod-name" style="color:var(--muted)">Ô trống</div></div><div class="slot-foot">Sẵn sàng</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  root.innerHTML = headHtml + cardsHtml + shelfHtml;
 }
 
 function renderReport() {
