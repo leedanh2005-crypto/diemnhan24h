@@ -171,8 +171,9 @@ export function KioskMode() {
   // Tra cứu thông tin mã QR trước khi bấm nhận
   const inspectToken = async (token) => {
     // 1. Thử gọi API backend PICKO trước
+    const apiBase = import.meta.env.VITE_API_URL || ''
     try {
-      const res = await fetch(`/api/orders/inspect?token=${encodeURIComponent(token)}`)
+      const res = await fetch(`${apiBase}/api/orders/inspect?token=${encodeURIComponent(token)}`)
       if (res.ok) {
         const data = await res.json()
         if (data.success && data.apartment) {
@@ -219,8 +220,9 @@ export function KioskMode() {
     let detailMsg = ''
 
     // 1. Thử gọi API backend PICKO trước
+    const apiBase = import.meta.env.VITE_API_URL || ''
     try {
-      const res = await fetch('/api/orders/verify-qr', {
+      const res = await fetch(`${apiBase}/api/orders/verify-qr`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token })
