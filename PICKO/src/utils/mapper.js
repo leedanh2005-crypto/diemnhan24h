@@ -90,6 +90,31 @@ const DEMO_EXACT_PACKAGES = {
         variant: 'Chống thấm nước 50ml'
       }
     ]
+  },
+  'SPXVN077123999': {
+    recipient: 'Lê Minh Quân',
+    phone: '090*****67',
+    apartment: '1204',
+    address: '45/7 Trần Phú, Phường Thạch Thang, Quận Hải Châu, Thành phố Đà Nẵng',
+    shopName: 'COOLMATE OFFICIAL STORE',
+    senderAddress: 'Tầng 3-4, Tòa nhà Kim Hoàn, Ngõ 19 Duy Tân, Cầu Giấy, Hà Nội',
+    orderCode: 'SHP260815B12',
+    mainProduct: 'ÁO THUN COTTON OVERSIZE PHONG CÁCH HÀN QUỐC',
+    totalQuantity: 1,
+    totalAmount: 185000,
+    carrier: 'Shopee Express (SPX)',
+    payment: 'Ví ShopeePay',
+    instruction: 'Được đồng kiểm',
+    deliveryRoute: 'DN-45-21-TK15-P · E-TIÊUCHUẨN',
+    items: [
+      {
+        productName: 'Áo thun cotton oversize phong cách Hàn Quốc',
+        image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=150&q=80',
+        quantity: 1,
+        price: 185000,
+        variant: 'Trắng / Size L'
+      }
+    ]
   }
 };
 

@@ -2449,14 +2449,31 @@ function rtUpsert(r) {
   const i = rt.list.findIndex(x => x.id === r.id);
   if (i >= 0) rt.list[i] = r; else rt.list.unshift(r);
   updateRtBadge();
+  try { localStorage.setItem('picko_returns', JSON.stringify(rt.list)); } catch {}
 }
 async function loadReturnsData() {
   try {
     const d = await api('/api/returns');
-    rt.list = d.returns || []; rt.loaded = true; updateRtBadge();
+    if (d && Array.isArray(d.returns)) {
+      rt.list = d.returns;
+      try { localStorage.setItem('picko_returns', JSON.stringify(rt.list)); } catch {}
+    }
+  } catch (err) {
+    console.warn('Lỗi tải dữ liệu trả hàng:', err);
+    try {
+      const saved = localStorage.getItem('picko_returns');
+      if (saved) rt.list = JSON.parse(saved);
+    } catch {}
+  } finally {
+    rt.loaded = true;
+    updateRtBadge();
     if (document.body.dataset.view === 'returns') renderReturns();
-  } catch {}
+  }
 }
+try {
+  const _savedRt = localStorage.getItem('picko_returns');
+  if (_savedRt) { rt.list = JSON.parse(_savedRt); rt.loaded = true; updateRtBadge(); }
+} catch {}
 
 /* --- Khối "Trả hàng" trong Chi tiết đơn --- */
 function returnSection(o) {

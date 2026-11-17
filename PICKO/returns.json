@@ -1,0 +1,69 @@
+[
+  {
+    "id": "RTSHP01",
+    "userId": "user-1204",
+    "orderId": "demo-shp-003",
+    "orderCode": "SHP260815B12",
+    "marketplace": "Shopee",
+    "amount": 185000,
+    "items": [
+      {
+        "productName": "Áo thun cotton oversize phong cách Hàn Quốc",
+        "variant": "Trắng / Size L",
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=150&q=80"
+      }
+    ],
+    "trackingCode": "SPXVN077123999-RT",
+    "reason": "Sai mẫu / sai kích cỡ",
+    "status": "AT_STATION",
+    "dropCode": "RT-820859",
+    "handover": null,
+    "chip": "CP-3048",
+    "createdAt": "2026-11-15T08:30:00.000Z",
+    "deadline": "2026-11-30T08:30:00.000Z",
+    "timeline": [
+      {
+        "s": "WAIT_DROPOFF",
+        "at": "2026-11-15T08:30:00.000Z",
+        "note": "Cư dân tạo yêu cầu"
+      },
+      {
+        "s": "AT_STATION",
+        "at": "2026-11-15T10:15:00.000Z",
+        "note": "Máy quét: QR gửi trả và tem kiện khớp, gắn chip CP-3048"
+      }
+    ]
+  },
+  {
+    "id": "RTSHP02",
+    "userId": "user-1204",
+    "orderId": "demo-shp-004",
+    "orderCode": "SHP260920X88",
+    "marketplace": "Shopee",
+    "amount": 215000,
+    "items": [
+      {
+        "productName": "Balo laptop nam nữ thời trang chống nước",
+        "variant": "Đen / 15.6 inch",
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=150&q=80"
+      }
+    ],
+    "trackingCode": "SPXVN095817234",
+    "reason": "Hàng bị lỗi / hư hỏng",
+    "status": "WAIT_DROPOFF",
+    "dropCode": "RT-69C00A",
+    "handover": null,
+    "chip": null,
+    "createdAt": "2026-11-17T09:00:00.000Z",
+    "deadline": "2026-12-02T09:00:00.000Z",
+    "timeline": [
+      {
+        "s": "WAIT_DROPOFF",
+        "at": "2026-11-17T09:00:00.000Z",
+        "note": "Cư dân tạo yêu cầu"
+      }
+    ]
+  }
+]

@@ -40,6 +40,23 @@ const createDefaultShopeeOrders = () => [
     "Cập nhật gần nhất": new Date().toISOString(),
     "Mã lấy hàng": null,
     created_at: new Date(Date.now() - 3600000 * 40).toISOString()
+  },
+  {
+    id: 'demo-shp-003',
+    "ID nội bộ PICKO": "PK-SHP-003",
+    "Mã vận đơn": "SPXVN077123999",
+    "Mã đơn hàng trên sàn": "SHP260815B12",
+    "Sàn TMĐT": "Shopee",
+    "Số căn hộ": "1204",
+    "Trạng thái đơn trên sàn": "Đã giao",
+    // KIỆN NÀY CƯ DÂN ĐÃ NHẬN -> CÓ THỂ TẠO YÊU CẦU TRẢ HÀNG
+    "Trạng thái tại trạm PICKO": "Đã nhận",
+    "Tổng số sản phẩm": 1,
+    "Tổng tiền đơn": 185000,
+    "Thời gian đặt đơn": new Date(Date.now() - 3600000 * 96).toISOString(),
+    "Cập nhật gần nhất": new Date(Date.now() - 3600000 * 48).toISOString(),
+    "Mã lấy hàng": null,
+    created_at: new Date(Date.now() - 3600000 * 96).toISOString()
   }
 ];
 
