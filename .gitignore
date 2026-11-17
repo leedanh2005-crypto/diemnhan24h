@@ -1,7 +1,36 @@
 # Environment & Secrets
 .env
+.env.*
+!.env.example
 credentials.json
 token.json
+
+# Node & Builds
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+
+# Test files & temporary assets
+test_*.png
+Screenshot*.png
+Note.txt
+Giao*
+Giao  diện mới/
+kiosk-app/
+
+# Agent Skills & Local Tooling
+.agents/
+skills/
+senior-backend/
+senior-frontend/
+ui-ux-pro-max/
+supermemory/
+supermemory-main.zip
+
+# Documents & Binaries
+*.pdf
+KSKD_PICKO_DATA.xlsx
 
 # Intermediate files
 .tmp/
