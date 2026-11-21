@@ -1023,16 +1023,231 @@ tbody tr:hover {
 }
 
 /* --------------------------------------------------------------------------
-   9. SPENDING & BUDGET REPORTS (v-reports)
+   9. SPENDING & BUDGET REPORTS (v-reports) & RETURNS COMMON
    -------------------------------------------------------------------------- */
+/* Sticky Glassmorphic Header (Fix for White Box on >900px screens) */
+.rp-head {
+  background: transparent !important;
+}
+
+@media (min-width: 901px) {
+  .rp-head {
+    position: sticky !important;
+    top: 64px !important;
+    z-index: 30 !important;
+    margin: 0 0 16px !important;
+    padding: 22px 0 14px !important;
+    background: rgba(7, 11, 20, 0.85) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+}
+
 .rp-head h2 {
   color: #f8fafc !important;
   font-size: 26px !important;
   font-weight: 800 !important;
+  letter-spacing: -0.5px !important;
 }
 
 .rp-head p {
   color: #94a3b8 !important;
+}
+
+/* Realtime Sync Tag in Reports & Returns */
+.rp-live {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-top: 8px !important;
+  padding: 4px 12px !important;
+  border-radius: 99px !important;
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+.rp-live i {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  background: #10b981 !important;
+  box-shadow: 0 0 10px #10b981 !important;
+}
+
+/* Empty State Cards (Fix for White Box on Empty State) */
+.rp-empty {
+  text-align: center !important;
+  padding: 64px 24px !important;
+  background: rgba(15, 23, 42, 0.65) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1.5px dashed rgba(255, 255, 255, 0.14) !important;
+  border-radius: var(--r) !important;
+  color: #94a3b8 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+  margin-bottom: 24px !important;
+}
+
+.rp-empty h3 {
+  color: #f8fafc !important;
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  margin-top: 8px !important;
+  margin-bottom: 6px !important;
+}
+
+.rp-empty p {
+  color: #cbd5e1 !important;
+  font-size: 14.5px !important;
+  max-width: 480px !important;
+  margin: 0 auto 20px !important;
+}
+
+.rp-empty .ic {
+  color: #34d399 !important;
+  filter: drop-shadow(0 0 14px rgba(52, 211, 153, 0.45)) !important;
+}
+
+/* Budget CTA Banner (Fix for White Box when no budget is set) */
+.rp-cta {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(6, 40, 34, 0.85) 100%) !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  border-radius: var(--r) !important;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45), 0 0 25px rgba(16, 185, 129, 0.15) !important;
+  padding: 24px 28px !important;
+}
+
+.rp-cta h3 {
+  color: #f8fafc !important;
+  font-size: 20px !important;
+  font-weight: 800 !important;
+}
+
+.rp-cta p {
+  color: #cbd5e1 !important;
+}
+
+/* Dropdown Market Filter */
+.rp-sel {
+  height: 40px !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 10px !important;
+  padding: 0 14px !important;
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+}
+
+/* Return Status Badge Pills */
+.rt-left {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+.rt-left.warn {
+  background: rgba(245, 158, 11, 0.18) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.35) !important;
+}
+
+.rt-left.off {
+  background: rgba(100, 116, 139, 0.2) !important;
+  color: #94a3b8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Skeleton Loading Animation */
+.sk {
+  background: linear-gradient(90deg, rgba(30, 41, 59, 0.6) 25%, rgba(51, 65, 85, 0.7) 50%, rgba(30, 41, 59, 0.6) 75%) !important;
+  background-size: 200% 100% !important;
+}
+
+/* Ranked Spend Rows */
+.rk {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.rk b {
+  color: #f8fafc !important;
+}
+
+.rk .v {
+  color: #f8fafc !important;
+}
+
+.rk img {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-radius: 9px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.rk-none {
+  color: #94a3b8 !important;
+}
+
+/* Savings Section */
+.sv {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.sv span {
+  color: #94a3b8 !important;
+}
+
+.sv b {
+  color: #f8fafc !important;
+}
+
+.sv.tot {
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.sv.tot b {
+  color: #34d399 !important;
+  text-shadow: 0 0 10px rgba(52, 211, 153, 0.4) !important;
+}
+
+.lim {
+  color: #94a3b8 !important;
+}
+
+.lim.ok {
+  color: #34d399 !important;
+}
+
+.lim.warn {
+  color: #fbbf24 !important;
+}
+
+.lim.over {
+  color: #f43f5e !important;
+}
+
+/* Budget Modal Quick Suggestions */
+.sugg button {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  border-radius: 999px !important;
+}
+
+.sugg button:hover {
+  background: rgba(16, 185, 129, 0.28) !important;
+  color: #ffffff !important;
+}
+
+.bg-sub {
+  color: #f8fafc !important;
+}
+
+.ins b {
+  color: #f8fafc !important;
 }
 
 .rp-card {
