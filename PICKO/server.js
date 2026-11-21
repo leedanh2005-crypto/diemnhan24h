@@ -18,6 +18,7 @@ app.use(express.json());
 app.use("/logos", express.static(path.join(__dirname, "logos")));
 app.get("/favicon.ico", (req, res) => res.sendFile(path.join(__dirname, "logos", "favicon.ico")));
 app.get("/favicon.png", (req, res) => res.sendFile(path.join(__dirname, "logos", "favicon.png")));
+app.get('/dark-luxury.css', (req, res) => res.sendFile(path.join(__dirname, 'dark-luxury.css')));
 
 // API Routes
 app.get("/api/health", (req, res) => {
