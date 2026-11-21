@@ -2791,5 +2791,873 @@ tbody tr:hover {
 }
 
 /* ==========================================================================
+   8. OPTION A: 3D ISOMETRIC SMART LOCKER VISUALIZER
+   (Perspective 3D Stage, Modular Towers, Smart LED Beacons & 3D Door Open)
+   ========================================================================== */
+
+/* 3D Perspective Stage Container */
+.locker-isometric-stage {
+  position: relative !important;
+  width: 100% !important;
+  min-height: 520px !important;
+  perspective: 1200px !important;
+  perspective-origin: 50% 36% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 40px 20px 60px !important;
+  background: radial-gradient(ellipse at 50% 35%, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 42, 0) 70%) !important;
+  border-radius: 24px !important;
+  overflow: hidden !important;
+  user-select: none !important;
+  transition: all 0.4s ease !important;
+}
+
+/* Perspective Toggle Toolbar (3D Isometric vs 2D Elevation) */
+.locker-view-switch {
+  position: relative !important;
+  z-index: 20 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 5px !important;
+  border-radius: 999px !important;
+  background: rgba(15, 23, 42, 0.85) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  margin-bottom: 32px !important;
+}
+
+.locker-switch-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 18px !important;
+  border-radius: 999px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: #94a3b8 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.locker-switch-btn:hover {
+  color: #f8fafc !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.locker-switch-btn.active,
+.locker-switch-btn[aria-pressed="true"] {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(6, 78, 59, 0.45) 100%) !important;
+  border-color: rgba(16, 185, 129, 0.5) !important;
+  color: #34d399 !important;
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.35) !important;
+}
+
+/* 3D Scene Root & Transformations */
+.locker-3d-scene {
+  position: relative !important;
+  transform-style: preserve-3d !important;
+  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+/* Isometric 3D Mode (Default) */
+.locker-isometric-stage:not(.mode-2d) .locker-3d-scene,
+.locker-isometric-stage.mode-3d .locker-3d-scene,
+.locker-3d-scene.mode-3d {
+  transform: rotateX(20deg) rotateY(-18deg) rotateZ(2deg) translateZ(0) !important;
+}
+
+/* 2D Elevation Mode (Flat Front View) */
+.locker-isometric-stage.mode-2d .locker-3d-scene,
+.locker-3d-scene.mode-2d {
+  transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) translateZ(0) !important;
+}
+
+/* Ambient Stage Shadow & Cyberpunk Floor Grid */
+.locker-floor-shadow {
+  position: absolute !important;
+  bottom: -25px !important;
+  left: -10% !important;
+  right: -10% !important;
+  height: 50px !important;
+  border-radius: 50% !important;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.75) 0%, transparent 75%) !important;
+  filter: blur(14px) !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+.locker-floor-grid {
+  position: absolute !important;
+  bottom: -40px !important;
+  left: 50% !important;
+  transform: translateX(-50%) rotateX(75deg) translateZ(-40px) !important;
+  width: 960px !important;
+  height: 460px !important;
+  background-image:
+    linear-gradient(to right, rgba(16, 185, 129, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(16, 185, 129, 0.08) 1px, transparent 1px) !important;
+  background-size: 32px 32px !important;
+  mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.9) 25%, transparent 75%) !important;
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.9) 25%, transparent 75%) !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+/* Smart Locker Modular Towers Bank */
+.locker-bank {
+  display: flex !important;
+  gap: 22px !important;
+  align-items: stretch !important;
+  transform-style: preserve-3d !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+@media (max-width: 900px) {
+  .locker-bank {
+    flex-direction: column !important;
+    gap: 28px !important;
+  }
+}
+
+/* 3D Smart Locker Tower Column */
+.locker-tower {
+  width: 250px !important;
+  background: linear-gradient(180deg, #131b2e 0%, #0d1424 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 20px !important;
+  padding: 16px 14px 18px !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -2px 0 rgba(0, 0, 0, 0.4) !important;
+  transform-style: preserve-3d !important;
+  position: relative !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease !important;
+}
+
+.locker-tower:hover {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+}
+
+/* Tower Header & Metadata */
+.locker-tower-head {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 4px 6px 12px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  margin-bottom: 12px !important;
+}
+
+.tower-title {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: #f8fafc !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.tower-chip {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 3px 8px !important;
+  border-radius: 6px !important;
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #94a3b8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Fresh Refrigerated Unit (Tháp Fresh Hàng Mát) */
+.locker-tower-fresh {
+  background: linear-gradient(180deg, #0e2439 0%, #091726 100%) !important;
+  border-color: rgba(56, 189, 248, 0.45) !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.65), 0 0 30px rgba(56, 189, 248, 0.18), inset 0 1px 0 rgba(56, 189, 248, 0.35) !important;
+}
+
+.locker-tower-fresh .tower-title {
+  color: #38bdf8 !important;
+}
+
+.locker-tower-fresh .tower-chip,
+.tower-temp-badge {
+  background: rgba(56, 189, 248, 0.16) !important;
+  color: #38bdf8 !important;
+  border: 1px solid rgba(56, 189, 248, 0.4) !important;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.25) !important;
+  font-family: ui-monospace, Menlo, Consolas, monospace !important;
+  font-weight: 800 !important;
+}
+
+/* Modular Cell Compartments (.locker-cell) */
+.locker-cell-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  transform-style: preserve-3d !important;
+}
+
+.locker-cell {
+  position: relative !important;
+  border-radius: 14px !important;
+  transform-style: preserve-3d !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Real Physical Dimension Variants */
+.locker-cell.cell-s {
+  min-height: 80px !important;
+}
+
+.locker-cell.cell-m {
+  min-height: 115px !important;
+}
+
+.locker-cell.cell-l {
+  min-height: 165px !important;
+}
+
+.locker-cell.cell-xl {
+  min-height: 220px !important;
+}
+
+.locker-cell.cell-fresh {
+  min-height: 140px !important;
+}
+
+/* Inner Recessed Compartment Cavity */
+.cell-interior {
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: 12px !important;
+  background: radial-gradient(circle at 50% 50%, #0d1525 0%, #060912 100%) !important;
+  box-shadow: inset 0 6px 20px rgba(0, 0, 0, 0.85), inset 0 0 2px rgba(255, 255, 255, 0.08) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 1 !important;
+  transition: background 0.5s ease, box-shadow 0.5s ease !important;
+}
+
+/* Parcel Resting Inside Compartment */
+.cell-parcel {
+  position: relative !important;
+  z-index: 2 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 8px 12px !important;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6) !important;
+  color: #f8fafc !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  transform: translateZ(10px) !important;
+  transition: all 0.4s cubic-bezier(0.34, 1.3, 0.64, 1) !important;
+}
+
+.parcel-chip-tag {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  font-size: 10px !important;
+  font-family: ui-monospace, Menlo, Consolas, monospace !important;
+  color: #34d399 !important;
+  background: rgba(16, 185, 129, 0.2) !important;
+  padding: 1px 6px !important;
+  border-radius: 4px !important;
+}
+
+/* Smoked Glass Translucent Cabinet Door */
+.cell-door {
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: 12px !important;
+  background: rgba(15, 23, 42, 0.82) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  padding: 10px 12px !important;
+  transform-origin: left center !important;
+  transform-style: preserve-3d !important;
+  backface-visibility: hidden !important;
+  z-index: 5 !important;
+  cursor: pointer !important;
+  transition: transform 0.75s cubic-bezier(0.34, 1.3, 0.64, 1), box-shadow 0.4s ease, border-color 0.3s ease, background 0.3s ease !important;
+}
+
+/* Ergonomic Door Handle Grip */
+.cell-handle {
+  position: absolute !important;
+  right: 10px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 3px !important;
+  height: 28px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.15) !important;
+  transition: all 0.2s ease !important;
+}
+
+.cell-door:hover .cell-handle {
+  background: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Cell Label & Header */
+.cell-code-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.cell-code {
+  font-family: ui-monospace, Menlo, Consolas, monospace !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.05em !important;
+  color: #cbd5e1 !important;
+}
+
+.cell-status-text {
+  font-size: 11px !important;
+  color: #94a3b8 !important;
+  font-weight: 600 !important;
+}
+
+/* Smart LED Status Beacons */
+.led-beacon {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  display: inline-block !important;
+  position: relative !important;
+}
+
+/* Available Cells (.cell-empty) */
+.locker-cell.cell-empty .cell-door {
+  background: rgba(15, 23, 42, 0.65) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  opacity: 0.78 !important;
+}
+
+.locker-cell.cell-empty:hover .cell-door {
+  opacity: 1 !important;
+  background: rgba(30, 41, 59, 0.75) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.led-empty {
+  background: rgba(148, 163, 184, 0.4) !important;
+  box-shadow: 0 0 4px rgba(148, 163, 184, 0.3) !important;
+}
+
+/* Occupied Cells (.cell-other) - Amber Caution Indicators */
+.locker-cell.cell-other .cell-door {
+  background: rgba(20, 26, 42, 0.75) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.locker-cell.cell-other .cell-code {
+  color: #94a3b8 !important;
+}
+
+.led-other,
+.led-amber {
+  background: #f59e0b !important;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.75), 0 0 2px #fbbf24 !important;
+}
+
+.locker-cell.cell-other .cell-status-text {
+  color: #fbbf24 !important;
+}
+
+/* Apartment 1204 Active Parcels (.cell-mine & .led-mine) - Intense Glowing Emerald Beacon */
+.locker-cell.cell-mine .cell-door {
+  background: radial-gradient(circle at 75% 25%, rgba(16, 185, 129, 0.25) 0%, rgba(15, 23, 42, 0.92) 80%) !important;
+  border: 1.8px solid #10b981 !important;
+  box-shadow: 0 0 32px rgba(16, 185, 129, 0.45), inset 0 0 18px rgba(16, 185, 129, 0.25), 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+  z-index: 10 !important;
+}
+
+.locker-cell.cell-mine .cell-code {
+  color: #34d399 !important;
+  font-weight: 800 !important;
+}
+
+.locker-cell.cell-mine .cell-status-text {
+  color: #34d399 !important;
+  font-weight: 700 !important;
+}
+
+.led-mine {
+  background: #34d399 !important;
+  box-shadow: 0 0 14px #10b981, 0 0 4px #34d399 !important;
+  animation: locker-beacon-pulse 1.8s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.mine-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  background: rgba(16, 185, 129, 0.22) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.5) !important;
+  border-radius: 6px !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  padding: 2px 7px !important;
+}
+
+/* Fresh Unit Refrigerated Cell (.cell-fresh) */
+.locker-cell.cell-fresh .cell-door {
+  background: radial-gradient(circle at 75% 25%, rgba(56, 189, 248, 0.22) 0%, rgba(15, 23, 42, 0.9) 80%) !important;
+  border-color: rgba(56, 189, 248, 0.5) !important;
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.25), inset 0 0 16px rgba(56, 189, 248, 0.2) !important;
+}
+
+.locker-cell.cell-fresh .cell-code {
+  color: #38bdf8 !important;
+}
+
+.led-fresh {
+  background: #38bdf8 !important;
+  box-shadow: 0 0 12px #38bdf8, 0 0 4px #7dd3fc !important;
+  animation: fresh-frost-glow 2.2s infinite ease-in-out !important;
+}
+
+/* Cabinet Door Opening Animation (.cell-door-open & .open) */
+.locker-cell.cell-door-open .cell-door,
+.locker-cell.open .cell-door,
+.cell-door.cell-door-open {
+  transform: rotateY(-85deg) translateZ(2px) !important;
+  box-shadow: -14px 6px 30px rgba(0, 0, 0, 0.8), 0 0 24px rgba(16, 185, 129, 0.35) !important;
+  border-color: rgba(16, 185, 129, 0.8) !important;
+}
+
+/* Compartment Light Burst upon Opening */
+.locker-cell.cell-door-open .cell-interior,
+.locker-cell.open .cell-interior {
+  background: radial-gradient(circle at 50% 40%, rgba(16, 185, 129, 0.38) 0%, #070e1c 85%) !important;
+  box-shadow: inset 0 0 35px rgba(16, 185, 129, 0.65), inset 0 4px 12px rgba(255, 255, 255, 0.25) !important;
+}
+
+.locker-cell.cell-door-open .cell-parcel,
+.locker-cell.open .cell-parcel {
+  transform: translateY(-2px) scale(1.06) translateZ(20px) !important;
+  box-shadow: 0 10px 28px rgba(16, 185, 129, 0.45), 0 0 20px rgba(16, 185, 129, 0.35) !important;
+}
+
+/* Keyframes for 3D Locker Visualizer */
+@keyframes locker-beacon-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.8), 0 0 14px #10b981;
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0), 0 0 26px #34d399;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0), 0 0 14px #10b981;
+  }
+}
+
+@keyframes fresh-frost-glow {
+  0% { box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
+  50% { box-shadow: 0 0 22px rgba(56, 189, 248, 0.7); }
+  100% { box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
+}
+
+
+/* ==========================================================================
+   9. OPTION B: LIVE INTERACTIVE PACKAGE JOURNEY (Apple Live Activities Style)
+   (Stepper Timeline, Connecting Laser Beam, Quick Action Glass Pills)
+   ========================================================================== */
+
+/* Live Journey Card / Capsule Container */
+.live-journey-card,
+.live-journey-track {
+  position: relative !important;
+  background: rgba(15, 23, 42, 0.78) !important;
+  backdrop-filter: blur(28px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 22px !important;
+  padding: 20px 24px !important;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  overflow: hidden !important;
+  margin: 12px 0 16px !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.live-journey-card:hover,
+.live-journey-track:hover {
+  border-color: rgba(56, 189, 248, 0.35) !important;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55), 0 0 24px rgba(56, 189, 248, 0.15) !important;
+}
+
+/* Specular Gloss Overlay (Apple Style) */
+.live-journey-card::before,
+.live-journey-track::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 40% !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%) !important;
+  pointer-events: none !important;
+}
+
+/* Journey Header Bar */
+.journey-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 16px !important;
+  flex-wrap: wrap !important;
+  padding-bottom: 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.journey-carrier-info {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+/* Live Dynamic Radar Dot */
+.live-radar-dot {
+  width: 9px !important;
+  height: 9px !important;
+  border-radius: 50% !important;
+  background: #10b981 !important;
+  box-shadow: 0 0 12px #10b981 !important;
+  position: relative !important;
+  display: inline-block !important;
+}
+
+.live-radar-dot::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: -4px !important;
+  border-radius: 50% !important;
+  border: 1.5px solid rgba(16, 185, 129, 0.65) !important;
+  animation: apple-live-ping 1.8s infinite ease-out !important;
+}
+
+/* Stepper Track with Animated Laser Beam Progress Line */
+.journey-stepper {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  position: relative !important;
+  margin: 28px 0 20px !important;
+  padding: 0 16px !important;
+  z-index: 2 !important;
+}
+
+/* Background Connecting Line */
+.journey-line-bg {
+  position: absolute !important;
+  top: 18px !important;
+  left: 36px !important;
+  right: 36px !important;
+  height: 3px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 999px !important;
+  z-index: 1 !important;
+}
+
+/* Connecting Laser Beam Progress Line */
+.journey-laser-line {
+  position: absolute !important;
+  top: 18px !important;
+  left: 36px !important;
+  width: var(--journey-progress, 75%) !important;
+  height: 3px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #10b981 0%, #38bdf8 50%, #10b981 100%) !important;
+  background-size: 200% 100% !important;
+  animation: laser-beam-glow 2.5s infinite linear !important;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.8), 0 0 6px #38bdf8 !important;
+  z-index: 2 !important;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Stepper Stage Nodes (4-5 Stages) */
+.journey-node {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  position: relative !important;
+  z-index: 3 !important;
+  max-width: 120px !important;
+  gap: 8px !important;
+}
+
+/* Stage Node Bullet / Icon */
+.node-dot {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(15, 23, 42, 0.92) !important;
+  border: 2px solid rgba(255, 255, 255, 0.15) !important;
+  color: #64748b !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+  position: relative !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.node-dot svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* Completed Stage */
+.journey-node.done .node-dot {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(6, 78, 59, 0.5) 100%) !important;
+  border-color: #10b981 !important;
+  color: #34d399 !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.35) !important;
+}
+
+.journey-node.done .node-title {
+  color: #cbd5e1 !important;
+  font-weight: 600 !important;
+}
+
+/* Active Stage (Glowing Pulsing Beacon & Halo) */
+.journey-node.active .node-dot,
+.journey-node.now .node-dot {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  border-color: #34d399 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 24px rgba(16, 185, 129, 0.8), 0 0 8px #34d399 !important;
+  animation: apple-live-ping 1.8s infinite ease-in-out !important;
+}
+
+.journey-node.active .node-title,
+.journey-node.now .node-title {
+  color: #34d399 !important;
+  font-weight: 800 !important;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Concentric Halo Ring for Active Stage */
+.beacon-halo {
+  position: absolute !important;
+  inset: -6px !important;
+  border-radius: 50% !important;
+  border: 2px solid rgba(16, 185, 129, 0.7) !important;
+  animation: beacon-halo-expand 1.8s infinite cubic-bezier(0.25, 1, 0.5, 1) !important;
+  pointer-events: none !important;
+}
+
+/* Future / Pending Stage */
+.journey-node.pending .node-dot {
+  background: rgba(30, 41, 59, 0.45) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #475569 !important;
+}
+
+.journey-node.pending .node-title {
+  color: #64748b !important;
+  font-weight: 500 !important;
+}
+
+/* Stage Typography & Timestamps */
+.node-title {
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+  color: #cbd5e1 !important;
+  margin: 0 !important;
+}
+
+.node-time,
+.journey-time-badge {
+  font-size: 11px !important;
+  color: #94a3b8 !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  padding: 2px 7px !important;
+  border-radius: 6px !important;
+  display: inline-block !important;
+  margin-top: 3px !important;
+  font-weight: 500 !important;
+}
+
+/* Status Chips */
+.journey-status-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px 12px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  background: rgba(16, 185, 129, 0.16) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.2) !important;
+}
+
+/* Quick Action Glass Pills (.journey-quick-btn) */
+.journey-actions-row {
+  display: flex !important;
+  gap: 12px !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  margin-top: 18px !important;
+  padding-top: 16px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.journey-quick-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px 22px !important;
+  border-radius: 999px !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  text-decoration: none !important;
+}
+
+/* '⚡ Lấy hàng ngay (QR 1-chạm)' with Glowing Emerald Border */
+.journey-quick-btn.btn-qr,
+.journey-quick-btn.btn-quick-pickup,
+[data-journey-pickup] {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(6, 78, 59, 0.4) 100%) !important;
+  border: 1.5px solid #10b981 !important;
+  color: #34d399 !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.journey-quick-btn.btn-qr:hover,
+.journey-quick-btn.btn-quick-pickup:hover,
+[data-journey-pickup]:hover {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 0 32px rgba(16, 185, 129, 0.65), 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* '📍 Định vị Ô A-03' with Cyan Locator Glow */
+.journey-quick-btn.btn-locate,
+.journey-quick-btn.btn-quick-locate,
+[data-journey-locate] {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.18) 0%, rgba(14, 116, 144, 0.35) 100%) !important;
+  border: 1.5px solid #38bdf8 !important;
+  color: #38bdf8 !important;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.journey-quick-btn.btn-locate:hover,
+.journey-quick-btn.btn-quick-locate:hover,
+[data-journey-locate]:hover {
+  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 0 32px rgba(56, 189, 248, 0.65), 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Compact Miniature Stepper for Table Rows & Cards */
+.live-journey-mini {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 8px 14px !important;
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 999px !important;
+  margin-top: 6px !important;
+}
+
+.mini-laser-track {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.mini-dot {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  transition: all 0.2s ease !important;
+}
+
+.mini-dot.done {
+  background: #10b981 !important;
+  box-shadow: 0 0 6px #10b981 !important;
+}
+
+.mini-dot.active {
+  background: #34d399 !important;
+  box-shadow: 0 0 10px #34d399 !important;
+  transform: scale(1.3) !important;
+  animation: apple-live-ping 1.6s infinite !important;
+}
+
+/* Keyframes for Live Journey */
+@keyframes laser-beam-glow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes apple-live-ping {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.75), 0 0 14px rgba(16, 185, 129, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0), 0 0 24px rgba(16, 185, 129, 0.9);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0), 0 0 14px rgba(16, 185, 129, 0.6);
+  }
+}
+
+@keyframes beacon-halo-expand {
+  0% { transform: scale(0.95); opacity: 0.9; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* ==========================================================================
    END OF DARK LUXURY GLASSMORPHISM THEME
    ========================================================================== */
