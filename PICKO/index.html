@@ -1479,7 +1479,7 @@ const post = (path, marketplace) => api(path, {
 /* ===== B. TRẠNG THÁI ===== */
 let orders = [], connections = {}, tab = 'all', shown = 10;
 window.expandedJourneys = window.expandedJourneys || {};
-window.currentLockerMode = window.currentLockerMode || '3d';
+window.currentLockerMode = '2d';
 window.lockerOpenDoors = window.lockerOpenDoors || {};
 
 /* ===== C. THỐNG KÊ ===== */
@@ -1519,7 +1519,7 @@ function renderLiveJourneyCard(o, i) {
     { title: 'Đặt hàng', time: o.createdAt ? when(o.createdAt) : 'Hôm qua' },
     { title: 'Sàn xác nhận', time: o.createdAt ? when(new Date(new Date(o.createdAt).getTime() + 1800000)) : 'Hoàn tất' },
     { title: 'Đang vận chuyển', time: o.updatedAt ? when(o.updatedAt) : 'Đang giao' },
-    { title: 'Tại Trạm PODO (Ô A-03)', time: isAtStation(o) ? when(o.updatedAt) : (st.step >= 3 ? when(o.updatedAt) : 'Dự kiến hôm nay') },
+    { title: isAtStation(o) ? 'Tại Trạm PODO (Ô A-03)' : 'Tại Trạm PODO', time: isAtStation(o) ? when(o.updatedAt) : (st.step >= 3 ? when(o.updatedAt) : 'Dự kiến hôm nay') },
     { title: 'Đã nhận hàng', time: st.step === 4 ? when(o.updatedAt) : 'Đang chờ' }
   ];
 
@@ -1573,7 +1573,7 @@ function renderLiveJourneyCard(o, i) {
         </div>
         <div style="margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
           ${o.stationStatus === 'AT_STATION' ? `
-            <button class="journey-quick-btn btn-locate" onclick="jumpToLockerCell('A-03', 'CP-0186')" title="Xem vị trí ô kệ trên sơ đồ 3D">
+            <button class="journey-quick-btn btn-locate" onclick="jumpToLockerCell('A-03', 'CP-0186')" title="Xem vị trí ô kệ trên sơ đồ kệ hàng 2D">
               <svg class="ic" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
               <span>📍 Xem ô kệ A-03</span>
             </button>
@@ -1582,7 +1582,7 @@ function renderLiveJourneyCard(o, i) {
               <span>⚡ QR Lấy hàng 1-chạm</span>
             </button>
           ` : o.stationStatus === 'PICKUP_REQUESTED' ? `
-            <button class="journey-quick-btn btn-locate" onclick="jumpToLockerCell('A-03', 'CP-0186')" title="Xem vị trí ô kệ trên sơ đồ 3D">
+            <button class="journey-quick-btn btn-locate" onclick="jumpToLockerCell('A-03', 'CP-0186')" title="Xem vị trí ô kệ trên sơ đồ kệ hàng 2D">
               <svg class="ic" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
               <span>📍 Xem ô kệ A-03</span>
             </button>
@@ -1615,16 +1615,17 @@ window.jumpToLockerCell = function(slot, chip) {
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       el.classList.add('sonar-ping');
-      el.classList.add('cell-door-open');
+      el.classList.add('active');
       el.classList.add('open');
       window.lockerOpenDoors = window.lockerOpenDoors || {};
       window.lockerOpenDoors[slot] = true;
       playBeeperSound();
-      toast(`📍 Đã định vị kiện hàng tại Ô ${slot}! Cửa tủ thông minh 3D đang mở.`, 'ok');
+      toast(`📍 Đã định vị kiện hàng tại Ô kệ ${slot}! Đèn LED định vị đang nhấp nháy.`, 'ok');
       setTimeout(() => el.classList.remove('sonar-ping'), 4500);
     }
   }, 250);
 };
+window.goToLockerSlot = window.jumpToLockerCell;
 
 function renderOrders() {
   window.expandedJourneys = window.expandedJourneys || {};
@@ -1711,14 +1712,14 @@ function renderOrders() {
         <button class="btn btn-o" data-detail="${i}">Chi tiết</button>
         ${o.trackingCode ? `<button class="btn btn-o" data-barcode="${esc(o.trackingCode)}" data-room="${esc(o.apartment || '1204')}" data-prod="${esc(o.product)}" title="Hiện mã vạch để Shipper quét">🏷️ Barcode</button>` : ''}
         ${o.stationStatus === 'AT_STATION' ? `
-          <button class="journey-quick-btn btn-locate" onclick="event.stopPropagation(); jumpToLockerCell('A-03', 'CP-0186')" title="Xem vị trí ô kệ A-03 trên sơ đồ 3D">
+          <button class="journey-quick-btn btn-locate" onclick="event.stopPropagation(); jumpToLockerCell('A-03', 'CP-0186')" title="Xem vị trí ô kệ A-03 trên sơ đồ kệ hàng 2D">
             <span>📍 Ô A-03</span>
           </button>
           <button class="journey-quick-btn btn-qr" data-pk-one="${esc(o.orderId)}" onclick="event.stopPropagation()" title="Mở mã QR lấy hàng 1-chạm">
             <span>⚡ QR 1-chạm</span>
           </button>
         ` : o.stationStatus === 'PICKUP_REQUESTED' ? `
-          <button class="journey-quick-btn btn-locate" onclick="event.stopPropagation(); jumpToLockerCell('A-03', 'CP-0186')" title="Xem vị trí ô kệ A-03 trên sơ đồ 3D">
+          <button class="journey-quick-btn btn-locate" onclick="event.stopPropagation(); jumpToLockerCell('A-03', 'CP-0186')" title="Xem vị trí ô kệ A-03 trên sơ đồ kệ hàng 2D">
             <span>📍 Ô A-03</span>
           </button>
           <button class="journey-quick-btn btn-qr" data-pk-view="${esc(o.orderId)}" onclick="event.stopPropagation()" title="Mở mã QR lấy hàng 1-chạm">
@@ -2265,58 +2266,40 @@ function playBeeperSound() {
   }
 }
 
-/* ===== D2. 3D ISOMETRIC SMART LOCKER VISUALIZER & LOCATIONS ===== */
-window.setLockerViewMode = function(mode) {
-  window.currentLockerMode = mode;
-  const stage = document.getElementById('lockerStage');
-  const scene = document.getElementById('locker3dScene');
-  const btn3D = document.getElementById('btnMode3D');
-  const btn2D = document.getElementById('btnMode2D');
-  if (stage && scene) {
-    if (mode === '2d') {
-      stage.classList.add('mode-2d');
-      stage.classList.remove('mode-3d');
-      scene.classList.add('mode-2d');
-      scene.classList.remove('mode-3d');
-      if (btn3D) { btn3D.classList.remove('active'); btn3D.setAttribute('aria-pressed', 'false'); }
-      if (btn2D) { btn2D.classList.add('active'); btn2D.setAttribute('aria-pressed', 'true'); }
-      toast('📐 Đã chuyển sang chế độ Mặt đứng 2D phẳng', 'info');
-    } else {
-      stage.classList.remove('mode-2d');
-      stage.classList.add('mode-3d');
-      scene.classList.remove('mode-2d');
-      scene.classList.add('mode-3d');
-      if (btn3D) { btn3D.classList.add('active'); btn3D.setAttribute('aria-pressed', 'true'); }
-      if (btn2D) { btn2D.classList.remove('active'); btn2D.setAttribute('aria-pressed', 'false'); }
-      toast('🧊 Đã chuyển sang chế độ Phối cảnh 3D Isometric', 'ok');
-    }
-  }
-};
-
-window.toggleLockerDoor = function(cellCode) {
+/* ===== D2. 2D OPEN SMART SHELF VISUALIZER & LOCATIONS ===== */
+window.highlightShelfSlot = function(cellCode) {
   const code = cellCode.replace(/[^a-zA-Z0-9]/g, '');
   const el = document.getElementById('cell-' + code) || document.getElementById('cell-' + cellCode) || document.getElementById('slot-' + code);
   if (!el) return;
-  const isOpen = el.classList.toggle('cell-door-open');
-  el.classList.toggle('open', isOpen);
-  window.lockerOpenDoors[cellCode] = isOpen;
+  const isActive = el.classList.toggle('active');
+  el.classList.toggle('open', isActive);
+  window.lockerOpenDoors = window.lockerOpenDoors || {};
+  window.lockerOpenDoors[cellCode] = isActive;
   playBeeperSound();
-  if (isOpen) {
-    toast(`🔓 Cửa tủ ô ${cellCode} đã mở! Cảm biến hồng ngoại đã nhận diện.`, 'ok');
+  if (isActive) {
+    el.classList.add('sonar-ping');
+    toast(`📍 Đã định vị Ô kệ ${cellCode}. Đèn LED định vị đang nhấp nháy phát sáng!`, 'ok');
+    setTimeout(() => el.classList.remove('sonar-ping'), 3500);
   } else {
-    toast(`🔒 Cửa tủ ô ${cellCode} đã đóng an toàn.`, 'info');
+    toast(`Đã tắt định vị Ô kệ ${cellCode}.`, 'info');
   }
+};
+window.toggleLockerDoor = window.highlightShelfSlot;
+
+window.setLockerViewMode = function(mode) {
+  window.currentLockerMode = '2d';
 };
 
 window.pingLocationChip = function(chipCode, slotName) {
   playBeeperSound();
-  toast('🔊 Đang phát tín hiệu đến chip ' + chipCode + ' tại Ô ' + slotName + '! Thẻ iTag đang nhấp nháy.', 'ok');
+  toast('🔊 Đang phát tín hiệu đến chip ' + chipCode + ' tại Ô kệ ' + slotName + '! Đèn LED thẻ iTag đang nhấp nháy.', 'ok');
   const code = slotName.replace(/[^a-zA-Z0-9]/g, '');
   const slotEl = document.getElementById('cell-' + code) || document.getElementById('slot-' + code);
   if (slotEl) {
     slotEl.classList.add('sonar-ping');
-    slotEl.classList.add('cell-door-open');
+    slotEl.classList.add('active');
     slotEl.classList.add('open');
+    window.lockerOpenDoors = window.lockerOpenDoors || {};
     window.lockerOpenDoors[slotName] = true;
     slotEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
     setTimeout(() => slotEl.classList.remove('sonar-ping'), 4000);
@@ -2326,9 +2309,9 @@ window.pingLocationChip = function(chipCode, slotName) {
 window.pingAllChips = function() {
   playBeeperSound();
   toast('🔊 Đang phát tín hiệu tìm kiếm tất cả kiện hàng của Căn hộ 1204!', 'ok');
-  document.querySelectorAll('.slot-mine, .cell-mine').forEach(el => {
+  document.querySelectorAll('.slot-mine, .cell-mine, .shelf-slot.mine').forEach(el => {
     el.classList.add('sonar-ping');
-    el.classList.add('cell-door-open');
+    el.classList.add('active');
     el.classList.add('open');
     setTimeout(() => el.classList.remove('sonar-ping'), 4000);
   });
@@ -2352,10 +2335,10 @@ function renderLocationView() {
       <div>
         <div class="loc-tag">
           <span class="live-dot"></span>
-          <span>Hệ Thống Tủ Thông Minh PODO Station · Sảnh Tháp Diamond</span>
+          <span>Hệ Thống Kệ Hàng Thông Minh PODO Station · Sảnh Tháp Diamond</span>
         </div>
-        <h2>Sơ đồ Tủ Kệ Thông Minh 3D</h2>
-        <p>Phối cảnh 3D thời gian thực, tương tác mở cửa tủ trực quan và điều khiển thẻ chip iTag của Căn hộ 1204</p>
+        <h2>Sơ đồ Kệ Hàng Thông Minh 2D</h2>
+        <p>Sơ đồ kệ để hàng chung đa tầng trực diện 2D, kiểm soát vị trí kiện hàng và điều khiển đèn LED thẻ chip iTag của Căn hộ 1204</p>
       </div>
       <div class="loc-tools">
         ${totalAt > 0 ? `
@@ -2397,8 +2380,8 @@ function renderLocationView() {
               <svg class="ic" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
               <span>Bíp bíp & Nháy đèn</span>
             </button>
-            <button class="btn btn-o" onclick="toggleLockerDoor('${slot}')" style="border-color:#10b981;color:#34d399">
-              <span>🚪 Mở tủ 3D</span>
+            <button class="btn btn-o" onclick="highlightShelfSlot('${slot}')" style="border-color:#10b981;color:#34d399">
+              <span>📍 Định vị ô kệ</span>
             </button>
             <button class="btn btn-p" data-pk-one="${esc(o.orderId)}">
               <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
@@ -2415,7 +2398,7 @@ function renderLocationView() {
           <div class="lpc-left">
             <div class="lpc-badge-row">
               <span class="lpc-market-badge">${mkBadge(r.marketplace)}</span>
-              <span class="lpc-slot-pill">📍 Kệ B · Tầng 1 · Ô ${slot}</span>
+              <span class="lpc-slot-pill">📍 Kệ B · Tầng 2 · Ô ${slot}</span>
               <span class="lpc-chip-pill" style="background:#fef3c7;color:#92400e;border-color:rgba(217,119,6,0.3)">🏷️ Kiện gửi trả · Chip ${chip}</span>
             </div>
             <h4 class="lpc-title">${esc((r.items && r.items[0] && r.items[0].productName) || 'Kiện hàng gửi trả')}</h4>
@@ -2430,8 +2413,8 @@ function renderLocationView() {
               <svg class="ic" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
               <span>Bíp bíp & Nháy đèn</span>
             </button>
-            <button class="btn btn-o" onclick="toggleLockerDoor('${slot}')" style="border-color:#f59e0b;color:#f59e0b">
-              <span>🚪 Mở tủ 3D</span>
+            <button class="btn btn-o" onclick="highlightShelfSlot('${slot}')" style="border-color:#f59e0b;color:#f59e0b">
+              <span>📍 Định vị ô kệ</span>
             </button>
             <button class="btn btn-o" data-rt-handover="${esc(r.id)}">
               <span>Mã bàn giao shipper</span>
@@ -2459,227 +2442,198 @@ function renderLocationView() {
   const hasB02 = activeReturns.length > 0;
   const b02Prod = hasB02 ? esc((activeReturns[0].items && activeReturns[0].items[0] && activeReturns[0].items[0].productName) || 'Kiện trả hàng') : '';
 
-  const isMode2D = window.currentLockerMode === '2d';
-
   const lockerHtml = `
-    <div class="locker-isometric-stage ${isMode2D ? 'mode-2d' : 'mode-3d'}" id="lockerStage">
-      <!-- Toggle toolbar: 3D Isometric vs Mặt đứng 2D phẳng -->
-      <div class="locker-view-switch" role="tablist" aria-label="Chế độ hiển thị">
-        <button class="locker-switch-btn ${!isMode2D ? 'active' : ''}" id="btnMode3D" onclick="setLockerViewMode('3d')" aria-pressed="${!isMode2D}">
-          <svg class="ic" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-          <span>Phối cảnh 3D Isometric</span>
-        </button>
-        <button class="locker-switch-btn ${isMode2D ? 'active' : ''}" id="btnMode2D" onclick="setLockerViewMode('2d')" aria-pressed="${isMode2D}">
-          <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-          <span>Mặt đứng 2D Phẳng</span>
-        </button>
-      </div>
-
-      <!-- 3D Scene Root -->
-      <div class="locker-3d-scene ${isMode2D ? 'mode-2d' : 'mode-3d'}" id="locker3dScene">
-        <!-- Floor Shadow & Cyberpunk Grid -->
+    <div class="locker-isometric-stage shelf-elevation-stage mode-2d" id="lockerStage">
+      <!-- 2D Shelf Elevation Scene Root (Mặt đứng trực diện 2D hở) -->
+      <div class="locker-3d-scene mode-2d" id="locker3dScene">
+        <!-- Thanh dầm chân kệ mặt sàn 2D -->
         <div class="locker-floor-shadow"></div>
-        <div class="locker-floor-grid"></div>
 
-        <!-- Modular Locker Towers Bank -->
+        <!-- Khung Kệ để hàng đa tầng 2D (Open Shelf Rack) -->
         <div class="locker-bank">
 
-          <!-- THÁP 1: KỆ A (Tiêu Chuẩn - Hàng Giao Đến) -->
-          <div class="locker-tower" id="tower-A">
+          <!-- KHUNG KỆ 1: KỆ A (Kệ Để Hàng Tiêu Chuẩn - Hàng Giao Đến) -->
+          <div class="locker-tower shelf-tower" id="tower-A">
             <div class="locker-tower-head">
               <div class="tower-title">
                 <svg class="ic" viewBox="0 0 24 24" style="color:#10b981"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
-                <span>Kệ A · Giao đến</span>
+                <span>Kệ A · Hàng giao đến</span>
               </div>
-              <span class="tower-chip">Tiêu chuẩn</span>
+              <span class="tower-chip">Kệ tiêu chuẩn</span>
             </div>
 
             <div class="locker-cell-grid">
-              <!-- Ô A-09 (Size S, Ô trống) -->
-              <div class="locker-cell cell-s cell-empty ${window.lockerOpenDoors['A-09'] ? 'cell-door-open open' : ''}" id="cell-A09" onclick="toggleLockerDoor('A-09')">
-                <div class="cell-interior"><span style="color:#64748b;font-size:11px">Ô trống</span></div>
+              <!-- Tầng 3: Ô A-09 (Size S, Mặt kệ trống) -->
+              <div class="locker-cell shelf-slot cell-s cell-empty ${window.lockerOpenDoors['A-09'] ? 'active open' : ''}" id="cell-A09" onclick="highlightShelfSlot('A-09')">
+                <div class="cell-interior"><span style="color:#64748b;font-size:11px">Mặt kệ trống</span></div>
                 <div class="cell-door">
-                  <div class="cell-code-row"><span class="cell-code">A-09 (S)</span><span class="led-beacon led-empty"></span></div>
-                  <div class="cell-status-text">Sẵn sàng</div>
-                  <div class="cell-handle"></div>
+                  <div class="cell-code-row"><span class="cell-code">A-09 · Tầng 3</span><span class="led-beacon led-empty"></span></div>
+                  <div class="cell-status-text">Trống (Sẵn sàng)</div>
                 </div>
               </div>
 
-              <!-- Ô A-10 (Size S, Căn 0802) -->
-              <div class="locker-cell cell-s cell-other ${window.lockerOpenDoors['A-10'] ? 'cell-door-open open' : ''}" id="cell-A10" onclick="toggleLockerDoor('A-10')">
+              <!-- Tầng 2: Ô A-10 (Size S, Căn 0802) -->
+              <div class="locker-cell shelf-slot cell-s cell-other ${window.lockerOpenDoors['A-10'] ? 'active open' : ''}" id="cell-A10" onclick="highlightShelfSlot('A-10')">
                 <div class="cell-interior"><div class="cell-parcel"><span>📦 Căn 0802</span></div></div>
                 <div class="cell-door">
-                  <div class="cell-code-row"><span class="cell-code">A-10 (S)</span><span class="led-beacon led-other"></span></div>
-                  <div class="cell-status-text">Căn 0802</div>
-                  <div class="cell-handle"></div>
+                  <div class="cell-code-row"><span class="cell-code">A-10 · Tầng 2</span><span class="led-beacon led-other"></span></div>
+                  <div class="cell-status-text">Căn khác (0802)</div>
                 </div>
               </div>
 
-              <!-- Ô A-03 CỦA CĂN HỘ 1204 (Size M) -->
+              <!-- Tầng 2: Ô A-03 CỦA CĂN HỘ 1204 (Size M) -->
               ${hasA03 ? `
-                <div class="locker-cell cell-m cell-mine ${window.lockerOpenDoors['A-03'] ? 'cell-door-open open' : ''}" id="cell-A03" onclick="toggleLockerDoor('A-03')">
+                <div class="locker-cell shelf-slot cell-m cell-mine ${window.lockerOpenDoors['A-03'] ? 'active open' : ''}" id="cell-A03" onclick="highlightShelfSlot('A-03')">
                   <div class="cell-interior">
                     <div class="cell-parcel">
-                      <span>📦 ${a03Prod}</span>
+                      <span style="font-weight:800;color:#f8fafc">📦 ${a03Prod}</span>
                       <span class="parcel-chip-tag">🏷️ Chip CP-0186</span>
                     </div>
                   </div>
                   <div class="cell-door">
                     <div class="cell-code-row">
-                      <span class="cell-code">A-03 (M)</span>
+                      <span class="cell-code">A-03 · Tầng 2</span>
                       <span class="led-beacon led-mine"></span>
                     </div>
                     <div class="cell-status-text">
-                      <span class="mine-badge">Căn 1204</span>
+                      <span class="mine-badge">⭐ Căn 1204 - Ô A-03</span>
                     </div>
-                    <div class="cell-handle"></div>
                   </div>
                 </div>
               ` : `
-                <div class="locker-cell cell-m cell-empty ${window.lockerOpenDoors['A-03'] ? 'cell-door-open open' : ''}" id="cell-A03" onclick="toggleLockerDoor('A-03')">
-                  <div class="cell-interior"><span style="color:#64748b;font-size:11px">Ô trống</span></div>
+                <div class="locker-cell shelf-slot cell-m cell-empty ${window.lockerOpenDoors['A-03'] ? 'active open' : ''}" id="cell-A03" onclick="highlightShelfSlot('A-03')">
+                  <div class="cell-interior"><span style="color:#64748b;font-size:11px">Mặt kệ trống</span></div>
                   <div class="cell-door">
-                    <div class="cell-code-row"><span class="cell-code">A-03 (M)</span><span class="led-beacon led-empty"></span></div>
-                    <div class="cell-status-text">Sẵn sàng</div>
-                    <div class="cell-handle"></div>
+                    <div class="cell-code-row"><span class="cell-code">A-03 · Tầng 2</span><span class="led-beacon led-empty"></span></div>
+                    <div class="cell-status-text">Trống (Sẵn sàng)</div>
                   </div>
                 </div>
               `}
 
-              <!-- Ô A-05 (Size M, Căn 0411) -->
-              <div class="locker-cell cell-m cell-other ${window.lockerOpenDoors['A-05'] ? 'cell-door-open open' : ''}" id="cell-A05" onclick="toggleLockerDoor('A-05')">
+              <!-- Tầng 1: Ô A-05 (Size M, Căn 0411) -->
+              <div class="locker-cell shelf-slot cell-m cell-other ${window.lockerOpenDoors['A-05'] ? 'active open' : ''}" id="cell-A05" onclick="highlightShelfSlot('A-05')">
                 <div class="cell-interior"><div class="cell-parcel"><span>📦 Căn 0411</span></div></div>
                 <div class="cell-door">
-                  <div class="cell-code-row"><span class="cell-code">A-05 (M)</span><span class="led-beacon led-other"></span></div>
-                  <div class="cell-status-text">Căn 0411</div>
-                  <div class="cell-handle"></div>
+                  <div class="cell-code-row"><span class="cell-code">A-05 · Tầng 1</span><span class="led-beacon led-other"></span></div>
+                  <div class="cell-status-text">Căn khác (0411)</div>
                 </div>
               </div>
 
-              <!-- Ô A-01 (Size L, Kiện lớn / Nặng) -->
-              <div class="locker-cell cell-l cell-empty ${window.lockerOpenDoors['A-01'] ? 'cell-door-open open' : ''}" id="cell-A01" onclick="toggleLockerDoor('A-01')">
-                <div class="cell-interior"><span style="color:#64748b;font-size:11px">Ô trống</span></div>
+              <!-- Tầng 1: Ô A-01 (Size L, Kiện lớn sàn kệ dưới) -->
+              <div class="locker-cell shelf-slot cell-l cell-empty ${window.lockerOpenDoors['A-01'] ? 'active open' : ''}" id="cell-A01" onclick="highlightShelfSlot('A-01')">
+                <div class="cell-interior"><span style="color:#64748b;font-size:11px">Mặt kệ trống (Kiện lớn)</span></div>
                 <div class="cell-door">
-                  <div class="cell-code-row"><span class="cell-code">A-01 (L)</span><span class="led-beacon led-empty"></span></div>
-                  <div class="cell-status-text">Sẵn sàng</div>
-                  <div class="cell-handle"></div>
+                  <div class="cell-code-row"><span class="cell-code">A-01 · Tầng 1 (L)</span><span class="led-beacon led-empty"></span></div>
+                  <div class="cell-status-text">Trống (Sẵn sàng)</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- THÁP 2: KỆ B (Gửi TrẢ Hàng PODO) -->
-          <div class="locker-tower" id="tower-B">
+          <!-- KHUNG KỆ 2: KỆ B (Kệ Hàng Thu Gom & Gửi Trả PODO) -->
+          <div class="locker-tower shelf-tower" id="tower-B">
             <div class="locker-tower-head">
               <div class="tower-title">
                 <svg class="ic" viewBox="0 0 24 24" style="color:#f59e0b"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
-                <span>Kệ B · Gửi trả</span>
+                <span>Kệ B · Hàng gửi trả</span>
               </div>
               <span class="tower-chip" style="color:#f59e0b;border-color:rgba(245,158,11,0.3)">Thu gom</span>
             </div>
 
             <div class="locker-cell-grid">
-              <!-- Ô B-01 (Size S, Ô trống) -->
-              <div class="locker-cell cell-s cell-empty ${window.lockerOpenDoors['B-01'] ? 'cell-door-open open' : ''}" id="cell-B01" onclick="toggleLockerDoor('B-01')">
-                <div class="cell-interior"><span style="color:#64748b;font-size:11px">Ô trống</span></div>
+              <!-- Tầng 3: Ô B-01 (Size S, Mặt kệ trống) -->
+              <div class="locker-cell shelf-slot cell-s cell-empty ${window.lockerOpenDoors['B-01'] ? 'active open' : ''}" id="cell-B01" onclick="highlightShelfSlot('B-01')">
+                <div class="cell-interior"><span style="color:#64748b;font-size:11px">Mặt kệ trống</span></div>
                 <div class="cell-door">
-                  <div class="cell-code-row"><span class="cell-code">B-01 (S)</span><span class="led-beacon led-empty"></span></div>
-                  <div class="cell-status-text">Sẵn sàng</div>
-                  <div class="cell-handle"></div>
+                  <div class="cell-code-row"><span class="cell-code">B-01 · Tầng 3</span><span class="led-beacon led-empty"></span></div>
+                  <div class="cell-status-text">Trống (Sẵn sàng)</div>
                 </div>
               </div>
 
-              <!-- Ô B-02 (Size M, Kiện trả Căn 1204) -->
+              <!-- Tầng 2: Ô B-02 (Size M, Kiện trả Căn 1204) -->
               ${hasB02 ? `
-                <div class="locker-cell cell-m cell-mine ${window.lockerOpenDoors['B-02'] ? 'cell-door-open open' : ''}" id="cell-B02" style="border-color:#f59e0b" onclick="toggleLockerDoor('B-02')">
+                <div class="locker-cell shelf-slot cell-m cell-mine ${window.lockerOpenDoors['B-02'] ? 'active open' : ''}" id="cell-B02" style="border-color:#f59e0b" onclick="highlightShelfSlot('B-02')">
                   <div class="cell-interior">
                     <div class="cell-parcel">
-                      <span>🔄 ${b02Prod}</span>
+                      <span style="font-weight:800;color:#f8fafc">🔄 ${b02Prod}</span>
                       <span class="parcel-chip-tag" style="color:#f59e0b;background:rgba(245,158,11,0.2)">🏷️ Chip CP-3048</span>
                     </div>
                   </div>
                   <div class="cell-door" style="border-color:#f59e0b">
                     <div class="cell-code-row">
-                      <span class="cell-code" style="color:#f59e0b">B-02 (M)</span>
+                      <span class="cell-code" style="color:#f59e0b">B-02 · Tầng 2</span>
                       <span class="led-beacon led-mine" style="background:#f59e0b;box-shadow:0 0 14px #f59e0b"></span>
                     </div>
                     <div class="cell-status-text">
-                      <span class="mine-badge" style="color:#f59e0b;background:rgba(245,158,11,0.2);border-color:#f59e0b">Chờ Shipper</span>
+                      <span class="mine-badge" style="color:#f59e0b;background:rgba(245,158,11,0.2);border-color:#f59e0b">⭐ Căn 1204 - Ô B-02</span>
                     </div>
-                    <div class="cell-handle"></div>
                   </div>
                 </div>
               ` : `
-                <div class="locker-cell cell-m cell-empty ${window.lockerOpenDoors['B-02'] ? 'cell-door-open open' : ''}" id="cell-B02" onclick="toggleLockerDoor('B-02')">
-                  <div class="cell-interior"><span style="color:#64748b;font-size:11px">Ô trống</span></div>
+                <div class="locker-cell shelf-slot cell-m cell-empty ${window.lockerOpenDoors['B-02'] ? 'active open' : ''}" id="cell-B02" onclick="highlightShelfSlot('B-02')">
+                  <div class="cell-interior"><span style="color:#64748b;font-size:11px">Mặt kệ trống</span></div>
                   <div class="cell-door">
-                    <div class="cell-code-row"><span class="cell-code">B-02 (M)</span><span class="led-beacon led-empty"></span></div>
-                    <div class="cell-status-text">Sẵn sàng</div>
-                    <div class="cell-handle"></div>
+                    <div class="cell-code-row"><span class="cell-code">B-02 · Tầng 2</span><span class="led-beacon led-empty"></span></div>
+                    <div class="cell-status-text">Trống (Sẵn sàng)</div>
                   </div>
                 </div>
               `}
 
-              <!-- Ô B-03 (Size M, Ô trống) -->
-              <div class="locker-cell cell-m cell-empty ${window.lockerOpenDoors['B-03'] ? 'cell-door-open open' : ''}" id="cell-B03" onclick="toggleLockerDoor('B-03')">
-                <div class="cell-interior"><span style="color:#64748b;font-size:11px">Ô trống</span></div>
+              <!-- Tầng 1: Ô B-03 (Size M, Mặt kệ trống) -->
+              <div class="locker-cell shelf-slot cell-m cell-empty ${window.lockerOpenDoors['B-03'] ? 'active open' : ''}" id="cell-B03" onclick="highlightShelfSlot('B-03')">
+                <div class="cell-interior"><span style="color:#64748b;font-size:11px">Mặt kệ trống</span></div>
                 <div class="cell-door">
-                  <div class="cell-code-row"><span class="cell-code">B-03 (M)</span><span class="led-beacon led-empty"></span></div>
-                  <div class="cell-status-text">Sẵn sàng</div>
-                  <div class="cell-handle"></div>
+                  <div class="cell-code-row"><span class="cell-code">B-03 · Tầng 1</span><span class="led-beacon led-empty"></span></div>
+                  <div class="cell-status-text">Trống (Sẵn sàng)</div>
                 </div>
               </div>
 
-              <!-- Ô B-04 (Size L, Ô lớn gửi trả) -->
-              <div class="locker-cell cell-l cell-other ${window.lockerOpenDoors['B-04'] ? 'cell-door-open open' : ''}" id="cell-B04" onclick="toggleLockerDoor('B-04')">
+              <!-- Tầng 1: Ô B-04 (Size L, Kiện lớn căn khác) -->
+              <div class="locker-cell shelf-slot cell-l cell-other ${window.lockerOpenDoors['B-04'] ? 'active open' : ''}" id="cell-B04" onclick="highlightShelfSlot('B-04')">
                 <div class="cell-interior"><div class="cell-parcel"><span>🔄 Căn 1602 (L)</span></div></div>
                 <div class="cell-door">
-                  <div class="cell-code-row"><span class="cell-code">B-04 (L)</span><span class="led-beacon led-other"></span></div>
-                  <div class="cell-status-text">Đã khóa</div>
-                  <div class="cell-handle"></div>
+                  <div class="cell-code-row"><span class="cell-code">B-04 · Tầng 1</span><span class="led-beacon led-other"></span></div>
+                  <div class="cell-status-text">Căn khác (1602)</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- THÁP 3: KỆ C (Tủ Lạnh Thông Minh Fresh 4°C - Hàng Mát & Thực Phẩm) -->
-          <div class="locker-tower locker-tower-fresh" id="tower-C">
+          <!-- KHUNG KỆ 3: KỆ C (Kệ Mát Thông Minh Fresh 4°C - Hàng Mát & Thực Phẩm) -->
+          <div class="locker-tower shelf-tower locker-tower-fresh" id="tower-C">
             <div class="locker-tower-head">
               <div class="tower-title">
                 <svg class="ic" viewBox="0 0 24 24" style="color:#38bdf8"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14"/></svg>
-                <span>Kệ C · Tủ mát</span>
+                <span>Kệ C · Kệ mát</span>
               </div>
               <span class="tower-chip tower-temp-badge">❄️ 4.2°C</span>
             </div>
 
             <div class="locker-cell-grid">
-              <!-- Ô C-01 (Size Fresh, Ngăn mát) -->
-              <div class="locker-cell cell-fresh cell-empty ${window.lockerOpenDoors['C-01'] ? 'cell-door-open open' : ''}" id="cell-C01" onclick="toggleLockerDoor('C-01')">
-                <div class="cell-interior"><span style="color:#38bdf8;font-size:11px">❄️ Ngăn mát sẵn sàng</span></div>
+              <!-- Tầng 3: Ô C-01 (Size Fresh, Kệ mát sẵn sàng) -->
+              <div class="locker-cell shelf-slot cell-fresh cell-empty ${window.lockerOpenDoors['C-01'] ? 'active open' : ''}" id="cell-C01" onclick="highlightShelfSlot('C-01')">
+                <div class="cell-interior"><span style="color:#38bdf8;font-size:11px">❄️ Kệ mát sẵn sàng</span></div>
                 <div class="cell-door">
-                  <div class="cell-code-row"><span class="cell-code">C-01 (Mát)</span><span class="led-beacon led-fresh"></span></div>
+                  <div class="cell-code-row"><span class="cell-code">C-01 · Tầng 3 (Mát)</span><span class="led-beacon led-fresh"></span></div>
                   <div class="cell-status-text" style="color:#38bdf8">Nhiệt độ 4°C</div>
-                  <div class="cell-handle"></div>
                 </div>
               </div>
 
-              <!-- Ô C-02 (Size Fresh, Hoa tươi Căn 0712) -->
-              <div class="locker-cell cell-fresh cell-other ${window.lockerOpenDoors['C-02'] ? 'cell-door-open open' : ''}" id="cell-C02" onclick="toggleLockerDoor('C-02')">
+              <!-- Tầng 2: Ô C-02 (Size Fresh, Hoa tươi Căn 0712) -->
+              <div class="locker-cell shelf-slot cell-fresh cell-other ${window.lockerOpenDoors['C-02'] ? 'active open' : ''}" id="cell-C02" onclick="highlightShelfSlot('C-02')">
                 <div class="cell-interior"><div class="cell-parcel" style="border-color:rgba(56,189,248,0.4)"><span>🌸 Hoa tươi · Căn 0712</span></div></div>
                 <div class="cell-door">
-                  <div class="cell-code-row"><span class="cell-code">C-02 (Mát)</span><span class="led-beacon led-fresh"></span></div>
-                  <div class="cell-status-text" style="color:#38bdf8">Căn 0712</div>
-                  <div class="cell-handle"></div>
+                  <div class="cell-code-row"><span class="cell-code">C-02 · Tầng 2 (Mát)</span><span class="led-beacon led-fresh"></span></div>
+                  <div class="cell-status-text" style="color:#38bdf8">Căn khác (0712)</div>
                 </div>
               </div>
 
-              <!-- Ô C-03 (Size Fresh, Trái cây Căn 1508) -->
-              <div class="locker-cell cell-fresh cell-other ${window.lockerOpenDoors['C-03'] ? 'cell-door-open open' : ''}" id="cell-C03" onclick="toggleLockerDoor('C-03')">
+              <!-- Tầng 1: Ô C-03 (Size Fresh, Trái cây Căn 1508) -->
+              <div class="locker-cell shelf-slot cell-fresh cell-other ${window.lockerOpenDoors['C-03'] ? 'active open' : ''}" id="cell-C03" onclick="highlightShelfSlot('C-03')">
                 <div class="cell-interior"><div class="cell-parcel" style="border-color:rgba(56,189,248,0.4)"><span>🍓 Trái cây · Căn 1508</span></div></div>
                 <div class="cell-door">
-                  <div class="cell-code-row"><span class="cell-code">C-03 (Mát)</span><span class="led-beacon led-fresh"></span></div>
-                  <div class="cell-status-text" style="color:#38bdf8">Căn 1508</div>
-                  <div class="cell-handle"></div>
+                  <div class="cell-code-row"><span class="cell-code">C-03 · Tầng 1 (Mát)</span><span class="led-beacon led-fresh"></span></div>
+                  <div class="cell-status-text" style="color:#38bdf8">Căn khác (1508)</div>
                 </div>
               </div>
             </div>
@@ -2688,13 +2642,14 @@ function renderLocationView() {
         </div>
       </div>
 
-      <!-- Chú thích LED & Trạng thái ô tủ -->
+      <!-- Chú thích LED & Trạng thái ô kệ -->
       <div style="display:flex;gap:20px;justify-content:center;align-items:center;margin-top:28px;flex-wrap:wrap;font-size:12.5px;color:#94a3b8;position:relative;z-index:10;">
-        <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;border-radius:50%;background:#34d399;box-shadow:0 0 8px #10b981;display:inline-block;"></span><span style="color:#f8fafc;font-weight:700;">Kiện Căn 1204 (Active)</span></div>
-        <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;border-radius:50%;background:#f59e0b;box-shadow:0 0 8px #f59e0b;display:inline-block;"></span><span>Kiện gửi trả / Căn khác</span></div>
-        <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;border-radius:50%;background:#38bdf8;box-shadow:0 0 8px #38bdf8;display:inline-block;"></span><span>Tủ lạnh 4°C Fresh</span></div>
-        <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;border-radius:50%;background:rgba(148,163,184,0.4);display:inline-block;"></span><span>Ô trống sẵn sàng</span></div>
-        <div style="color:#64748b;font-size:11.5px;">💡 <i>Nhấp vào bất kỳ ô tủ nào để mô phỏng mở/đóng cửa 3D</i></div>
+        <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;border-radius:50%;background:#34d399;box-shadow:0 0 8px #10b981;display:inline-block;"></span><span style="color:#f8fafc;font-weight:700;">⭐ Kiện Căn 1204 (Của bạn)</span></div>
+        <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;border-radius:50%;background:#f59e0b;box-shadow:0 0 8px #f59e0b;display:inline-block;"></span><span>Kiện gửi trả PODO</span></div>
+        <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;border-radius:50%;background:#38bdf8;box-shadow:0 0 8px #38bdf8;display:inline-block;"></span><span>Kệ mát 4°C Fresh</span></div>
+        <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;border-radius:50%;background:#64748b;display:inline-block;"></span><span>Kiện căn khác</span></div>
+        <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;border-radius:50%;background:rgba(148,163,184,0.25);border:1px dashed rgba(255,255,255,0.4);display:inline-block;"></span><span>Mặt kệ trống sẵn sàng</span></div>
+        <div style="color:#64748b;font-size:11.5px;width:100%;text-align:center;">💡 <i>Nhấp vào ô kệ để kích hoạt đèn LED định vị vị trí kiện hàng</i></div>
       </div>
     </div>
   `;
