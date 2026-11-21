@@ -349,80 +349,293 @@ body {
   box-shadow: 0 4px 16px rgba(56, 189, 248, 0.2) !important;
 }
 
-/* 4 Concierge Stat Pills with Distinct Ambient Glows */
+/* --------------------------------------------------------------------------
+   4.1 BENTO GRID LUXURY DASHBOARD (.concierge-stats-row & Asymmetric Bento)
+   -------------------------------------------------------------------------- */
+.concierge-stats-row {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 18px !important;
+  padding-top: 24px !important;
+  position: relative !important;
+}
+
+/* Asymmetric Bento Grid for Screens > 900px */
+@media (min-width: 901px) {
+  .concierge-stats-row {
+    grid-template-columns: repeat(4, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    grid-auto-flow: dense !important;
+  }
+
+  /* 2x2 Hero Card: Actionable Packages Ready at Station */
+  .concierge-stats-row > .c-stat-pill:nth-child(1),
+  .concierge-stats-row > .c-stat-pill.bento-hero,
+  .concierge-stats-row > .c-stat-pill.bento-2x2 {
+    grid-column: span 2 !important;
+    grid-row: span 2 !important;
+    min-height: 200px !important;
+    padding: 26px 30px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+  }
+
+  /* 2x1 Key Metrics Card: Packages In Shipping / Transit */
+  .concierge-stats-row > .c-stat-pill:nth-child(2),
+  .concierge-stats-row > .c-stat-pill.bento-2x1 {
+    grid-column: span 2 !important;
+    grid-row: span 1 !important;
+    padding: 20px 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 18px !important;
+  }
+
+  /* 1x1 Secondary Stat: Completed Deliveries */
+  .concierge-stats-row > .c-stat-pill:nth-child(3),
+  .concierge-stats-row > .c-stat-pill.bento-1x1 {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+    padding: 16px 20px !important;
+  }
+
+  /* 1x1 Secondary Stat: Demo Reset / Utility */
+  .concierge-stats-row > .c-stat-pill:nth-child(4) {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+    padding: 16px 20px !important;
+  }
+}
+
+/* Responsive Bento Tablet Layout (601px - 900px) */
+@media (min-width: 601px) and (max-width: 900px) {
+  .concierge-stats-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+  }
+
+  .concierge-stats-row > .c-stat-pill:nth-child(1),
+  .concierge-stats-row > .c-stat-pill.bento-hero {
+    grid-column: span 2 !important;
+    padding: 22px 24px !important;
+  }
+
+  .concierge-stats-row > .c-stat-pill:nth-child(2) {
+    grid-column: span 2 !important;
+  }
+
+  .concierge-stats-row > .c-stat-pill:nth-child(3),
+  .concierge-stats-row > .c-stat-pill:nth-child(4) {
+    grid-column: span 1 !important;
+  }
+}
+
+/* Responsive Bento Mobile Layout (<= 600px) */
+@media (max-width: 600px) {
+  .concierge-stats-row {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}
+
+/* Bento Card Base: Luxury Glass with Interactive Spotlight & Radial Glow */
 .c-stat-pill {
-  background: rgba(15, 23, 42, 0.75) !important;
-  backdrop-filter: blur(16px) !important;
+  background: rgba(15, 23, 42, 0.72) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: 16px !important;
-  padding: 16px 20px !important;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  border-radius: 20px !important;
+  padding: 18px 22px !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
   position: relative !important;
   overflow: hidden !important;
+  cursor: pointer !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
 }
 
-.c-stat-txt strong {
-  color: #f8fafc !important;
-  font-size: 22px !important;
-  letter-spacing: -0.5px !important;
+/* Dynamic Interactive Hover Spotlight Overlay */
+.c-stat-pill::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+  transition: opacity 0.35s ease !important;
+  background: radial-gradient(480px circle at var(--mouse-x, 30%) var(--mouse-y, 30%), rgba(56, 189, 248, 0.12), rgba(16, 185, 129, 0.06) 40%, transparent 70%) !important;
+  z-index: 1 !important;
 }
 
-.c-stat-txt span {
-  color: #94a3b8 !important;
-  font-size: 12.5px !important;
+.c-stat-pill:hover::before {
+  opacity: 1 !important;
+}
+
+.c-stat-pill:hover {
+  transform: translateY(-4px) !important;
+  border-color: rgba(56, 189, 248, 0.45) !important;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.65), 0 0 25px rgba(56, 189, 248, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.18) !important;
+}
+
+/* 4.2 HERO CARD LUXURY ASYMMETRIC STYLING (Item 1: Ready at Station) */
+.concierge-stats-row > .c-stat-pill:nth-child(1),
+.c-stat-pill.bento-hero,
+.c-stat-pill.bento-2x2 {
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.88) 0%, rgba(6, 44, 38, 0.75) 100%) !important;
+  border: 1px solid rgba(16, 185, 129, 0.32) !important;
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6), 0 0 30px rgba(16, 185, 129, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+.concierge-stats-row > .c-stat-pill:nth-child(1)::before,
+.c-stat-pill.bento-hero::before {
+  background: radial-gradient(550px circle at var(--mouse-x, 25%) var(--mouse-y, 25%), rgba(16, 185, 129, 0.22), rgba(52, 211, 153, 0.08) 45%, transparent 75%) !important;
+}
+
+.concierge-stats-row > .c-stat-pill:nth-child(1):hover,
+.c-stat-pill.bento-hero:hover {
+  border-color: rgba(52, 211, 153, 0.8) !important;
+  box-shadow: 0 24px 55px -10px rgba(0, 0, 0, 0.75), 0 0 40px rgba(16, 185, 129, 0.45), inset 0 0 25px rgba(16, 185, 129, 0.12) !important;
+}
+
+/* Hero Card Pulse Ring Indicator */
+.concierge-stats-row > .c-stat-pill:nth-child(1) .c-stat-ico,
+.c-stat-pill.bento-hero .c-stat-ico {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 16px !important;
+  position: relative !important;
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+  box-shadow: 0 0 24px rgba(16, 185, 129, 0.5) !important;
+  animation: bento-pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+}
+
+.concierge-stats-row > .c-stat-pill:nth-child(1) .c-stat-ico svg,
+.c-stat-pill.bento-hero .c-stat-ico svg {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+@keyframes bento-pulse-ring {
+  0% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7), 0 0 20px rgba(16, 185, 129, 0.5); }
+  70% { transform: scale(1.03); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0), 0 0 28px rgba(16, 185, 129, 0.8); }
+  100% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0), 0 0 20px rgba(16, 185, 129, 0.5); }
+}
+
+/* Typography Hierarchy in Bento Cards */
+.c-stat-txt {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Hero Card Typography: Radiant Emerald Gradient Number */
+.concierge-stats-row > .c-stat-pill:nth-child(1) .c-stat-txt strong,
+.c-stat-pill.bento-hero .c-stat-txt strong {
+  font-size: clamp(34px, 3.2vw, 46px) !important;
+  font-weight: 900 !important;
+  line-height: 1.05 !important;
+  letter-spacing: -0.03em !important;
+  background: linear-gradient(135deg, #f8fafc 0%, #34d399 60%, #38bdf8 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 2px 14px rgba(52, 211, 153, 0.4)) !important;
+  margin-top: 12px !important;
+  margin-bottom: 4px !important;
+}
+
+.concierge-stats-row > .c-stat-pill:nth-child(1) .c-stat-txt span,
+.c-stat-pill.bento-hero .c-stat-txt span {
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+  color: #f1f5f9 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+}
+
+/* 4.3 2x1 KEY METRICS CARD (Item 2: In Shipping / Transit) */
+.concierge-stats-row > .c-stat-pill:nth-child(2),
+.c-stat-pill.bento-2x1 {
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.85) 0%, rgba(14, 30, 56, 0.75) 100%) !important;
+  border: 1px solid rgba(56, 189, 248, 0.28) !important;
+}
+
+.concierge-stats-row > .c-stat-pill:nth-child(2):hover,
+.c-stat-pill.bento-2x1:hover {
+  border-color: rgba(56, 189, 248, 0.7) !important;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.65), 0 0 35px rgba(56, 189, 248, 0.35) !important;
+}
+
+.concierge-stats-row > .c-stat-pill:nth-child(2) .c-stat-txt strong,
+.c-stat-pill.bento-2x1 .c-stat-txt strong {
+  font-size: 28px !important;
+  font-weight: 800 !important;
+  color: #38bdf8 !important;
+  text-shadow: 0 0 16px rgba(56, 189, 248, 0.45) !important;
+  line-height: 1.1 !important;
+}
+
+.concierge-stats-row > .c-stat-pill:nth-child(2) .c-stat-txt span,
+.c-stat-pill.bento-2x1 .c-stat-txt span {
+  font-size: 13.5px !important;
+  color: #cbd5e1 !important;
   font-weight: 600 !important;
 }
 
-/* Ambient Pill 1: Emerald (Ready at station) */
+/* 4.4 1x1 SECONDARY METRIC CARDS (Item 3 & 4: Done & Demo) */
+.concierge-stats-row > .c-stat-pill:nth-child(3) .c-stat-txt strong,
+.concierge-stats-row > .c-stat-pill:nth-child(4) .c-stat-txt strong,
+.c-stat-pill.bento-1x1 .c-stat-txt strong {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  color: #f8fafc !important;
+  line-height: 1.1 !important;
+}
+
+.concierge-stats-row > .c-stat-pill:nth-child(3) .c-stat-txt span,
+.concierge-stats-row > .c-stat-pill:nth-child(4) .c-stat-txt span,
+.c-stat-pill.bento-1x1 .c-stat-txt span {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #94a3b8 !important;
+}
+
+/* Ambient Pill Icons & Highlights */
 .stat-emerald {
-  background: rgba(16, 185, 129, 0.16) !important;
+  background: rgba(16, 185, 129, 0.18) !important;
   color: #34d399 !important;
-  border: 1px solid rgba(16, 185, 129, 0.3) !important;
-}
-.c-stat-pill:has(.stat-emerald):hover {
-  background: rgba(20, 32, 54, 0.85) !important;
-  border-color: rgba(16, 185, 129, 0.5) !important;
-  box-shadow: 0 8px 28px rgba(16, 185, 129, 0.24), 0 0 20px rgba(16, 185, 129, 0.2) !important;
-  transform: translateY(-3px) !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
 }
 
-/* Ambient Pill 2: Cyan (In transit / Shipping) */
 .stat-blue {
-  background: rgba(56, 189, 248, 0.16) !important;
+  background: rgba(56, 189, 248, 0.18) !important;
   color: #38bdf8 !important;
-  border: 1px solid rgba(56, 189, 248, 0.3) !important;
-}
-.c-stat-pill:has(.stat-blue):hover {
-  background: rgba(20, 32, 54, 0.85) !important;
-  border-color: rgba(56, 189, 248, 0.5) !important;
-  box-shadow: 0 8px 28px rgba(56, 189, 248, 0.24), 0 0 20px rgba(56, 189, 248, 0.2) !important;
-  transform: translateY(-3px) !important;
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
 }
 
-/* Ambient Pill 3: Violet (Received / Done) */
 .stat-slate {
-  background: rgba(139, 92, 246, 0.16) !important;
+  background: rgba(139, 92, 246, 0.18) !important;
   color: #c084fc !important;
-  border: 1px solid rgba(139, 92, 246, 0.3) !important;
-}
-.c-stat-pill:has(.stat-slate):hover {
-  background: rgba(20, 32, 54, 0.85) !important;
-  border-color: rgba(139, 92, 246, 0.5) !important;
-  box-shadow: 0 8px 28px rgba(139, 92, 246, 0.24), 0 0 20px rgba(139, 92, 246, 0.2) !important;
-  transform: translateY(-3px) !important;
+  border: 1px solid rgba(139, 92, 246, 0.35) !important;
 }
 
-/* Ambient Pill 4: Amber (Demo reset / Utility) */
 .stat-amber {
-  background: rgba(245, 158, 11, 0.16) !important;
+  background: rgba(245, 158, 11, 0.18) !important;
   color: #fbbf24 !important;
-  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+  border: 1px solid rgba(245, 158, 11, 0.35) !important;
 }
+
+.c-stat-pill:has(.stat-slate):hover {
+  background: rgba(24, 28, 54, 0.85) !important;
+  border-color: rgba(139, 92, 246, 0.6) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 25px rgba(139, 92, 246, 0.3) !important;
+}
+
 .c-stat-pill:has(.stat-amber):hover {
-  background: rgba(20, 32, 54, 0.85) !important;
-  border-color: rgba(245, 158, 11, 0.5) !important;
-  box-shadow: 0 8px 28px rgba(245, 158, 11, 0.24), 0 0 20px rgba(245, 158, 11, 0.2) !important;
-  transform: translateY(-3px) !important;
+  background: rgba(36, 28, 20, 0.85) !important;
+  border-color: rgba(245, 158, 11, 0.6) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 25px rgba(245, 158, 11, 0.3) !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -923,32 +1136,227 @@ tbody tr:hover {
 }
 
 /* --------------------------------------------------------------------------
-   8. RETURNS VIEW (v-returns)
+   8. RETURNS VIEW (v-returns) & MULTI-STEP STEPPER
    -------------------------------------------------------------------------- */
+
+/* Animated Laser Glow Keyframes */
+@keyframes laser-glow-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes laser-pulse-head {
+  0%, 100% { filter: drop-shadow(0 0 6px #10b981) drop-shadow(0 0 14px rgba(16, 185, 129, 0.6)); }
+  50% { filter: drop-shadow(0 0 10px #34d399) drop-shadow(0 0 22px rgba(52, 211, 153, 0.9)); }
+}
+
+/* 8.1 Multi-Step Guide Stepper (.rt-steps) with Laser-Glow Progress Line Track */
+.rt-steps {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 16px !important;
+  margin-bottom: 24px !important;
+}
+
+/* Animated Laser-Glow Track Running Behind Steps */
+.rt-steps::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 31px !important;
+  left: 48px !important;
+  right: 48px !important;
+  height: 3px !important;
+  background: linear-gradient(90deg, #10b981 0%, #34d399 35%, #38bdf8 70%, #10b981 100%) !important;
+  background-size: 200% 100% !important;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.7), 0 0 6px rgba(56, 189, 248, 0.5) !important;
+  animation: laser-glow-flow 3.5s linear infinite !important;
+  z-index: 0 !important;
+  border-radius: 999px !important;
+  pointer-events: none !important;
+}
+
 .rt-st {
-  background: rgba(15, 23, 42, 0.7) !important;
+  position: relative !important;
+  z-index: 1 !important;
+  background: rgba(15, 23, 42, 0.78) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: 14px !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+  border-radius: 18px !important;
+  padding: 16px 18px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.rt-st:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(16, 185, 129, 0.45) !important;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), 0 0 20px rgba(16, 185, 129, 0.2) !important;
 }
 
 .rt-st i {
-  background: rgba(16, 185, 129, 0.18) !important;
-  color: #34d399 !important;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3) !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.6) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+  width: 32px !important;
+  height: 32px !important;
+  font-weight: 800 !important;
 }
 
 .rt-st b {
   color: #f8fafc !important;
+  font-weight: 700 !important;
 }
 
 .rt-st span {
   color: #94a3b8 !important;
+  font-size: 12.5px !important;
 }
 
+/* 8.2 Stepper in Return Cards (.stp) with Laser Progress Line */
+.stp {
+  position: relative !important;
+  display: flex !important;
+  margin: 18px 0 12px !important;
+}
+
+.stp .s {
+  flex: 1 !important;
+  text-align: center !important;
+  position: relative !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: #94a3b8 !important;
+}
+
+.stp .s::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 15px !important;
+  left: -50% !important;
+  width: 100% !important;
+  height: 2px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s ease !important;
+  z-index: 0 !important;
+}
+
+.stp .s:first-child::before {
+  display: none !important;
+}
+
+.stp .s.done::before,
+.stp .s.now::before {
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%) !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.7) !important;
+  height: 3px !important;
+}
+
+.stp .s i {
+  position: relative !important;
+  z-index: 1 !important;
+  background: #0f172a !important;
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
+  color: #94a3b8 !important;
+  width: 30px !important;
+  height: 30px !important;
+  margin: 0 auto 8px !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
+  font-style: normal !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.stp .s.done {
+  color: #cbd5e1 !important;
+}
+
+.stp .s.done i {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  border-color: #34d399 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.6) !important;
+}
+
+.stp .s.now {
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+}
+
+.stp .s.now i {
+  border-color: #38bdf8 !important;
+  background: #0f172a !important;
+  color: #38bdf8 !important;
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.25), 0 0 16px rgba(56, 189, 248, 0.65) !important;
+  animation: laser-pulse-head 2s infinite !important;
+}
+
+.stp small {
+  color: #94a3b8 !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+}
+
+/* 8.3 Refined Urgency Badges (.rt-left) */
+/* Emerald for >3 days, Amber for <=3 days, Ruby for expired */
+.rt-left {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 5px 12px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.2px !important;
+  white-space: nowrap !important;
+  transition: all 0.2s ease !important;
+  /* Default: Emerald (>3 days left) */
+  background: rgba(16, 185, 129, 0.16) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.38) !important;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.25) !important;
+}
+
+.rt-left::before {
+  content: "" !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background: currentColor !important;
+  box-shadow: 0 0 8px currentColor !important;
+  display: inline-block !important;
+}
+
+/* Amber: Urgent / Deadline approaching (<=3 days left) */
+.rt-left.warn,
+.rt-left.amber {
+  background: rgba(245, 158, 11, 0.16) !important;
+  color: #fbbf24 !important;
+  border-color: rgba(245, 158, 11, 0.45) !important;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Ruby: Expired / Overdue */
+.rt-left.off,
+.rt-left.expired,
+.rt-left.ruby {
+  background: rgba(244, 63, 94, 0.18) !important;
+  color: #fb7185 !important;
+  border-color: rgba(244, 63, 94, 0.45) !important;
+  box-shadow: 0 0 14px rgba(244, 63, 94, 0.3) !important;
+}
+
+/* Return Cards Styling */
 .rt-card {
   background: rgba(15, 23, 42, 0.72) !important;
   backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: var(--r) !important;
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45) !important;
@@ -984,42 +1392,6 @@ tbody tr:hover {
 
 .rt-sim b {
   color: #34d399 !important;
-}
-
-/* Stepper on dark */
-.stp .s {
-  color: #94a3b8 !important;
-}
-
-.stp .s::before {
-  background: rgba(255, 255, 255, 0.1) !important;
-}
-
-.stp .s i {
-  background: #0f172a !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  color: #94a3b8 !important;
-}
-
-.stp .s.done i {
-  background: #10b981 !important;
-  border-color: #10b981 !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 14px rgba(16, 185, 129, 0.5) !important;
-}
-
-.stp .s.done::before, .stp .s.now::before {
-  background: #10b981 !important;
-}
-
-.stp .s.now {
-  color: #38bdf8 !important;
-}
-
-.stp .s.now i {
-  border-color: #38bdf8 !important;
-  color: #38bdf8 !important;
-  box-shadow: 0 0 14px rgba(56, 189, 248, 0.5) !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -1143,24 +1515,7 @@ tbody tr:hover {
   font-weight: 600 !important;
 }
 
-/* Return Status Badge Pills */
-.rt-left {
-  background: rgba(16, 185, 129, 0.15) !important;
-  color: #34d399 !important;
-  border: 1px solid rgba(16, 185, 129, 0.3) !important;
-}
 
-.rt-left.warn {
-  background: rgba(245, 158, 11, 0.18) !important;
-  color: #fbbf24 !important;
-  border: 1px solid rgba(245, 158, 11, 0.35) !important;
-}
-
-.rt-left.off {
-  background: rgba(100, 116, 139, 0.2) !important;
-  color: #94a3b8 !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-}
 
 /* Skeleton Loading Animation */
 .sk {
@@ -1250,74 +1605,319 @@ tbody tr:hover {
   color: #f8fafc !important;
 }
 
+/* --------------------------------------------------------------------------
+   9.2 BENTO GRID FOR SPENDING & REPORTS (.rp-grid.g4, .rp-card, .rp-budget)
+   -------------------------------------------------------------------------- */
+.rp-grid {
+  display: grid !important;
+  gap: 18px !important;
+  margin-bottom: 20px !important;
+}
+
+/* Bento Layout for 4 KPI Cards (.rp-grid.g4) */
+.rp-grid.g4 {
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 18px !important;
+}
+
+@media (min-width: 1024px) {
+  .rp-grid.g4 {
+    /* Asymmetric Bento Layout: Hero Spending Card + Key Metrics + Accent Savings */
+    grid-template-columns: 1.55fr 1fr 1fr 1.35fr !important;
+  }
+
+  /* Card 1: Total Spending Hero Glass Card */
+  .rp-grid.g4 > .rp-card:nth-child(1),
+  .rp-card.bento-spend-hero {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.88) 0%, rgba(20, 35, 60, 0.8) 100%) !important;
+    border: 1px solid rgba(56, 189, 248, 0.3) !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(56, 189, 248, 0.08) !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .rp-grid.g4 > .rp-card:nth-child(1)::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 3px !important;
+    background: linear-gradient(90deg, #38bdf8 0%, #818cf8 100%) !important;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.8) !important;
+  }
+
+  .rp-grid.g4 > .rp-card:nth-child(1) strong {
+    font-size: clamp(26px, 2.3vw, 32px) !important;
+    font-weight: 900 !important;
+    background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+
+  /* Card 4: Savings from Discounts & Vouchers (Emerald Velvet Glass) */
+  .rp-grid.g4 > .rp-card:nth-child(4),
+  .rp-card.bento-savings-hero {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.88) 0%, rgba(6, 44, 38, 0.75) 100%) !important;
+    border: 1px solid rgba(16, 185, 129, 0.35) !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(16, 185, 129, 0.1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .rp-grid.g4 > .rp-card:nth-child(4)::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 3px !important;
+    background: linear-gradient(90deg, #10b981 0%, #34d399 100%) !important;
+    box-shadow: 0 0 14px rgba(16, 185, 129, 0.8) !important;
+  }
+
+  .rp-grid.g4 > .rp-card:nth-child(4) strong.grn {
+    font-size: clamp(26px, 2.3vw, 32px) !important;
+    font-weight: 900 !important;
+    color: #34d399 !important;
+    text-shadow: 0 0 18px rgba(52, 211, 153, 0.55) !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .rp-grid.g4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .rp-grid.g4, .rp-grid.g2, .rp-grid.g2e {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Glass Card Foundation with Spotlight Glow */
 .rp-card {
   background: rgba(15, 23, 42, 0.72) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: var(--r) !important;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  padding: 22px 24px !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative !important;
 }
 
 .rp-card:hover {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55), 0 0 20px rgba(16, 185, 129, 0.15) !important;
+  transform: translateY(-4px) !important;
+  border-color: rgba(56, 189, 248, 0.35) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), 0 0 25px rgba(16, 185, 129, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
 .rp-card h4 {
   color: #f8fafc !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.3px !important;
 }
 
 .rp-card h4 small {
   color: #94a3b8 !important;
+  font-weight: 500 !important;
 }
 
 .rp-k small {
   color: #94a3b8 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
 }
 
 .rp-k strong {
   color: #f8fafc !important;
+  font-size: 26px !important;
+  font-weight: 800 !important;
   letter-spacing: -0.6px !important;
+  margin: 6px 0 8px !important;
+  line-height: 1.1 !important;
 }
 
 .rp-k .grn {
   color: #34d399 !important;
-  text-shadow: 0 0 14px rgba(52, 211, 153, 0.4) !important;
+  text-shadow: 0 0 16px rgba(52, 211, 153, 0.45) !important;
 }
 
-/* Budget Card */
+.rp-k .d {
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: #94a3b8 !important;
+}
+
+.rp-k .d.up {
+  color: #fb7185 !important;
+}
+
+.rp-k .d.down {
+  color: #34d399 !important;
+}
+
+/* 9.3 LUXURY BENTO BUDGET CARD (.rp-budget) */
 .rp-budget {
-  background: rgba(15, 23, 42, 0.8) !important;
+  background: rgba(15, 23, 42, 0.82) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-top: 4px solid #10b981 !important;
+  border-radius: 22px !important;
+  padding: 26px 30px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border-top: none !important;
 }
 
-.rp-budget.warn {
-  border-top-color: #f59e0b !important;
+/* Laser-Glow Accent Line on Top of Budget Card */
+.rp-budget::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 3.5px !important;
+  background: linear-gradient(90deg, #059669 0%, #10b981 60%, #34d399 100%) !important;
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.8) !important;
 }
 
-.rp-budget.over {
-  border-top-color: #f43f5e !important;
+.rp-budget.warn::before {
+  background: linear-gradient(90deg, #d97706 0%, #f59e0b 60%, #fbbf24 100%) !important;
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.8) !important;
+}
+
+.rp-budget.over::before {
+  background: linear-gradient(90deg, #e11d48 0%, #f43f5e 60%, #fb7185 100%) !important;
+  box-shadow: 0 0 18px rgba(244, 63, 94, 0.8) !important;
 }
 
 .rp-bh h3 {
   color: #f8fafc !important;
+  font-size: 28px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.6px !important;
 }
 
 .rp-bh h3 span {
   color: #94a3b8 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+.rp-tag {
+  padding: 6px 14px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+.ok .rp-tag {
+  background: rgba(16, 185, 129, 0.18) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.25) !important;
+}
+
+.warn .rp-tag {
+  background: rgba(245, 158, 11, 0.18) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.35) !important;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.25) !important;
+}
+
+.over .rp-tag {
+  background: rgba(244, 63, 94, 0.18) !important;
+  color: #fb7185 !important;
+  border: 1px solid rgba(244, 63, 94, 0.35) !important;
+  box-shadow: 0 0 12px rgba(244, 63, 94, 0.25) !important;
+}
+
+/* Laser-Glow Progress Bar */
+.pbar.big {
+  height: 14px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+  position: relative !important;
+  margin: 12px 0 6px !important;
+}
+
+.pbar.big i {
+  height: 100% !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%) !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.6) !important;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.pbar.big.warn i {
+  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%) !important;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.6) !important;
+}
+
+.pbar.big.over i {
+  background: linear-gradient(90deg, #f43f5e 0%, #fb7185 100%) !important;
+  box-shadow: 0 0 16px rgba(244, 63, 94, 0.7) !important;
+}
+
+.pbar.big u {
+  position: absolute !important;
+  top: -4px !important;
+  bottom: -4px !important;
+  width: 3px !important;
+  background: #fbbf24 !important;
+  box-shadow: 0 0 12px #f59e0b, 0 0 4px #ffffff !important;
+  border-radius: 2px !important;
+  z-index: 5 !important;
+}
+
+/* Bento Sub-Grid within Budget Card */
+.rp-bs {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 14px !important;
+  margin-top: 24px !important;
+}
+
+.rp-bs > div {
+  background: rgba(15, 23, 42, 0.55) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 14px !important;
+  padding: 14px 16px !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.rp-bs > div:hover {
+  background: rgba(30, 41, 59, 0.65) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  transform: translateY(-2px) !important;
 }
 
 .rp-bs small {
   color: #94a3b8 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
 }
 
 .rp-bs b {
   color: #f8fafc !important;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  display: block !important;
+  margin-top: 4px !important;
 }
 
-/* Progress bar */
+/* General Progress Bar */
 .pbar {
   background: rgba(255, 255, 255, 0.08) !important;
 }
@@ -1492,24 +2092,59 @@ tbody tr:hover {
   color: #ffffff !important;
 }
 
-/* Boarding Pass Ticket QR */
+/* 10.2 BOARDING PASS VIP TICKET QR (.tk-card, .tk-head, .tk-qrbox) */
 .modal.tk {
   background: none !important;
   box-shadow: none !important;
   border: none !important;
+  max-width: 420px !important;
+  padding: 0 !important;
 }
 
 .tk-card {
-  background: #0f172a !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.14) !important;
-  border-radius: 24px !important;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 45px rgba(16, 185, 129, 0.25) !important;
+  --y: 132px;
+  position: relative !important;
+  background: linear-gradient(180deg, #131c2e 0%, #0a0f1d 100%) !important;
+  border-radius: 26px !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 35px 90px rgba(0, 0, 0, 0.85), 
+              0 0 45px rgba(16, 185, 129, 0.28), 
+              inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+  overflow: hidden !important;
+  /* Refined Ticket Notches with Dual-Radial Masking */
+  -webkit-mask: radial-gradient(circle 13px at 0 var(--y), transparent 97%, #000 98%) left/51% 100% no-repeat,
+                radial-gradient(circle 13px at 100% var(--y), transparent 97%, #000 98%) right/51% 100% no-repeat !important;
+  mask: radial-gradient(circle 13px at 0 var(--y), transparent 97%, #000 98%) left/51% 100% no-repeat,
+        radial-gradient(circle 13px at 100% var(--y), transparent 97%, #000 98%) right/51% 100% no-repeat !important;
+}
+
+/* Luxury Metallic Edge Gradient Overlay */
+.tk-card::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(16, 185, 129, 0.35) 25%, rgba(56, 189, 248, 0.15) 60%, rgba(255, 255, 255, 0.08) 100%) !important;
+  opacity: 0.65 !important;
+  mix-blend-mode: overlay !important;
+  z-index: 2 !important;
 }
 
 .tk-head {
-  background: linear-gradient(135deg, #070b14 0%, #0f172a 60%, #1e293b 100%) !important;
-  border-radius: 24px 24px 0 0 !important;
+  height: 132px !important;
+  box-sizing: border-box !important;
+  padding: 18px 24px !important;
+  color: #ffffff !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  border-radius: 26px 26px 0 0 !important;
+  background: radial-gradient(circle at 100% 0%, rgba(16, 185, 129, 0.35) 0%, transparent 60%),
+              radial-gradient(circle at 0% 100%, rgba(56, 189, 248, 0.2) 0%, transparent 50%),
+              linear-gradient(135deg, #090e17 0%, #0f172a 50%, #1e293b 100%) !important;
   position: relative !important;
+  border-bottom: none !important;
 }
 
 .tk-head::after {
@@ -1518,50 +2153,79 @@ tbody tr:hover {
   bottom: 0 !important;
   left: 0 !important;
   right: 0 !important;
-  height: 2px !important;
-  background: linear-gradient(90deg, #10b981 0%, #38bdf8 50%, #8b5cf6 100%) !important;
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.7) !important;
+  height: 2.5px !important;
+  background: linear-gradient(90deg, #10b981 0%, #34d399 35%, #38bdf8 70%, #8b5cf6 100%) !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.8), 0 0 6px #38bdf8 !important;
 }
 
 .tk-head h3 {
-  color: #34d399 !important;
-  font-family: ui-monospace, Menlo, Consolas, monospace !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.08em !important;
-  text-shadow: 0 0 16px rgba(52, 211, 153, 0.6) !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 36px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.1em !important;
+  line-height: 1 !important;
+  background: linear-gradient(135deg, #ffffff 0%, #34d399 50%, #38bdf8 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 2px 14px rgba(52, 211, 153, 0.55)) !important;
 }
 
 .tk-pill {
-  background: rgba(16, 185, 129, 0.2) !important;
-  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+  background: rgba(16, 185, 129, 0.22) !important;
+  border: 1px solid rgba(16, 185, 129, 0.5) !important;
   color: #34d399 !important;
-  font-weight: 700 !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  padding: 5px 14px !important;
+  border-radius: 999px !important;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.3) !important;
 }
 
 .tk-dash {
-  border-top-color: rgba(255, 255, 255, 0.12) !important;
+  border-top: 2px dashed rgba(255, 255, 255, 0.18) !important;
+  margin: 0 24px !important;
+  position: relative !important;
 }
 
-/* QR Code Box – MUST STAY CLEAN WHITE FOR HIGH OPTICAL CAMERA SCANNABILITY */
+/* QR Code Box – Scannable Optical White with Metallic Neon Perimeter */
 .tk-qrbox {
   background: #ffffff !important;
-  border: 2px solid rgba(16, 185, 129, 0.6) !important;
-  border-radius: 20px !important;
-  box-shadow: 0 0 35px rgba(16, 185, 129, 0.35) !important;
+  border: 2.5px solid rgba(16, 185, 129, 0.7) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 0 45px rgba(16, 185, 129, 0.38), 0 12px 32px rgba(0, 0, 0, 0.4) !important;
+  position: relative !important;
+  padding: 16px !important;
 }
 
 .tk-qrbox .cn {
-  border-color: #10b981 !important;
+  position: absolute !important;
+  width: 26px !important;
+  height: 26px !important;
+  border: 3.5px solid #10b981 !important;
+  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.8)) !important;
 }
 
 .tk-scan {
-  background: linear-gradient(90deg, transparent, #10b981, transparent) !important;
-  box-shadow: 0 0 16px #10b981 !important;
+  position: absolute !important;
+  left: 14px !important;
+  right: 14px !important;
+  height: 2.5px !important;
+  background: linear-gradient(90deg, transparent 0%, #10b981 50%, #38bdf8 80%, transparent 100%) !important;
+  box-shadow: 0 0 18px #10b981, 0 0 8px #38bdf8 !important;
+}
+
+.tk-glow {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  color: #34d399 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.2) !important;
 }
 
 .tk-orders {
-  background: rgba(10, 15, 29, 0.75) !important;
+  background: rgba(10, 15, 29, 0.85) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
 }
 
 .tk-orders h6 {
@@ -1873,55 +2537,207 @@ tbody tr:hover {
   background: rgba(16, 185, 129, 0.15) !important;
 }
 
-/* Return Wizard Options */
-.rt-opt {
+/* --------------------------------------------------------------------------
+   12.2 MULTI-STEP RETURN WIZARD & SELECTION OPTIONS
+   -------------------------------------------------------------------------- */
+
+/* Stepper (.rt-dots) with Animated Laser-Glow Progress Line Track */
+.rt-dots {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 16px !important;
+  padding: 12px 20px !important;
   background: rgba(15, 23, 42, 0.75) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  color: #cbd5e1 !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 18px !important;
+  margin: 14px 0 20px !important;
+  overflow: hidden !important;
 }
 
-.rt-opt:hover {
-  border-color: rgba(16, 185, 129, 0.4) !important;
+.rt-dots::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 28px !important;
+  right: 28px !important;
+  height: 2px !important;
+  transform: translateY(-50%) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  z-index: 1 !important;
 }
 
-.rt-opt.on {
-  background: rgba(16, 185, 129, 0.12) !important;
-  border-color: #10b981 !important;
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.25) !important;
-}
-
-.rt-radio {
-  border-color: rgba(255, 255, 255, 0.25) !important;
-}
-
-.rt-opt.on .rt-radio {
-  border-color: #10b981 !important;
-}
-
-.rt-opt.on .rt-radio::after {
-  background: #10b981 !important;
-}
-
-.rt-chips button {
-  background: rgba(30, 41, 59, 0.6) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  color: #cbd5e1 !important;
-}
-
-.rt-chips button.on {
-  background: rgba(16, 185, 129, 0.2) !important;
-  border-color: #10b981 !important;
-  color: #34d399 !important;
+.rt-dots::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 28px !important;
+  width: var(--rt-progress, 60%) !important;
+  height: 3px !important;
+  transform: translateY(-50%) !important;
+  background: linear-gradient(90deg, #10b981 0%, #34d399 35%, #38bdf8 70%, #10b981 100%) !important;
+  background-size: 200% 100% !important;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.8), 0 0 4px #34d399 !important;
+  animation: laser-glow-flow 3.5s linear infinite !important;
+  border-radius: 999px !important;
+  z-index: 2 !important;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .rt-dots span {
-  background: rgba(30, 41, 59, 0.6) !important;
+  position: relative !important;
+  z-index: 3 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 7px 18px !important;
+  border-radius: 999px !important;
+  background: #0f172a !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
   color: #94a3b8 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
 }
 
 .rt-dots span.on {
-  background: rgba(16, 185, 129, 0.2) !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(6, 78, 59, 0.45) 100%) !important;
+  border-color: #10b981 !important;
   color: #34d399 !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.45), 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+.rt-dots span.now,
+.rt-dots span.active {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  border-color: #34d399 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 24px rgba(16, 185, 129, 0.7), 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Return Selection Cards with Shadcn-Style Spring Radio Buttons */
+.rt-opt {
+  display: flex !important;
+  gap: 16px !important;
+  align-items: center !important;
+  padding: 16px 20px !important;
+  margin-bottom: 12px !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 18px !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  background: rgba(15, 23, 42, 0.72) !important;
+  backdrop-filter: blur(20px) !important;
+  color: #cbd5e1 !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+}
+
+.rt-opt:hover {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(56, 189, 248, 0.45) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 18px rgba(56, 189, 248, 0.2) !important;
+}
+
+.rt-opt.on {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(15, 23, 42, 0.92) 100%) !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.35), 0 0 0 1px rgba(16, 185, 129, 0.5), inset 0 0 25px rgba(16, 185, 129, 0.1) !important;
+}
+
+.rt-opt.off {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Shadcn-Style Spring Radio Button */
+.rt-radio {
+  flex: none !important;
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  border: 2px solid rgba(255, 255, 255, 0.25) !important;
+  background: rgba(15, 23, 42, 0.85) !important;
+  display: grid !important;
+  place-items: center !important;
+  position: relative !important;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* Active Ring Pulse Animation on Radio */
+.rt-opt.on .rt-radio {
+  border-color: #10b981 !important;
+  background: rgba(6, 78, 59, 0.5) !important;
+  transform: scale(1.08) !important;
+  animation: spring-ring-pulse 2.2s infinite !important;
+}
+
+/* Spring Radio Inner Dot Pop */
+.rt-opt.on .rt-radio::after {
+  content: "" !important;
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  background: #34d399 !important;
+  box-shadow: 0 0 12px #10b981, 0 0 4px #34d399 !important;
+  animation: spring-radio-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+}
+
+@keyframes spring-radio-pop {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes spring-ring-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7), 0 0 14px rgba(16, 185, 129, 0.6); }
+  70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0), 0 0 20px rgba(16, 185, 129, 0.8); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0), 0 0 14px rgba(16, 185, 129, 0.6); }
+}
+
+.rt-opt .in b {
+  color: #f8fafc !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+.rt-opt .in b span {
+  color: #94a3b8 !important;
+  font-weight: 500 !important;
+}
+
+.rt-opt .in > span {
+  color: #94a3b8 !important;
+}
+
+.rt-chips button {
+  background: rgba(30, 41, 59, 0.65) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+  color: #cbd5e1 !important;
+  border-radius: 999px !important;
+  padding: 8px 16px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.rt-chips button:hover {
+  border-color: rgba(56, 189, 248, 0.45) !important;
+  background: rgba(51, 65, 85, 0.75) !important;
+}
+
+.rt-chips button.on {
+  background: rgba(16, 185, 129, 0.22) !important;
+  border-color: #10b981 !important;
+  color: #34d399 !important;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.3) !important;
 }
 
 /* Auth Dialog */
