@@ -2924,211 +2924,538 @@ tbody tr:hover {
 }
 
 /* ==========================================================================
-   8. SMART SHELF 2D ELEVATION VISUALIZER (KỆ ĐỂ HÀNG THÔNG MINH MẶT 2D)
-   (Mặt đứng trực diện 2D hở, Phân biệt rõ ô của bạn vs căn khác vs ô trống, LED Beacon)
+   8. SMART SHELF MULTI-RACK 3D ISOMETRIC & TOP-DOWN BLUEPRINT VISUALIZER
+   (Hệ thống Kệ Hàng Thông Minh Đa Dãy Sảnh Trạm PODO Station · Sảnh Tháp Diamond)
+   - 100% KỆ ĐỂ HÀNG THƯỜNG tiêu chuẩn (Khung kim loại đen titan/sapphire, thanh dầm hở, không cánh cửa)
+   - 100% KỆ THƯỜNG TIÊU CHUẨN (Không dùng khoang lạnh)
+   - Hỗ trợ 4-5 dãy kệ: Kệ A (Tiêu chuẩn), Kệ B (Hàng nhỏ), Kệ C (Quá khổ), Kệ D (Hàng trả), Kệ E (Hỏa tốc)
+   - Phối cảnh 2 góc nhìn: 🌐 3D Isometric (.mode-3d) & 📐 Từ trên xuống Top-Down (.mode-topdown)
+   - Hiệu ứng nổi bật Căn 1204: LED Emerald, Sóng sonar phát quang, Huy hiệu Của Bạn
    ========================================================================== */
 
-/* 2D Elevation Shelf Stage Container (Mặt đứng trực diện 2D phẳng hoàn toàn) */
+/* --------------------------------------------------------------------------
+   8.1 STAGE CONTAINER & GÓC NHÌN TỔNG THỂ
+   -------------------------------------------------------------------------- */
+
+/* Stage Container chung cho phối cảnh không gian kệ hàng */
+.shelf-view-stage,
 .locker-isometric-stage,
 .shelf-elevation-stage,
 .shelf-stage {
   position: relative !important;
   width: 100% !important;
-  min-height: auto !important;
-  perspective: none !important;
+  min-height: 480px !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  padding: 28px 20px 36px !important;
-  background: radial-gradient(ellipse at 50% 15%, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 42, 0.7) 85%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 24px 20px 36px !important;
+  background: radial-gradient(ellipse at 50% 12%, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 42, 0.78) 75%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 24px !important;
   overflow: hidden !important;
   user-select: none !important;
-  transform: none !important;
-  transition: all 0.3s ease !important;
+  transition: background 0.5s ease, border-color 0.4s ease, box-shadow 0.4s ease !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
-/* Ẩn hoàn toàn nút chuyển 3D theo yêu cầu User (Mặt 2D trực diện mặc định) */
-.locker-view-switch {
-  display: none !important;
-}
+/* --------------------------------------------------------------------------
+   8.2 THANH CHUYỂN ĐỔI GÓC NHÌN (3D ISOMETRIC vs TOP-DOWN BLUEPRINT)
+   -------------------------------------------------------------------------- */
 
-/* 2D Scene Root (Tuyệt đối không xoay 3D / Không tilt / Không skew) */
-.locker-3d-scene,
-.locker-3d-scene.mode-3d,
-.locker-3d-scene.mode-2d,
-.locker-isometric-stage .locker-3d-scene,
-.locker-isometric-stage:not(.mode-2d) .locker-3d-scene {
+.shelf-view-toggle,
+.locker-view-switch,
+.shelf-view-toolbar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  background: rgba(15, 23, 42, 0.88) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 999px !important;
+  padding: 5px 6px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 0 16px rgba(16, 185, 129, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  margin: 0 auto 24px auto !important;
   position: relative !important;
-  transform: none !important;
-  transform-style: flat !important;
+  z-index: 30 !important;
+  max-width: 95% !important;
+}
+
+.shelf-view-toggle .view-toggle-btn,
+.shelf-view-toggle button,
+.locker-view-switch button,
+.view-toggle-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 8px 18px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #94a3b8 !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  cursor: pointer !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  white-space: nowrap !important;
+  line-height: 1.4 !important;
+}
+
+.shelf-view-toggle .view-toggle-btn:hover,
+.shelf-view-toggle button:hover,
+.locker-view-switch button:hover,
+.view-toggle-btn:hover {
+  color: #f8fafc !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.shelf-view-toggle .view-toggle-btn.active,
+.shelf-view-toggle button.active,
+.locker-view-switch button.active,
+.view-toggle-btn.active {
+  color: #34d399 !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.28) 0%, rgba(6, 78, 59, 0.65) 100%) !important;
+  border: 1px solid rgba(16, 185, 129, 0.5) !important;
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  font-weight: 800 !important;
+}
+
+/* --------------------------------------------------------------------------
+   8.3 KHÔNG GIAN 3D SCENE & CHẾ ĐỘ PHỐI CẢNH (MODE-3D vs MODE-TOPDOWN)
+   -------------------------------------------------------------------------- */
+
+/* Scene Wrapper */
+.shelf-3d-scene,
+.locker-3d-scene {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
-  width: 100% !important;
-  max-width: 960px !important;
-  margin: 0 auto !important;
-  transition: none !important;
+  transform-origin: 50% 45% !important;
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-/* Loại bỏ lưới sàn 3D nghiêng */
-.locker-floor-grid {
-  display: none !important;
+/* === A. CHẾ ĐỘ 3D ISOMETRIC (.mode-3d) === */
+.shelf-view-stage.mode-3d,
+.locker-isometric-stage.mode-3d,
+.shelf-stage.mode-3d,
+.shelf-elevation-stage.mode-3d {
+  perspective: 1400px !important;
+  perspective-origin: 50% 36% !important;
 }
 
-/* Thanh đỡ chân kệ mặt sàn 2D sang trọng */
-.locker-floor-shadow {
-  position: static !important;
-  width: 90% !important;
-  max-width: 860px !important;
-  height: 6px !important;
-  margin: 18px auto 0 !important;
-  border-radius: 999px !important;
-  background: linear-gradient(90deg, transparent 0%, rgba(16, 185, 129, 0.35) 20%, rgba(56, 189, 248, 0.35) 80%, transparent 100%) !important;
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25) !important;
-  filter: none !important;
+.shelf-view-stage.mode-3d .shelf-3d-scene,
+.shelf-view-stage.mode-3d .locker-3d-scene,
+.locker-isometric-stage.mode-3d .locker-3d-scene,
+.shelf-3d-scene.mode-3d,
+.locker-3d-scene.mode-3d {
+  transform-style: preserve-3d !important;
+  transform: rotateX(25deg) rotateY(-18deg) rotateZ(3deg) !important;
+}
+
+/* Lưới sàn công nghệ 3D Isometric */
+.mode-3d .locker-floor-grid,
+.mode-3d .shelf-floor-grid {
+  display: block !important;
+  position: absolute !important;
+  width: 150% !important;
+  height: 150% !important;
+  left: -25% !important;
+  top: -15% !important;
+  background-image:
+    linear-gradient(rgba(16, 185, 129, 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 185, 129, 0.14) 1px, transparent 1px) !important;
+  background-size: 38px 38px !important;
+  transform: rotateX(90deg) translateZ(-65px) !important;
+  transform-origin: 50% 80% !important;
+  opacity: 0.85 !important;
   pointer-events: none !important;
+  mask-image: radial-gradient(ellipse at 50% 50%, black 25%, transparent 75%) !important;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 25%, transparent 75%) !important;
+}
+
+/* Bóng đổ sàn công nghệ 3D đa tầng */
+.mode-3d .locker-floor-shadow,
+.mode-3d .shelf-floor-shadow {
+  position: absolute !important;
+  width: 105% !important;
+  max-width: 1100px !important;
+  height: 38px !important;
+  bottom: -24px !important;
+  left: -2.5% !important;
+  margin: 0 auto !important;
+  border-radius: 999px !important;
+  background: radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0.85) 0%, rgba(16, 185, 129, 0.2) 45%, transparent 75%) !important;
+  filter: blur(14px) !important;
+  pointer-events: none !important;
+  transform: translateZ(-35px) !important;
   z-index: 1 !important;
 }
 
-/* Khối dãy kệ để hàng thông minh (Smart Shelf Bank) */
-.locker-bank {
+/* Chiều sâu 3D trên từng tháp kệ */
+.mode-3d .locker-tower,
+.mode-3d .shelf-tower {
+  transform-style: preserve-3d !important;
+  box-shadow: -10px 16px 32px rgba(0, 0, 0, 0.65), -22px 30px 60px rgba(0, 0, 0, 0.45), inset 1px 1px 0 rgba(255, 255, 255, 0.12) !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease !important;
+}
+
+.mode-3d .locker-tower:hover,
+.mode-3d .shelf-tower:hover {
+  transform: translateY(-4px) translateZ(8px) !important;
+  box-shadow: -14px 22px 42px rgba(0, 0, 0, 0.75), -26px 36px 70px rgba(0, 0, 0, 0.5), inset 1px 1px 0 rgba(255, 255, 255, 0.18) !important;
+}
+
+/* Chiều sâu kiện hàng 3D đặt mở trên tầng kệ */
+.mode-3d .cell-parcel {
+  transform: translateZ(12px) translateY(-2px) !important;
+  box-shadow: -4px 6px 16px rgba(0, 0, 0, 0.6) !important;
+}
+
+.mode-3d .locker-cell:hover,
+.mode-3d .shelf-slot:hover {
+  transform: translateZ(16px) translateY(-2px) !important;
+}
+
+/* === B. CHẾ ĐỘ TỪ TRÊN XUỐNG - TOP-DOWN BLUEPRINT (.mode-topdown) === */
+.shelf-view-stage.mode-topdown,
+.locker-isometric-stage.mode-topdown,
+.shelf-stage.mode-topdown,
+.shelf-elevation-stage.mode-topdown {
+  perspective: none !important;
+  background: radial-gradient(ellipse at 50% 25%, rgba(14, 165, 233, 0.08) 0%, rgba(9, 14, 26, 0.96) 85%),
+              linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px) !important;
+  background-size: 100% 100%, 24px 24px, 24px 24px !important;
+}
+
+.shelf-view-stage.mode-topdown .shelf-3d-scene,
+.shelf-view-stage.mode-topdown .locker-3d-scene,
+.locker-isometric-stage.mode-topdown .locker-3d-scene,
+.shelf-3d-scene.mode-topdown,
+.locker-3d-scene.mode-topdown {
+  transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) !important;
+  transform-style: flat !important;
+}
+
+/* Ẩn lưới 3D nghiêng trong chế độ Top-down */
+.mode-topdown .locker-floor-grid,
+.mode-topdown .shelf-floor-grid {
+  display: none !important;
+}
+
+/* Đường vạch định vị mặt sàn kỹ thuật Top-down */
+.mode-topdown .locker-floor-shadow,
+.mode-topdown .shelf-floor-shadow {
+  position: static !important;
+  width: 96% !important;
+  max-width: 1040px !important;
+  height: 3px !important;
+  margin: 18px auto 0 !important;
+  border-radius: 999px !important;
+  background: repeating-linear-gradient(90deg, rgba(56, 189, 248, 0.5) 0px, rgba(56, 189, 248, 0.5) 12px, transparent 12px, transparent 20px) !important;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3) !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+/* Huy hiệu chỉ dẫn sơ đồ mặt bằng sảnh */
+.blueprint-hall-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1040px;
+  padding: 8px 14px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  background: rgba(14, 165, 233, 0.08);
+  border: 1px dashed rgba(56, 189, 248, 0.35);
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 11.5px;
+  color: #38bdf8;
+  letter-spacing: 0.05em;
+}
+
+.mode-topdown .blueprint-hall-header {
+  display: flex !important;
+}
+
+/* Tháp Kệ trong chế độ Top-Down: Mặt bằng kiến trúc sắc nét */
+.mode-topdown .locker-tower,
+.mode-topdown .shelf-tower {
+  border-color: rgba(56, 189, 248, 0.28) !important;
+  background: rgba(11, 18, 32, 0.92) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(56, 189, 248, 0.15) !important;
+  transform: none !important;
+}
+
+.mode-topdown .cell-parcel {
+  transform: none !important;
+}
+
+/* Đường phân luồng lối đi sảnh trạm (Walkway Aisles) */
+.station-walkway,
+.aisle-walkway {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 12px;
+  margin: 8px 0;
+  border-top: 1px dashed rgba(56, 189, 248, 0.25);
+  border-bottom: 1px dashed rgba(56, 189, 248, 0.25);
+  color: #7dd3fc;
+  font-size: 11px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.mode-topdown .station-walkway,
+.mode-topdown .aisle-walkway {
+  display: flex !important;
+}
+
+/* --------------------------------------------------------------------------
+   8.4 BỐ CỤC ĐA DÃY KỆ (4-5 DÃY KỆ TIÊU CHUẨN & LỐI ĐI SẢNH TRẠM)
+   -------------------------------------------------------------------------- */
+
+/* Container chứa toàn bộ các dãy kệ sảnh trạm */
+.shelf-bank,
+.locker-bank,
+.station-aisles {
   display: flex !important;
   flex-direction: row !important;
-  gap: 22px !important;
+  gap: 18px !important;
   align-items: stretch !important;
   justify-content: center !important;
-  transform: none !important;
   position: relative !important;
   z-index: 2 !important;
   width: 100% !important;
-  max-width: 960px !important;
+  max-width: 1200px !important;
+  flex-wrap: wrap !important;
 }
 
-@media (max-width: 860px) {
-  .locker-bank {
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 24px !important;
-  }
-}
-
-/* Tháp Kệ / Dãy kệ đơn (.locker-tower / .shelf-tower) */
-.locker-tower {
-  width: 280px !important;
-  max-width: 100% !important;
+/* Tháp Kệ Tiêu Chuẩn (.locker-tower / .shelf-tower) - Khung kim loại đen Titan / Sapphire */
+.locker-tower,
+.shelf-tower {
+  flex: 1 1 200px !important;
+  min-width: 195px !important;
+  max-width: 245px !important;
   background: linear-gradient(180deg, #131c2e 0%, #0d1525 100%) !important;
   border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 18px !important;
-  padding: 16px 14px 18px !important;
+  padding: 14px 12px 16px !important;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
-  transform: none !important;
   position: relative !important;
   transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
 }
 
-.locker-tower:hover {
+.locker-tower:hover,
+.shelf-tower:hover {
   border-color: rgba(255, 255, 255, 0.22) !important;
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6) !important;
 }
 
-/* Tiêu đề & thông tin đỉnh kệ */
-.locker-tower-head {
+/* Đỉnh Tháp Kệ: Tiêu đề dãy & Chip phân loại */
+.locker-tower-head,
+.shelf-tower-head {
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
-  padding: 4px 6px 12px !important;
+  padding: 4px 4px 10px !important;
   border-bottom: 1.5px solid rgba(255, 255, 255, 0.08) !important;
-  margin-bottom: 14px !important;
+  margin-bottom: 12px !important;
+  gap: 6px !important;
 }
 
 .tower-title {
-  font-size: 13px !important;
+  font-size: 12.5px !important;
   font-weight: 800 !important;
-  letter-spacing: 0.06em !important;
+  letter-spacing: 0.05em !important;
   text-transform: uppercase !important;
   color: #f8fafc !important;
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 .tower-chip {
-  font-size: 11px !important;
+  font-size: 10.5px !important;
   font-weight: 700 !important;
-  padding: 3px 8px !important;
+  padding: 2.5px 7px !important;
   border-radius: 6px !important;
   background: rgba(30, 41, 59, 0.8) !important;
   color: #94a3b8 !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
 }
 
-/* Kệ mát 4°C Fresh (.locker-tower-fresh) */
-.locker-tower-fresh {
-  background: linear-gradient(180deg, #0e2238 0%, #091726 100%) !important;
-  border-color: rgba(56, 189, 248, 0.4) !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 28px rgba(56, 189, 248, 0.15), inset 0 1px 0 rgba(56, 189, 248, 0.25) !important;
+/* === BẢNG MÀU PHÂN LOẠI 5 DÃY KỆ TIÊU CHUẨN === */
+
+/* 1. Kệ A: Hàng tiêu chuẩn (Emerald Sapphire Accent) */
+.tower-a,
+#tower-A,
+.tower-standard {
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+.tower-a .tower-title,
+#tower-A .tower-title,
+.tower-standard .tower-title {
+  color: #34d399 !important;
+}
+.tower-a .tower-chip,
+#tower-A .tower-chip,
+.tower-standard .tower-chip {
+  color: #34d399 !important;
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
 }
 
-.locker-tower-fresh .tower-title {
+/* 2. Kệ B: Hàng nhỏ & Túi thư (Cyan Sky Accent) */
+.tower-b,
+#tower-B,
+.tower-small {
+  border-color: rgba(56, 189, 248, 0.3) !important;
+}
+.tower-b .tower-title,
+#tower-B .tower-title,
+.tower-small .tower-title {
   color: #38bdf8 !important;
 }
-
-.locker-tower-fresh .tower-chip,
-.tower-temp-badge {
-  background: rgba(56, 189, 248, 0.16) !important;
+.tower-b .tower-chip,
+#tower-B .tower-chip,
+.tower-small .tower-chip {
   color: #38bdf8 !important;
-  border: 1px solid rgba(56, 189, 248, 0.4) !important;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.2) !important;
-  font-family: ui-monospace, Menlo, Consolas, monospace !important;
-  font-weight: 800 !important;
+  background: rgba(56, 189, 248, 0.15) !important;
+  border-color: rgba(56, 189, 248, 0.35) !important;
+}
+
+/* 3. Kệ C: Hàng cồng kềnh / quá khổ (Violet Indigo Accent) */
+.tower-c,
+#tower-C,
+.tower-bulky,
+.tower-oversized {
+  border-color: rgba(129, 140, 248, 0.3) !important;
+}
+.tower-c .tower-title,
+#tower-C .tower-title,
+.tower-bulky .tower-title {
+  color: #a5b4fc !important;
+}
+.tower-c .tower-chip,
+#tower-C .tower-chip,
+.tower-bulky .tower-chip {
+  color: #a5b4fc !important;
+  background: rgba(129, 140, 248, 0.15) !important;
+  border-color: rgba(129, 140, 248, 0.35) !important;
+}
+
+/* 4. Kệ D: Khu vực hàng gửi trả (Amber Gold Accent) */
+.tower-d,
+#tower-D,
+.tower-returns {
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+.tower-d .tower-title,
+#tower-D .tower-title,
+.tower-returns .tower-title {
+  color: #fbbf24 !important;
+}
+.tower-d .tower-chip,
+#tower-D .tower-chip,
+.tower-returns .tower-chip {
+  color: #fbbf24 !important;
+  background: rgba(245, 158, 11, 0.15) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+
+/* 5. Kệ E: Hàng hỏa tốc / ưu tiên (Rose Coral Accent) */
+.tower-e,
+#tower-E,
+.tower-express,
+.tower-priority {
+  border-color: rgba(244, 63, 94, 0.3) !important;
+}
+.tower-e .tower-title,
+#tower-E .tower-title,
+.tower-express .tower-title {
+  color: #fb7185 !important;
+}
+.tower-e .tower-chip,
+#tower-E .tower-chip,
+.tower-express .tower-chip {
+  color: #fb7185 !important;
+  background: rgba(244, 63, 94, 0.15) !important;
+  border-color: rgba(244, 63, 94, 0.35) !important;
 }
 
 /* Lưới các tầng / ô kệ hở (.locker-cell-grid) */
-.locker-cell-grid {
+.locker-cell-grid,
+.shelf-cell-grid {
   display: flex !important;
   flex-direction: column !important;
-  gap: 12px !important;
+  gap: 10px !important;
   transform: none !important;
 }
 
-/* Ô Kệ Thông Minh (.locker-cell / .shelf-slot) - Kệ để hàng hở mặt 2D */
+/* --------------------------------------------------------------------------
+   8.5 Ô KỆ THÔNG MINH HỞ (.locker-cell / .shelf-slot)
+   -------------------------------------------------------------------------- */
+
 .locker-cell,
 .shelf-slot {
   position: relative !important;
   border-radius: 12px !important;
-  transform: none !important;
-  transform-style: flat !important;
   overflow: hidden !important;
   border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
-  border-bottom: 3.5px solid rgba(255, 255, 255, 0.2) !important; /* Thanh dầm đỡ mặt kệ */
-  background: rgba(13, 20, 36, 0.75) !important;
+  border-bottom: 3.5px solid rgba(255, 255, 255, 0.22) !important; /* Dầm thép chịu lực hở */
+  background: rgba(13, 20, 36, 0.78) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
-  transition: all 0.25s ease !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
   cursor: pointer !important;
 }
 
 /* Kích thước chiều cao chuẩn của các tầng kệ */
 .locker-cell.cell-s {
-  min-height: 84px !important;
+  min-height: 80px !important;
 }
 
 .locker-cell.cell-m {
-  min-height: 114px !important;
+  min-height: 108px !important;
 }
 
 .locker-cell.cell-l {
-  min-height: 148px !important;
+  min-height: 142px !important;
 }
 
 .locker-cell.cell-xl {
-  min-height: 186px !important;
+  min-height: 180px !important;
 }
 
+/* Backward-compatibility fallback: Legacy classes chuyển thành kệ chuẩn */
+.locker-tower-fresh,
 .locker-cell.cell-fresh {
-  min-height: 120px !important;
+  background: rgba(13, 20, 36, 0.78) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  border-bottom: 3.5px solid rgba(255, 255, 255, 0.22) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+}
+.tower-temp-badge,
+.led-fresh {
+  display: none !important;
 }
 
 /* Khoang kệ hở bên trong (Hàng đặt mở trên mặt kệ chung) */
@@ -3143,7 +3470,7 @@ tbody tr:hover {
   align-items: center !important;
   justify-content: center !important;
   z-index: 1 !important;
-  padding: 8px !important;
+  padding: 6px !important;
 }
 
 /* Kiện hàng đặt ngay trên mặt kệ hở */
@@ -3155,14 +3482,13 @@ tbody tr:hover {
   align-items: center !important;
   justify-content: center !important;
   gap: 4px !important;
-  padding: 7px 12px !important;
+  padding: 6px 10px !important;
   border-radius: 8px !important;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5) !important;
   color: #f8fafc !important;
   font-size: 11.5px !important;
   font-weight: 700 !important;
-  transform: none !important;
-  max-width: 90% !important;
+  max-width: 92% !important;
   text-align: center !important;
   word-break: break-word !important;
   transition: all 0.25s ease !important;
@@ -3172,16 +3498,16 @@ tbody tr:hover {
   display: inline-flex !important;
   align-items: center !important;
   gap: 4px !important;
-  font-size: 10px !important;
+  font-size: 9.5px !important;
   font-family: ui-monospace, Menlo, Consolas, monospace !important;
   color: #34d399 !important;
   background: rgba(16, 185, 129, 0.22) !important;
-  padding: 2px 7px !important;
+  padding: 2px 6px !important;
   border-radius: 4px !important;
   border: 1px solid rgba(16, 185, 129, 0.4) !important;
 }
 
-/* KHUNG HIỂN THỊ MẶT KỆ (KHÔNG PHẢI CÁNH CỬA TỦ, KHÔNG XOAY -85deg) */
+/* KHUNG HIỂN THỊ MẶT KỆ (KHÔNG PHẢI CÁNH CỬA TỦ, KHÔNG XOAY CỬA) */
 .cell-door {
   position: absolute !important;
   inset: 0 !important;
@@ -3194,7 +3520,7 @@ tbody tr:hover {
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;
-  padding: 8px 10px !important;
+  padding: 7px 9px !important;
   transform: none !important;
   transform-style: flat !important;
   pointer-events: none !important;
@@ -3217,14 +3543,14 @@ tbody tr:hover {
 
 .cell-code {
   font-family: ui-monospace, Menlo, Consolas, monospace !important;
-  font-size: 12.5px !important;
+  font-size: 12px !important;
   font-weight: 800 !important;
   letter-spacing: 0.05em !important;
   color: #cbd5e1 !important;
 }
 
 .cell-status-text {
-  font-size: 11px !important;
+  font-size: 10.5px !important;
   color: #94a3b8 !important;
   font-weight: 600 !important;
   width: 100% !important;
@@ -3244,9 +3570,9 @@ tbody tr:hover {
   flex-shrink: 0 !important;
 }
 
-/* ==========================================================================
-   PHÂN BIỆT RÕ RÀNG: Ô CỦA BẠN vs Ô CĂN KHÁC vs Ô TRỐNG
-   ========================================================================== */
+/* --------------------------------------------------------------------------
+   8.6 PHÂN BIỆT RÕ RÀNG: Ô CỦA BẠN vs Ô CĂN KHÁC vs Ô TRỐNG
+   -------------------------------------------------------------------------- */
 
 /* 1. Ô CÓ KIỆN CỦA CĂN 1204 (.cell-mine, .slot-mine, .shelf-slot.mine)
    - Viền xanh Emerald rực rỡ, box-shadow hào quang Emerald phát sáng
@@ -3257,14 +3583,14 @@ tbody tr:hover {
 .shelf-slot.slot-mine {
   border: 2px solid #10b981 !important;
   border-bottom: 4px solid #10b981 !important;
-  background: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.18) 0%, rgba(13, 20, 36, 0.95) 85%) !important;
-  box-shadow: 0 0 24px rgba(16, 185, 129, 0.42), inset 0 0 16px rgba(16, 185, 129, 0.2), 0 8px 24px rgba(0, 0, 0, 0.5) !important;
-  z-index: 5 !important;
+  background: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.22) 0%, rgba(13, 20, 36, 0.96) 85%) !important;
+  box-shadow: 0 0 28px rgba(16, 185, 129, 0.48), inset 0 0 18px rgba(16, 185, 129, 0.22), 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+  z-index: 6 !important;
 }
 
 .locker-cell.cell-mine:hover,
 .shelf-slot.mine:hover {
-  box-shadow: 0 0 32px rgba(16, 185, 129, 0.6), inset 0 0 20px rgba(16, 185, 129, 0.3) !important;
+  box-shadow: 0 0 36px rgba(16, 185, 129, 0.65), inset 0 0 22px rgba(16, 185, 129, 0.32) !important;
   border-color: #34d399 !important;
 }
 
@@ -3280,10 +3606,10 @@ tbody tr:hover {
 }
 
 .locker-cell.cell-mine .cell-parcel {
-  background: linear-gradient(135deg, rgba(6, 78, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+  background: linear-gradient(135deg, rgba(6, 78, 59, 0.85) 0%, rgba(15, 23, 42, 0.98) 100%) !important;
   border: 1.5px solid #10b981 !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4) !important;
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45) !important;
 }
 
 .led-mine {
@@ -3297,21 +3623,29 @@ tbody tr:hover {
   display: inline-flex !important;
   align-items: center !important;
   gap: 5px !important;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(6, 78, 59, 0.55) 100%) !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.35) 0%, rgba(6, 78, 59, 0.7) 100%) !important;
   color: #34d399 !important;
   border: 1.5px solid #10b981 !important;
   border-radius: 6px !important;
-  font-size: 11px !important;
+  font-size: 10.5px !important;
   font-weight: 800 !important;
-  padding: 2.5px 8px !important;
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.35) !important;
+  padding: 2px 7px !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4) !important;
   letter-spacing: 0.02em !important;
+}
+
+/* Sóng radar sonar phát quang quanh ô Căn 1204 khi bấm định vị */
+.locker-cell.cell-mine.sonar-ping,
+.shelf-slot.mine.sonar-ping,
+.sonar-ping {
+  animation: sonar-wave-dark 0.85s ease-in-out infinite, locker-beacon-pulse 1.8s infinite !important;
+  border-color: #34d399 !important;
+  box-shadow: 0 0 0 16px rgba(16, 185, 129, 0), 0 0 36px #10b981, inset 0 0 20px rgba(16, 185, 129, 0.4) !important;
 }
 
 /* 2. Ô KIỆN CỦA CĂN KHÁC (.cell-other, .shelf-slot.other)
    - Tông màu Slate trầm, phẳng, mờ
-   - Không gây xao nhãng, không cạnh tranh thị giác với kiện của resident
-   - KHÔNG CÓ Ổ KHÓA PADLOCK (vì là kệ để chung hở) */
+   - Không gây xao nhãng, không có ổ khóa padlock */
 .locker-cell.cell-other,
 .shelf-slot.other,
 .shelf-slot.slot-other {
@@ -3387,23 +3721,7 @@ tbody tr:hover {
   box-shadow: none !important;
 }
 
-/* Kệ mát Fresh 4°C (.cell-fresh) */
-.locker-cell.cell-fresh {
-  border-color: rgba(56, 189, 248, 0.3) !important;
-  border-bottom-color: rgba(56, 189, 248, 0.5) !important;
-}
-
-.locker-cell.cell-fresh .cell-code {
-  color: #38bdf8 !important;
-}
-
-.led-fresh {
-  background: #38bdf8 !important;
-  box-shadow: 0 0 10px #38bdf8, 0 0 3px #7dd3fc !important;
-  animation: fresh-frost-glow 2.2s infinite ease-in-out !important;
-}
-
-/* Tương tác khi nhấp vào ô kệ (Hiệu ứng Active Highlight thay cho cửa mở 3D) */
+/* Tương tác khi nhấp vào ô kệ (Active Highlight) */
 .locker-cell.cell-door-open,
 .locker-cell.open,
 .locker-cell:active,
@@ -3446,11 +3764,67 @@ tbody tr:hover {
   }
 }
 
-@keyframes fresh-frost-glow {
-  0% { box-shadow: 0 0 8px rgba(56, 189, 248, 0.3); }
-  50% { box-shadow: 0 0 18px rgba(56, 189, 248, 0.7); }
-  100% { box-shadow: 0 0 8px rgba(56, 189, 248, 0.3); }
+/* --------------------------------------------------------------------------
+   8.7 RESPONSIVE CHO SẢNH NHIỀU DÃY KỆ (DESKTOP / TABLET / MOBILE)
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  .shelf-bank,
+  .locker-bank,
+  .station-aisles {
+    gap: 14px !important;
+  }
+  .locker-tower,
+  .shelf-tower {
+    min-width: 175px !important;
+    max-width: 220px !important;
+  }
 }
+
+@media (max-width: 860px) {
+  .shelf-view-stage,
+  .locker-isometric-stage {
+    padding: 20px 12px 28px !important;
+  }
+  .shelf-bank,
+  .locker-bank,
+  .station-aisles {
+    justify-content: center !important;
+    gap: 16px !important;
+  }
+  .locker-tower,
+  .shelf-tower {
+    flex: 1 1 45% !important;
+    max-width: 48% !important;
+    min-width: 155px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .shelf-bank,
+  .locker-bank,
+  .station-aisles {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 18px !important;
+  }
+  .locker-tower,
+  .shelf-tower {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+  .shelf-view-toggle,
+  .locker-view-switch {
+    width: 100% !important;
+  }
+  .shelf-view-toggle .view-toggle-btn,
+  .locker-view-switch button {
+    padding: 7px 12px !important;
+    font-size: 11.5px !important;
+  }
+}
+
 
 
 /* ==========================================================================
