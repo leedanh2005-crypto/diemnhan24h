@@ -413,7 +413,7 @@ body {
 }
 
 .nt-foot:hover {
-  color: #047857 !important;
+  color: #065f46 !important;
   text-decoration: underline !important;
 }
 
@@ -760,7 +760,7 @@ body {
   border-radius: 16px !important;
   position: relative !important;
   background: rgba(16, 185, 129, 0.14) !important;
-  color: #047857 !important;
+  color: #065f46 !important;
   border: 1px solid rgba(16, 185, 129, 0.35) !important;
   box-shadow: 0 0 20px rgba(16, 185, 129, 0.25) !important;
   animation: bento-pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
@@ -809,7 +809,7 @@ body {
 .concierge-stats-row > .c-stat-pill:nth-child(1) .c-stat-txt strong,
 .c-stat-pill.bento-hero .c-stat-txt strong {
   font-size: 38px !important;
-  color: #047857 !important;
+  color: #065f46 !important;
   font-weight: 800 !important;
 }
 
@@ -849,7 +849,7 @@ body {
 }
 
 /* Stat color utility classes */
-.stat-emerald { color: #047857 !important; }
+.stat-emerald { color: #065f46 !important; }
 .stat-blue { color: #0284c7 !important; }
 .stat-slate { color: #475569 !important; }
 .stat-amber { color: #d97706 !important; }
@@ -1229,7 +1229,7 @@ tr.clk:hover {
 
 .gt-stage-pill b {
   background: rgba(16, 185, 129, 0.16) !important;
-  color: #047857 !important;
+  color: #065f46 !important;
   border: 1px solid rgba(16, 185, 129, 0.35) !important;
   border-radius: 999px !important;
   padding: 2px 8px !important;
@@ -1486,7 +1486,7 @@ tr.clk:hover {
 }
 
 .leg-mine {
-  color: #047857 !important;
+  color: #065f46 !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 5px !important;
@@ -1533,7 +1533,7 @@ tr.clk:hover {
 }
 
 .slot-mine .slot-code {
-  color: #047857 !important;
+  color: #065f46 !important;
   font-weight: 800 !important;
 }
 
@@ -1708,7 +1708,7 @@ tr.clk:hover {
 
 .stp .s.done i {
   background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
-  border-color: #047857 !important;
+  border-color: #065f46 !important;
   color: #ffffff !important;
   box-shadow: 0 2px 10px rgba(5, 150, 105, 0.3) !important;
 }
@@ -2220,9 +2220,10 @@ tr.clk:hover {
    10. MODALS & BOARDING PASS VIP TICKET QR
    -------------------------------------------------------------------------- */
 .overlay {
-  background: rgba(15, 23, 42, 0.45) !important;
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
+  background: rgba(15, 23, 42, 0.35) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .modal {
@@ -2580,7 +2581,7 @@ select:focus,
 }
 
 .vc b {
-  color: #047857 !important;
+  color: #065f46 !important;
 }
 
 .mk-card {
@@ -2597,16 +2598,38 @@ select:focus,
 }
 
 .au-bar {
-  background: #f1f5f9 !important;
-  height: 6px !important;
-  border-radius: 999px !important;
-  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 12px 16px !important;
+  background: rgba(241, 245, 249, 0.95) !important;
+  border-bottom: 1.5px solid rgba(226, 232, 240, 0.9) !important;
+  font-size: 13px !important;
+  color: #334155 !important;
+  border-radius: 24px 24px 0 0 !important;
 }
 
 .au-bar span {
-  background: #059669 !important;
-  height: 100% !important;
+  flex: 1 !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+  border-radius: 999px !important;
+  padding: 6px 14px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  color: #0f172a !important;
+  font-family: ui-monospace, SFMono-Regular, monospace !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  height: auto !important;
   display: block !important;
+}
+
+.au-bar .x {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
 }
 
 .au-perm li {
@@ -2710,7 +2733,7 @@ select:focus,
 .rt-dots span.now,
 .rt-dots span.active {
   background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
-  border-color: #047857 !important;
+  border-color: #065f46 !important;
   color: #ffffff !important;
   box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3) !important;
 }
@@ -3190,7 +3213,7 @@ select:focus,
   border-color: rgba(16, 185, 129, 0.45) !important;
 }
 .tower-a .tower-title, #tower-A .tower-title, .tower-standard .tower-title {
-  color: #047857 !important;
+  color: #065f46 !important;
 }
 .tower-a .tower-chip, #tower-A .tower-chip, .tower-standard .tower-chip {
   color: #065f46 !important;
@@ -3424,11 +3447,11 @@ select:focus,
 .locker-cell.cell-mine:hover,
 .shelf-slot.mine:hover {
   box-shadow: 0 0 0 3px #059669, 0 12px 32px rgba(16, 185, 129, 0.45), inset 0 0 20px rgba(16, 185, 129, 0.22) !important;
-  border-color: #047857 !important;
+  border-color: #065f46 !important;
 }
 
 .locker-cell.cell-mine .cell-code {
-  color: #047857 !important;
+  color: #065f46 !important;
   font-weight: 800 !important;
   text-shadow: 0 0 8px rgba(16, 185, 129, 0.3) !important;
 }
@@ -3790,7 +3813,7 @@ select:focus,
 .journey-node.active .node-dot,
 .journey-node.now .node-dot {
   background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
-  border-color: #047857 !important;
+  border-color: #065f46 !important;
   color: #ffffff !important;
   box-shadow: 0 0 18px rgba(16, 185, 129, 0.6), 0 0 6px #059669 !important;
   animation: apple-live-ping 1.8s infinite ease-in-out !important;
@@ -3798,7 +3821,7 @@ select:focus,
 
 .journey-node.active .node-title,
 .journey-node.now .node-title {
-  color: #047857 !important;
+  color: #065f46 !important;
   font-weight: 800 !important;
 }
 
@@ -3915,7 +3938,7 @@ select:focus,
 [data-journey-pickup] {
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.14) 0%, rgba(209, 250, 229, 0.8) 100%) !important;
   border: 1.5px solid #059669 !important;
-  color: #047857 !important;
+  color: #065f46 !important;
   box-shadow: 0 2px 10px rgba(16, 185, 129, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
 }
 
@@ -4043,7 +4066,7 @@ select:focus,
 
 .slot-mine#slot-A03 .slot-code,
 .slot-mine#slot-B02 .slot-code {
-  color: #047857 !important;
+  color: #065f46 !important;
   font-weight: 800 !important;
 }
 
@@ -4310,6 +4333,1262 @@ select:focus,
   background: #f8fafc !important;
   border-color: #c0c4c9 !important;
 }
+
+
+
+/* ==========================================================================
+   SECTION 16: WHITE LUXURY MASTER POLISH (APPLE PORCELAIN & LIQUID GLASS)
+   Audited & Enhanced for 100% WCAG AAA Contrast, Optical Glass & Precision
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   16.1 VIEW 1 (v-orders): BENTO CAPSULE, JOURNEY BAR, BADGES, ACTION PILLS
+   -------------------------------------------------------------------------- */
+.concierge-dashboard {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(203, 213, 225, 0.85) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 10px 36px -4px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+}
+
+.concierge-stats-row > .c-stat-pill {
+  background: linear-gradient(145deg, #ffffff 0%, rgba(248, 250, 252, 0.9) 100%) !important;
+  border: 1.5px solid rgba(203, 213, 225, 0.85) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+}
+
+.concierge-stats-row > .c-stat-pill.bento-hero {
+  background: linear-gradient(145deg, #ffffff 0%, rgba(236, 253, 245, 0.9) 100%) !important;
+  border: 1.5px solid rgba(16, 185, 129, 0.35) !important;
+  box-shadow: 0 10px 32px -4px rgba(16, 185, 129, 0.15), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+}
+
+.concierge-stats-row > .c-stat-pill.bento-2x2 {
+  background: linear-gradient(145deg, #ffffff 0%, rgba(240, 249, 255, 0.9) 100%) !important;
+  border: 1.5px solid rgba(56, 189, 248, 0.35) !important;
+  box-shadow: 0 10px 32px -4px rgba(2, 132, 199, 0.1), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+}
+
+.c-stat-pill .c-stat-num {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+.c-stat-pill .c-stat-label {
+  color: #475569 !important;
+  font-weight: 600 !important;
+}
+
+/* Delivery Journey Bar & Expandable Row */
+.journey-expand-row {
+  background: rgba(248, 250, 252, 0.85) !important;
+}
+
+.journey-expand-row td {
+  border-top: none !important;
+  padding: 4px 18px 18px !important;
+}
+
+.live-journey-card {
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1.5px solid rgba(203, 213, 225, 0.85) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 10px 36px -4px rgba(15, 23, 42, 0.08), 0 0 20px rgba(16, 185, 129, 0.06), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+}
+
+.journey-title {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+  font-size: 13.5px !important;
+}
+
+.journey-carrier-text {
+  color: #334155 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+.journey-carrier-text b {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+.journey-carrier-text code {
+  color: #0284c7 !important;
+  background: rgba(2, 132, 199, 0.08) !important;
+  border: 1px solid rgba(2, 132, 199, 0.2) !important;
+  padding: 1px 6px !important;
+  border-radius: 6px !important;
+  font-weight: 700 !important;
+}
+
+.journey-footer-info {
+  font-size: 12px !important;
+  color: #475569 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.journey-status-chip {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  color: #065f46 !important;
+  font-weight: 700 !important;
+  padding: 4px 12px !important;
+  border-radius: 999px !important;
+}
+
+.journey-node .node-title {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+.journey-node .node-time {
+  color: #64748b !important;
+  font-weight: 500 !important;
+}
+
+/* Marketplace Badges (Frosted Optical Glass Micro-Capsules) */
+.mk {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px 12px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  background: rgba(241, 245, 249, 0.8) !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+  transition: all 0.2s ease !important;
+}
+
+.mk img {
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(203, 213, 225, 0.7) !important;
+  padding: 1px !important;
+  object-fit: contain !important;
+}
+
+/* 1. Shopee */
+.mk.mk-shopee,
+.mk:has(img[src*="shopee"]),
+.mk-Shopee,
+[data-market="Shopee"] .mk {
+  background: rgba(238, 77, 45, 0.08) !important;
+  color: #ea580c !important;
+  border: 1px solid rgba(238, 77, 45, 0.28) !important;
+}
+
+/* 2. TikTok Shop */
+.mk.mk-tiktok,
+.mk:has(img[src*="tiktok"]),
+.mk-TikTok,
+[data-market="TikTok Shop"] .mk {
+  background: rgba(254, 44, 85, 0.08) !important;
+  color: #e11d48 !important;
+  border: 1px solid rgba(254, 44, 85, 0.28) !important;
+}
+
+/* 3. Lazada */
+.mk.mk-lazada,
+.mk:has(img[src*="lazada"]),
+.mk-Lazada,
+[data-market="Lazada"] .mk {
+  background: rgba(30, 58, 138, 0.08) !important;
+  color: #1d4ed8 !important;
+  border: 1px solid rgba(30, 58, 138, 0.28) !important;
+}
+
+/* 4. Tiki */
+.mk.mk-tiki,
+.mk:has(img[src*="tiki"]),
+.mk-Tiki,
+[data-market="Tiki"] .mk {
+  background: rgba(14, 165, 233, 0.08) !important;
+  color: #0284c7 !important;
+  border: 1px solid rgba(14, 165, 233, 0.28) !important;
+}
+
+/* Action Pills & Quick Buttons */
+.journey-quick-btn,
+.action-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 6px 14px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.journey-quick-btn.btn-qr,
+.journey-quick-btn.btn-quick-pickup,
+[data-journey-pickup] {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.14) 0%, rgba(209, 250, 229, 0.8) 100%) !important;
+  border: 1.5px solid #059669 !important;
+  color: #065f46 !important;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+.journey-quick-btn.btn-locate,
+.journey-quick-btn.btn-quick-locate,
+[data-journey-locate] {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.12) 0%, rgba(224, 242, 254, 0.8) 100%) !important;
+  border: 1.5px solid #0284c7 !important;
+  color: #0284c7 !important;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+/* --------------------------------------------------------------------------
+   16.2 VIEW 2 (v-reports): QUẢN LÝ CHI TIÊU & ANALYTICS
+   -------------------------------------------------------------------------- */
+.v-reports,
+#reportRoot {
+  color: #0f172a !important;
+}
+
+.rp-head h2 {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.rp-head p {
+  color: #475569 !important;
+}
+
+.rp-tools .chips button {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1.5px solid #cbd5e1 !important;
+  color: #334155 !important;
+  font-weight: 600 !important;
+  border-radius: 999px !important;
+  padding: 6px 14px !important;
+  transition: all 0.2s ease !important;
+}
+
+.rp-tools .chips button:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.rp-tools .chips button.on {
+  background: #059669 !important;
+  border-color: #059669 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3) !important;
+}
+
+.rp-sel {
+  background: #ffffff !important;
+  border: 1.5px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  padding: 8px 14px !important;
+}
+
+.rp-card {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1.5px solid rgba(226, 232, 240, 0.9) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  color: #0f172a !important;
+}
+
+.rp-k small {
+  color: #64748b !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+}
+
+.rp-k strong {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+.rp-k strong.grn {
+  color: #059669 !important;
+}
+
+.rp-k .d {
+  color: #475569 !important;
+}
+
+.rp-k .d.up {
+  color: #e11d48 !important;
+}
+
+.rp-k .d.down {
+  color: #059669 !important;
+}
+
+/* Budget Progress Bar */
+.rp-budget {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1.5px solid rgba(226, 232, 240, 0.9) !important;
+  border-radius: 22px !important;
+}
+
+.rp-bh h3 {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+.rp-bh h3 span {
+  color: #64748b !important;
+  font-weight: 600 !important;
+}
+
+.pbar.big {
+  background: #e2e8f0 !important;
+  border-radius: 999px !important;
+  height: 12px !important;
+}
+
+.pbar.big i {
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #059669 0%, #10b981 100%) !important;
+}
+
+.pbar.big.warn i {
+  background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%) !important;
+}
+
+.pbar.big.over i {
+  background: linear-gradient(90deg, #e11d48 0%, #f43f5e 100%) !important;
+}
+
+.rp-bs small {
+  color: #64748b !important;
+}
+
+.rp-bs b {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+/* Chart Container & Category Breakdown */
+.rp-chart,
+.chart-wrap {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1.5px solid rgba(226, 232, 240, 0.9) !important;
+  border-radius: 22px !important;
+}
+
+.cat-wrap {
+  color: #0f172a !important;
+}
+
+.cat-list {
+  color: #0f172a !important;
+}
+
+/* --------------------------------------------------------------------------
+   16.3 VIEW 3 (v-returns): TRẢ HÀNG & RETURN WIZARD
+   -------------------------------------------------------------------------- */
+.v-returns,
+#returnRoot {
+  color: #0f172a !important;
+}
+
+.rt-steps {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 14px !important;
+  margin-bottom: 24px !important;
+}
+
+.rt-st {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1.5px solid rgba(226, 232, 240, 0.9) !important;
+  border-radius: 18px !important;
+  padding: 16px 18px !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+}
+
+.rt-st i {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-style: normal !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3) !important;
+}
+
+.rt-st b {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  display: block !important;
+  margin-bottom: 2px !important;
+}
+
+.rt-st span {
+  color: #475569 !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+}
+
+.rt-card {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1.5px solid rgba(226, 232, 240, 0.9) !important;
+  border-radius: 20px !important;
+  padding: 22px !important;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  margin-bottom: 18px !important;
+}
+
+.rt-top .code {
+  color: #0f172a !important;
+  font-family: ui-monospace, monospace !important;
+  font-weight: 700 !important;
+}
+
+/* Stepper in Return Cards */
+.stp .s {
+  color: #64748b !important;
+  font-weight: 600 !important;
+}
+
+.stp .s b {
+  color: #0f172a !important;
+}
+
+.stp .s.done {
+  color: #059669 !important;
+}
+
+.stp .s.done i {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  border-color: #065f46 !important;
+  color: #ffffff !important;
+}
+
+.stp .s.now {
+  color: #065f46 !important;
+  font-weight: 800 !important;
+}
+
+.stp .s.now i {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border: 2px solid #059669 !important;
+  color: #065f46 !important;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3) !important;
+}
+
+.stp .s small {
+  color: #64748b !important;
+}
+
+/* Return Wizard Checkbox Labels */
+.rt-chk {
+  display: flex !important;
+  gap: 10px !important;
+  align-items: center !important;
+  font-size: 13px !important;
+  color: #334155 !important;
+  margin: 8px 0 !important;
+  cursor: pointer !important;
+  font-weight: 500 !important;
+}
+
+.rt-chk input.rt-c {
+  accent-color: #059669 !important;
+  width: 17px !important;
+  height: 17px !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+}
+
+/* Return Simulation Box */
+.rt-sim {
+  background: rgba(241, 245, 249, 0.85) !important;
+  border: 1px dashed rgba(203, 213, 225, 0.9) !important;
+  border-radius: 14px !important;
+  padding: 12px 16px !important;
+}
+
+.rt-sim b {
+  color: #0f172a !important;
+}
+
+.rt-sim span {
+  color: #475569 !important;
+}
+
+/* --------------------------------------------------------------------------
+   16.4 VIEW 4 (v-location): BRUSHED PLATINUM FRAMEWORK & APT 1204 HALO
+   -------------------------------------------------------------------------- */
+.v-location,
+#locationRoot {
+  color: #0f172a !important;
+}
+
+.loc-head h2 {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+.loc-head p {
+  color: #475569 !important;
+}
+
+.loc-tag {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  color: #065f46 !important;
+  font-weight: 700 !important;
+}
+
+.loc-cards-list {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+  gap: 16px !important;
+  margin-bottom: 24px !important;
+}
+
+.loc-package-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1.5px solid rgba(203, 213, 225, 0.85) !important;
+  border-radius: 20px !important;
+  padding: 18px 20px !important;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+}
+
+.lpc-slot-pill {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  color: #065f46 !important;
+  font-weight: 800 !important;
+  padding: 3px 10px !important;
+  border-radius: 999px !important;
+}
+
+.lpc-chip-pill {
+  background: rgba(2, 132, 199, 0.1) !important;
+  border: 1px solid rgba(2, 132, 199, 0.3) !important;
+  color: #0284c7 !important;
+  font-weight: 700 !important;
+  padding: 3px 10px !important;
+  border-radius: 999px !important;
+}
+
+/* Rack Capacity Metrics */
+.rack-capacity-metrics {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  gap: 14px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 18px !important;
+  padding: 16px 22px !important;
+  margin-bottom: 22px !important;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+}
+
+.rcm-item {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+.rcm-label {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  color: #64748b !important;
+}
+
+.rcm-val {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 6px !important;
+}
+
+.rcm-val small {
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
+}
+
+.rcm-val.grn {
+  color: #059669 !important;
+}
+
+.rcm-val.emr {
+  color: #065f46 !important;
+}
+
+.rcm-item.rcm-mine {
+  background: rgba(209, 250, 229, 0.45) !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  border-radius: 14px !important;
+  padding: 8px 14px !important;
+}
+
+.rcm-bar {
+  width: 100% !important;
+  height: 6px !important;
+  background: #e2e8f0 !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  margin-top: 4px !important;
+}
+
+.rcm-bar i {
+  display: block !important;
+  height: 100% !important;
+  background: linear-gradient(90deg, #059669 0%, #10b981 100%) !important;
+  border-radius: 999px !important;
+}
+
+/* Brushed Platinum Aluminum Rack Towers */
+.locker-tower,
+.shelf-tower {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 50%, #e2e8f0 100%) !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 8px 30px -6px rgba(15, 23, 42, 0.07), inset 0 1px 2px rgba(255, 255, 255, 1) !important;
+}
+
+/* Soft Glowing Emerald Halo Beacon for Apt 1204 (Ô A-03 & Ô D-02) */
+#cell-A03,
+#cell-D02,
+.cell-mine,
+.shelf-slot.mine,
+.slot-mine {
+  border: 2px solid #10b981 !important;
+  border-bottom: 4px solid #059669 !important;
+  background: radial-gradient(circle at 50% 20%, rgba(209, 250, 229, 0.95) 0%, rgba(240, 253, 244, 0.9) 85%) !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.35), 0 8px 24px rgba(16, 185, 129, 0.35), inset 0 0 16px rgba(16, 185, 129, 0.15) !important;
+}
+
+.parcel-name {
+  font-weight: 800 !important;
+  color: #0f172a !important;
+}
+
+.parcel-chip-tag {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #065f46 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  font-weight: 700 !important;
+}
+
+/* Shelf Legend */
+.shelf-legend {
+  display: flex !important;
+  gap: 20px !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-top: 28px !important;
+  flex-wrap: wrap !important;
+  font-size: 12.5px !important;
+  color: #475569 !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.shelf-legend .legend-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  color: #334155 !important;
+  font-weight: 600 !important;
+}
+
+.shelf-legend .legend-dot {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  display: inline-block !important;
+}
+
+.shelf-legend .dot-mine {
+  background: #10b981 !important;
+  box-shadow: 0 0 10px #10b981 !important;
+}
+
+.shelf-legend .dot-returns {
+  background: #f59e0b !important;
+  box-shadow: 0 0 8px #f59e0b !important;
+}
+
+.shelf-legend .dot-bulky {
+  background: #818cf8 !important;
+  box-shadow: 0 0 8px #818cf8 !important;
+}
+
+.shelf-legend .dot-express {
+  background: #f43f5e !important;
+  box-shadow: 0 0 8px #f43f5e !important;
+}
+
+.shelf-legend .dot-other {
+  background: #94a3b8 !important;
+}
+
+.shelf-legend .dot-empty {
+  background: rgba(148, 163, 184, 0.25) !important;
+  border: 1px dashed rgba(100, 116, 139, 0.5) !important;
+}
+
+.shelf-legend .legend-text-mine {
+  color: #065f46 !important;
+  font-weight: 800 !important;
+}
+
+.shelf-legend .legend-tip {
+  color: #64748b !important;
+  font-size: 11.5px !important;
+  width: 100% !important;
+  text-align: center !important;
+  margin-top: 6px !important;
+}
+
+/* --------------------------------------------------------------------------
+   16.5 MODALS & OVERLAYS: ZERO WHITE-ON-WHITE & LIQUID GLASS PRECISION
+   Auditing all 9 Modals: mConnect, mDetail, mBarcode, mAuth, mAcct,
+   mGoogle, mBudget, mPickup, mReturn
+   -------------------------------------------------------------------------- */
+.overlay {
+  background: rgba(15, 23, 42, 0.35) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.modal {
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1.5px solid rgba(203, 213, 225, 0.85) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 25px 60px -12px rgba(15, 23, 42, 0.18), 0 0 35px rgba(5, 150, 105, 0.08) !important;
+  color: #0f172a !important;
+}
+
+.modal h2, .modal h3, .modal h4 {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+.modal p, .modal .sub, .modal .note {
+  color: #475569 !important;
+}
+
+.modal-head,
+.modal-h {
+  border-bottom: 1.5px solid rgba(226, 232, 240, 0.9) !important;
+  padding: 20px 24px !important;
+}
+
+.modal-head h3,
+.modal-h h3 {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+/* Text & Form Inputs Inside All Modals */
+.modal input,
+.modal select,
+.modal textarea,
+.lg-field input {
+  background: #ffffff !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 12px !important;
+  color: #0f172a !important;
+  font-size: 14.5px !important;
+  transition: all 0.2s ease !important;
+}
+
+.modal input:focus,
+.modal select:focus,
+.modal textarea:focus,
+.lg-field input:focus {
+  border-color: #059669 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+  outline: none !important;
+}
+
+.lg-field small {
+  color: #334155 !important;
+  font-weight: 700 !important;
+  margin-bottom: 6px !important;
+  display: block !important;
+}
+
+/* 1. Modal #mConnect (Kết nối sàn) */
+#mConnect .mk-list {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 14px !important;
+}
+
+#mConnect .mk-card {
+  background: rgba(248, 250, 252, 0.9) !important;
+  border: 1.5px solid rgba(226, 232, 240, 0.9) !important;
+  border-radius: 18px !important;
+  padding: 16px !important;
+}
+
+#mConnect .note {
+  color: #64748b !important;
+  font-size: 12.5px !important;
+  margin-top: 16px !important;
+}
+
+/* 2. Modal #mDetail (Chi tiết đơn hàng) */
+#mDetail .dt-head {
+  border-bottom: 1.5px solid rgba(226, 232, 240, 0.9) !important;
+  padding-bottom: 16px !important;
+  margin-bottom: 20px !important;
+}
+
+#mDetail .dt-head b.code {
+  color: #0f172a !important;
+  font-family: ui-monospace, monospace !important;
+}
+
+#mDetail .dt-head small {
+  color: #64748b !important;
+}
+
+#mDetail .dt-item {
+  background: #ffffff !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  border-radius: 12px !important;
+  padding: 12px !important;
+  margin-bottom: 10px !important;
+}
+
+#mDetail .dt-item .info b {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+#mDetail .dt-item .info span {
+  color: #475569 !important;
+}
+
+#mDetail .dt-item .pr {
+  color: #059669 !important;
+  font-weight: 800 !important;
+}
+
+#mDetail .dt-box {
+  background: rgba(248, 250, 252, 0.85) !important;
+  border: 1.5px solid rgba(226, 232, 240, 0.9) !important;
+  border-radius: 16px !important;
+  padding: 16px 20px !important;
+}
+
+#mDetail .dt-box h4 {
+  color: #0f172a !important;
+  margin-bottom: 12px !important;
+}
+
+#mDetail .dt-row span {
+  color: #64748b !important;
+}
+
+#mDetail .dt-row b {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+/* 3. Modal #mBarcode (Mã vận đơn shipper) */
+#mBarcode #bcProdName {
+  color: #475569 !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+}
+
+#mBarcode #bcRoomBadge {
+  background: #d1fae5 !important;
+  color: #065f46 !important;
+  font-weight: 800 !important;
+}
+
+#mBarcode #bcCarrierBadge {
+  background: rgba(238, 77, 45, 0.1) !important;
+  color: #ea580c !important;
+  font-weight: 800 !important;
+}
+
+/* 4. Modal #mAuth (Cấp quyền kết nối OAuth) */
+#mAuth .au-body {
+  padding: 24px 28px !important;
+}
+
+#mAuth .au-link {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  margin-bottom: 18px !important;
+}
+
+#mAuth .au-pk {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  color: #ffffff !important;
+  display: grid !important;
+  place-items: center !important;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3) !important;
+}
+
+#mAuth .au-link b {
+  color: #94a3b8 !important;
+  font-size: 18px !important;
+}
+
+#mAuth .au-link img {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 14px !important;
+  object-fit: contain !important;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  padding: 4px !important;
+}
+
+#mAuth .au-perm {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 16px 0 !important;
+}
+
+#mAuth .au-perm li {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  color: #334155 !important;
+  font-weight: 500 !important;
+  margin-bottom: 10px !important;
+}
+
+#mAuth .au-perm li svg {
+  color: #059669 !important;
+}
+
+#mAuth .au-no {
+  color: #64748b !important;
+  font-size: 12.5px !important;
+  line-height: 1.4 !important;
+}
+
+#mAuth .au-act {
+  display: flex !important;
+  gap: 12px !important;
+  margin-top: 20px !important;
+}
+
+#mAuth .au-act button {
+  flex: 1 !important;
+}
+
+/* 5. Modal #mAcct (Đăng nhập / Đăng ký) */
+#mAcct .acct-brand img {
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08)) !important;
+}
+
+#mAcct .acct-tabs {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 4px !important;
+}
+
+#mAcct .acct-tabs button {
+  color: #475569 !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  padding: 8px 16px !important;
+  transition: all 0.2s ease !important;
+}
+
+#mAcct .acct-tabs button.on {
+  background: #059669 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3) !important;
+}
+
+#mAcct .lg-or {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin: 18px 0 14px !important;
+  color: #64748b !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+}
+
+#mAcct .lg-or::before,
+#mAcct .lg-or::after {
+  content: "" !important;
+  flex: 1 !important;
+  height: 1px !important;
+  background: #e2e8f0 !important;
+}
+
+#mAcct .lg-pass {
+  position: relative !important;
+  display: block !important;
+}
+
+#mAcct .lg-pass button {
+  position: absolute !important;
+  right: 12px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  color: #059669 !important;
+  background: none !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+
+#mAcct .ac-chk {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: flex-start !important;
+  font-size: 13px !important;
+  color: #334155 !important;
+  margin: 6px 0 10px !important;
+}
+
+#mAcct .ac-err {
+  color: #e11d48 !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+}
+
+#mAcct .ac-foot {
+  text-align: center !important;
+  font-size: 13.5px !important;
+  color: #64748b !important;
+  margin-top: 18px !important;
+}
+
+#mAcct .link {
+  color: #059669 !important;
+  font-weight: 700 !important;
+  background: none !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+
+#mAcct .link:hover {
+  text-decoration: underline !important;
+}
+
+/* 6. Modal #mGoogle (Đăng nhập bằng Google) */
+#mGoogle .g-top h3 {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+#mGoogle .g-acc {
+  background: #ffffff !important;
+  border-top: 1px solid #f1f5f9 !important;
+  padding: 12px 24px !important;
+  transition: all 0.15s ease !important;
+}
+
+#mGoogle .g-acc:hover {
+  background: #f8fafc !important;
+}
+
+#mGoogle .g-acc b {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+#mGoogle .g-acc small {
+  color: #64748b !important;
+}
+
+#mGoogle .g-note {
+  color: #64748b !important;
+}
+
+/* 7. Modal #mBudget (Hạn mức chi tiêu) */
+#mBudget #bgMonthly {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  padding: 10px 16px !important;
+  height: 52px !important;
+}
+
+#mBudget .sugg {
+  display: flex !important;
+  gap: 8px !important;
+  margin-top: 8px !important;
+  flex-wrap: wrap !important;
+}
+
+#mBudget .sugg button {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 999px !important;
+  color: #334155 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  padding: 4px 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+#mBudget .sugg button:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+  border-color: #059669 !important;
+}
+
+#mBudget .bg-sub {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+  font-size: 14px !important;
+  margin: 16px 0 10px !important;
+}
+
+#mBudget .bg-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+}
+
+#mBudget .dt-act {
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  margin-top: 20px !important;
+  border-top: 1.5px solid rgba(226, 232, 240, 0.9) !important;
+  padding-top: 16px !important;
+}
+
+/* 8. Modal #mPickup (Lấy hàng & vé VIP) */
+#mPickup .pk-head h3 {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+#mPickup .pk-head p {
+  color: #475569 !important;
+}
+
+#mPickup .pk-card {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(226, 232, 240, 0.9) !important;
+  border-radius: 18px !important;
+  padding: 16px 20px !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04) !important;
+}
+
+#mPickup .pk-card.on {
+  background: linear-gradient(135deg, rgba(240, 253, 244, 0.95), #ffffff) !important;
+  border-color: #059669 !important;
+  box-shadow: 0 0 20px rgba(5, 150, 105, 0.15) !important;
+}
+
+#mPickup .pk-card .in b {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+#mPickup .pk-card .in span {
+  color: #475569 !important;
+}
+
+#mPickup .pk-foot {
+  border-top: 1.5px solid rgba(226, 232, 240, 0.9) !important;
+  padding-top: 14px !important;
+  margin-top: 16px !important;
+}
+
+#mPickup #pkSum b {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+/* 9. Modal #mReturn (Trả hàng) */
+#mReturn .rt-opt {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(226, 232, 240, 0.9) !important;
+  border-radius: 16px !important;
+  color: #0f172a !important;
+}
+
+#mReturn .rt-opt.on {
+  background: linear-gradient(135deg, rgba(240, 253, 244, 0.95) 0%, #ffffff 100%) !important;
+  border-color: #059669 !important;
+  box-shadow: 0 0 20px rgba(5, 150, 105, 0.18) !important;
+}
+
+#mReturn .rt-opt .in b {
+  color: #0f172a !important;
+}
+
+#mReturn .rt-opt .in > span {
+  color: #475569 !important;
+}
+
+#mReturn .rt-radio {
+  border-color: #cbd5e1 !important;
+  background: #ffffff !important;
+}
+
+#mReturn .rt-opt.on .rt-radio {
+  border-color: #059669 !important;
+  background: #059669 !important;
+}
+
+#mReturn .rt-chips button {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #334155 !important;
+  font-weight: 600 !important;
+  border-radius: 999px !important;
+  padding: 6px 14px !important;
+}
+
+#mReturn .rt-chips button.on {
+  background: #059669 !important;
+  color: #ffffff !important;
+  border-color: #059669 !important;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3) !important;
+}
+
 
 /* ==========================================================================
    END OF APPLE PORCELAIN & LIQUID GLASS WHITE LUXURY THEME
