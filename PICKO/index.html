@@ -1186,6 +1186,8 @@ body:not([data-view="location"]) .v-location { display: none !important; }
         <span id="conciergeStatusText">Trạm PODO trực tuyến</span>
         <span class="concierge-sep">·</span>
         <span class="concierge-unit">Căn hộ 1204 - Tháp Diamond</span>
+        <span class="concierge-sep">·</span>
+        <span class="concierge-pill" style="font-size:11px;background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);padding:2px 8px;border-radius:12px;font-weight:600;">⏱️ Auto-reset trạng thái: 1 phút</span>
       </div>
       <h1 id="conciergeTitle">Chào buổi tối, <span class="resident-highlight">Lê Minh Quân</span></h1>
       <p id="conciergeSubtitle">Hôm nay trạm PODO ghi nhận kiện hàng của bạn an toàn, sẵn sàng nhận bất kỳ lúc nào.</p>
@@ -1498,11 +1500,18 @@ function isAtStation(o) {
 function renderSkeleton() {
   $('#ordersBody').innerHTML = Array.from({length:4}, () => `<tr>${'<td><div class="sk"></div></td>'.repeat(8)}</tr>`).join('');
 }
+let _prevOrderCount = -1;
 async function loadOrders() {
   if (!orders.length) renderSkeleton();
   try {
     const d = await api('/api/orders');
-    orders = (Array.isArray(d) ? d : (d.orders || [])).map(normalize);
+    const newOrders = (Array.isArray(d) ? d : (d.orders || [])).map(normalize);
+    if (_prevOrderCount !== -1 && newOrders.length > _prevOrderCount) {
+      toast('📦 Trạm PODO vừa tiếp nhận kiện hàng mới từ Kiosk!', 'ok');
+      try { playBeeperSound(); } catch(e) {}
+    }
+    _prevOrderCount = newOrders.length;
+    orders = newOrders;
     renderOrders(); renderBell(); if (document.body.dataset.view === 'reports') renderReport();
     if (document.body.dataset.view === 'location') renderLocationView();
   } catch {
@@ -2381,21 +2390,24 @@ function renderLocationView() {
 
   let cardsHtml = '';
   if (totalAt > 0) {
-    cardsHtml = '<div class="loc-cards-list">' + atStationOrders.map(o => {
-      const slot = 'A-03';
-      const chip = 'CP-0186';
+    const shelfSlots = ['A-03', 'A-02', 'B-01', 'B-03', 'C-01', 'C-02', 'D-01', 'D-03'];
+    cardsHtml = '<div class="loc-cards-list">' + atStationOrders.map((o, idx) => {
+      const slot = shelfSlots[idx % shelfSlots.length];
+      const rackChar = slot.charAt(0);
+      const cellNum = slot.slice(-2);
+      const chip = `CP-018${6 + idx}`;
       return `
         <div class="loc-package-card">
           <div class="lpc-left">
             <div class="lpc-badge-row">
               <span class="lpc-market-badge">${mkBadge(o.marketplace)}</span>
-              <span class="lpc-slot-pill">📍 Kệ A · Tầng 2 · Ô ${slot}</span>
+              <span class="lpc-slot-pill">📍 Kệ ${rackChar} · Ô ${slot}</span>
               <span class="lpc-chip-pill">🏷️ Chip ${chip}</span>
             </div>
             <h4 class="lpc-title">${esc(o.product)}</h4>
             <div class="lpc-meta">
               <span>Mã vận đơn: <b>${esc(o.trackingCode || '--')}</b></span>
-              <span>Mã đơn: <b>${esc(o.orderCode || '--')}</b></span>
+              <span>Căn hộ: <b>${esc(o.apartment || '1204')}</b></span>
               <span>Đến trạm lúc: <b>${when(o.updatedAt)}</b></span>
             </div>
           </div>
@@ -3963,7 +3975,7 @@ loadOrders = function () { const p = _loadOrdersBase.apply(this, arguments); loa
   renderSkeleton(); renderBell();
   loadStats(); 
   loadOrders();
-  setInterval(loadOrders, 60000); // Tự động làm mới/cập nhật trạng thái định kỳ 1 phút / lần (thay vì vài giây)
+  setInterval(loadOrders, 3500); // Tự động làm mới/cập nhật dữ liệu từ Kiosk mỗi 3.5 giây
 
   // Interactive Bento Card Spotlight Glow
   document.addEventListener('mousemove', e => {

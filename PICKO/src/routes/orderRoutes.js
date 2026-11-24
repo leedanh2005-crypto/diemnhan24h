@@ -9,6 +9,7 @@ router.get('/inspect', orderController.inspectPickupQR.bind(orderController));
 router.get('/stats', orderController.getStats.bind(orderController));
 router.post('/pickup-qr', orderController.generatePickupQR.bind(orderController));
 router.post('/verify-qr', orderController.verifyPickupQR.bind(orderController));
+router.post('/checkin', orderController.checkinOrder.bind(orderController));
 router.post('/reset-demo', orderController.resetDemoOrder.bind(orderController));
 router.get('/:id', orderController.getOrderById.bind(orderController));
 

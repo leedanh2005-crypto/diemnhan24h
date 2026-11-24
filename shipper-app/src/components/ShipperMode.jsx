@@ -6,7 +6,7 @@ import { playBeep } from '../utils/audio'
 
 export function ShipperMode() {
   const [trackingCode, setTrackingCode] = useState('')
-  const [roomNumber, setRoomNumber] = useState('')
+  const [roomNumber, setRoomNumber] = useState('1204')
   const [submitStatus, setSubmitStatus] = useState(null) // 'loading' | 'success' | 'error'
   const [statusMessage, setStatusMessage] = useState('')
   const [cameraError, setCameraError] = useState('')
@@ -241,17 +241,34 @@ export function ShipperMode() {
     }
   }
 
-  // Submit data lên Supabase
+  // Submit data lên Supabase & PICKO API
   const handleSubmit = async () => {
     const code = trackingCode.trim()
-    const room = roomNumber.trim()
-    if (!code || !room) return
+    const room = roomNumber.trim() || '1204'
+    if (!code) return
 
     setSubmitStatus('loading')
     setStatusMessage('Đang nạp kiện hàng vào hệ thống...')
 
     try {
-      // 1. Kiểm tra đơn hàng có sẵn trong hệ thống (như đơn Shopee kết nối)
+      // 1. Gửi lên PICKO Backend API trước để đồng bộ ngay tức thì với web Cư Dân
+      const apiBase = import.meta.env.VITE_API_URL || ''
+      try {
+        await fetch(`${apiBase}/api/orders/checkin`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            trackingCode: code,
+            roomNumber: room,
+            productName: `Kiện hàng ${code.slice(-4)}`,
+            marketplace: 'Shopee'
+          })
+        })
+      } catch (apiErr) {
+        console.warn('API check-in không phản hồi, fallback trực tiếp qua Supabase:', apiErr)
+      }
+
+      // 2. Ghi/đồng bộ trực tiếp lên Supabase
       const { data: existingList } = await supabase
         .from('packages')
         .select('id, "Mã vận đơn"')
@@ -471,6 +488,58 @@ export function ShipperMode() {
         </div>
       </section>
 
+      {/* Quick Room Selectors */}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <button
+          type="button"
+          style={{
+            background: roomNumber === '1204' ? 'linear-gradient(135deg, #10b981, #059669)' : 'rgba(255,255,255,0.08)',
+            color: '#fff',
+            border: roomNumber === '1204' ? '1px solid #34d399' : '1px solid rgba(255,255,255,0.15)',
+            padding: '7px 14px',
+            borderRadius: '10px',
+            fontSize: '13px',
+            fontWeight: '700',
+            cursor: 'pointer'
+          }}
+          onClick={() => setRoomNumber('1204')}
+        >
+          ⭐ Căn 1204 (Cư Dân)
+        </button>
+        <button
+          type="button"
+          style={{
+            background: roomNumber === '205' ? 'linear-gradient(135deg, #3b82f6, #1d4ed8)' : 'rgba(255,255,255,0.08)',
+            color: '#fff',
+            border: roomNumber === '205' ? '1px solid #60a5fa' : '1px solid rgba(255,255,255,0.15)',
+            padding: '7px 14px',
+            borderRadius: '10px',
+            fontSize: '13px',
+            fontWeight: '600',
+            cursor: 'pointer'
+          }}
+          onClick={() => setRoomNumber('205')}
+        >
+          Căn 205
+        </button>
+        <button
+          type="button"
+          style={{
+            background: roomNumber === '204' ? 'linear-gradient(135deg, #8b5cf6, #6d28d9)' : 'rgba(255,255,255,0.08)',
+            color: '#fff',
+            border: roomNumber === '204' ? '1px solid #a78bfa' : '1px solid rgba(255,255,255,0.15)',
+            padding: '7px 14px',
+            borderRadius: '10px',
+            fontSize: '13px',
+            fontWeight: '600',
+            cursor: 'pointer'
+          }}
+          onClick={() => setRoomNumber('204')}
+        >
+          Căn 204
+        </button>
+      </div>
+
       {/* 3. Numpad Section */}
       <section className="numpad-wrapper">
         <div className="numpad-grid">
@@ -558,6 +627,58 @@ export function ShipperMode() {
           </div>
         )}
       </section>
+
+      {/* Quick Room Selectors */}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <button
+          type="button"
+          style={{
+            background: roomNumber === '1204' ? 'linear-gradient(135deg, #10b981, #059669)' : 'rgba(255,255,255,0.08)',
+            color: '#fff',
+            border: roomNumber === '1204' ? '1px solid #34d399' : '1px solid rgba(255,255,255,0.15)',
+            padding: '7px 14px',
+            borderRadius: '10px',
+            fontSize: '13px',
+            fontWeight: '700',
+            cursor: 'pointer'
+          }}
+          onClick={() => setRoomNumber('1204')}
+        >
+          ⭐ Căn 1204 (Cư Dân)
+        </button>
+        <button
+          type="button"
+          style={{
+            background: roomNumber === '205' ? 'linear-gradient(135deg, #3b82f6, #1d4ed8)' : 'rgba(255,255,255,0.08)',
+            color: '#fff',
+            border: roomNumber === '205' ? '1px solid #60a5fa' : '1px solid rgba(255,255,255,0.15)',
+            padding: '7px 14px',
+            borderRadius: '10px',
+            fontSize: '13px',
+            fontWeight: '600',
+            cursor: 'pointer'
+          }}
+          onClick={() => setRoomNumber('205')}
+        >
+          Căn 205
+        </button>
+        <button
+          type="button"
+          style={{
+            background: roomNumber === '204' ? 'linear-gradient(135deg, #8b5cf6, #6d28d9)' : 'rgba(255,255,255,0.08)',
+            color: '#fff',
+            border: roomNumber === '204' ? '1px solid #a78bfa' : '1px solid rgba(255,255,255,0.15)',
+            padding: '7px 14px',
+            borderRadius: '10px',
+            fontSize: '13px',
+            fontWeight: '600',
+            cursor: 'pointer'
+          }}
+          onClick={() => setRoomNumber('204')}
+        >
+          Căn 204
+        </button>
+      </div>
 
       {/* Modal Nhập tay mã vận đơn */}
       {isManualInput && (

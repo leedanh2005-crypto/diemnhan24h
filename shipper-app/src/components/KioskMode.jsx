@@ -227,7 +227,9 @@ export function KioskMode() {
         if (data.success && data.apartment) {
           setTokenInfo({
             count: data.count || 1,
-            apartment: data.apartment
+            apartment: data.apartment,
+            isPickup: true,
+            trackingCode: data.trackingCode
           })
           return
         }
@@ -239,20 +241,87 @@ export function KioskMode() {
       const { data: pkgs } = await supabase
         .from('packages')
         .select('*')
-        .eq('Mã lấy hàng', token)
-        .eq('Trạng thái tại trạm PICKO', 'Hàng đã được giao đến trạm')
+        .or(`"Mã lấy hàng".eq.${token},"Mã vận đơn".eq.${token}`)
 
       if (pkgs && pkgs.length > 0) {
         setTokenInfo({
           count: pkgs.length,
-          apartment: pkgs[0]['Số căn hộ']
+          apartment: pkgs[0]['Số căn hộ'] || '1204',
+          isPickup: true,
+          trackingCode: pkgs[0]['Mã vận đơn']
         })
-      } else {
-        setTokenInfo(null)
+        return
       }
-    } catch {
-      setTokenInfo(null)
+    } catch {}
+
+    // 3. Nếu không phải mã lấy hàng cũ, đây là mã barcode kiện hàng mới!
+    setTokenInfo({
+      isNewPackage: true,
+      apartment: '1204',
+      trackingCode: token
+    })
+  }
+
+  // Tiếp nhận kiện hàng mới trực tiếp từ màn hình Kiosk
+  const handleCheckinFromKiosk = async (apartment = '1204') => {
+    const code = pendingToken || lastScannedRef.current
+    if (!code) return
+
+    setScanResult({
+      type: 'loading',
+      text: 'Đang tiếp nhận kiện hàng vào trạm...',
+      detail: `Lưu vào hệ thống cho Căn hộ ${apartment}`
+    })
+    setPendingToken(null)
+
+    // 1. Gửi lên backend PICKO
+    const apiBase = import.meta.env.VITE_API_URL || ''
+    try {
+      await fetch(`${apiBase}/api/orders/checkin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trackingCode: code,
+          roomNumber: apartment,
+          productName: `Kiện hàng ${code.slice(-4)}`,
+          marketplace: 'Shopee'
+        })
+      })
+    } catch (e) {
+      console.warn('Lỗi gọi API checkin:', e)
     }
+
+    // 2. Ghi trực tiếp Supabase
+    try {
+      await supabase.from('packages').upsert({
+        "Mã vận đơn": code,
+        "Số căn hộ": apartment,
+        "Trạng thái tại trạm PICKO": 'Hàng đã được giao đến trạm',
+        "Trạng thái đơn trên sàn": 'Đang giao',
+        "Cập nhật gần nhất": new Date().toISOString()
+      }, { onConflict: 'Mã vận đơn' })
+    } catch (e) {
+      console.warn('Lỗi upsert Supabase:', e)
+    }
+
+    playBeep('success')
+    setScanResult({
+      type: 'success',
+      text: `Đã nạp kiện hàng ${code} vào trạm PODO!`,
+      detail: `Căn hộ: ${apartment} • Đơn hàng đã xuất hiện ngay tức thì trên ứng dụng Cư Dân.`
+    })
+
+    setTimeout(() => {
+      if (!isMountedRef.current) return
+      setScanResult(null)
+      setPendingToken(null)
+      setTokenInfo(null)
+      lastScannedRef.current = ''
+
+      if (scannerRef.current && scannerRef.current.getState() === 2) {
+        scannerRef.current.resume()
+      }
+    }, 3500)
   }
 
   // Xác nhận lấy hàng
@@ -541,46 +610,103 @@ export function KioskMode() {
       {/* 3. Màn hình xác nhận mã QR */}
       {pendingToken && !scanResult && (
         <section className="kiosk-confirm-card">
-          <div className="confirm-icon-pulse">🔓</div>
-          <h3 className="confirm-title">MÃ QR HỢP LỆ!</h3>
-          <p className="confirm-desc">
-            Hệ thống đã nhận diện mã xác thực từ ứng dụng Cư Dân.
-          </p>
+          {tokenInfo?.isNewPackage ? (
+            <>
+              <div className="confirm-icon-pulse" style={{ background: 'rgba(56, 189, 248, 0.15)', borderColor: '#38bdf8' }}>📦</div>
+              <h3 className="confirm-title" style={{ color: '#38bdf8' }}>PHÁT HIỆN KIỆN HÀNG MỚI!</h3>
+              <p className="confirm-desc">
+                Hệ thống đã nhận diện mã vận đơn/mã QR từ camera Kiosk.
+              </p>
 
-          <div className="confirm-token-badge">
-            <span className="token-label">MÃ XÁC THỰC:</span>
-            <span className="token-value">{pendingToken}</span>
-          </div>
+              <div className="confirm-token-badge">
+                <span className="token-label">MÃ VẬN ĐƠN:</span>
+                <span className="token-value" style={{ color: '#38bdf8' }}>{pendingToken}</span>
+              </div>
 
-          {tokenInfo && (
-            <div className="confirm-info-box">
-              <div className="info-item">
-                <span className="info-key">Căn hộ:</span>
-                <span className="info-val highlight">{tokenInfo.apartment}</span>
+              <div className="confirm-info-box">
+                <div className="info-item">
+                  <span className="info-key">Trạng thái:</span>
+                  <span className="info-val highlight" style={{ color: '#10b981' }}>Sẵn sàng lưu vào trạm PODO</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-key">Điểm đến mặc định:</span>
+                  <span className="info-val">Căn hộ 1204 (Cư Dân)</span>
+                </div>
               </div>
-              <div className="info-item">
-                <span className="info-key">Số kiện sẵn sàng:</span>
-                <span className="info-val">{tokenInfo.count} kiện hàng</span>
+
+              <div className="confirm-actions" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <button
+                  type="button"
+                  className="kiosk-action-btn primary-confirm"
+                  style={{ background: 'linear-gradient(135deg, #10b981, #059669)', width: '100%' }}
+                  onClick={() => handleCheckinFromKiosk('1204')}
+                >
+                  ⭐ TIẾP NHẬN VÀO TRẠM CHO CĂN 1204
+                </button>
+                <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+                  <button
+                    type="button"
+                    className="kiosk-action-btn"
+                    style={{ background: 'rgba(59, 130, 246, 0.2)', border: '1px solid #3b82f6', color: '#60a5fa', flex: 1 }}
+                    onClick={() => handleCheckinFromKiosk('205')}
+                  >
+                    Gán Căn 205
+                  </button>
+                  <button
+                    type="button"
+                    className="kiosk-action-btn cancel-btn"
+                    style={{ flex: 1 }}
+                    onClick={cancelPickup}
+                  >
+                    ❌ Hủy bỏ
+                  </button>
+                </div>
               </div>
-            </div>
+            </>
+          ) : (
+            <>
+              <div className="confirm-icon-pulse">🔓</div>
+              <h3 className="confirm-title">MÃ QR HỢP LỆ!</h3>
+              <p className="confirm-desc">
+                Hệ thống đã nhận diện mã xác thực từ ứng dụng Cư Dân.
+              </p>
+
+              <div className="confirm-token-badge">
+                <span className="token-label">MÃ XÁC THỰC:</span>
+                <span className="token-value">{pendingToken}</span>
+              </div>
+
+              {tokenInfo && (
+                <div className="confirm-info-box">
+                  <div className="info-item">
+                    <span className="info-key">Căn hộ:</span>
+                    <span className="info-val highlight">{tokenInfo.apartment}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-key">Số kiện sẵn sàng:</span>
+                    <span className="info-val">{tokenInfo.count} kiện hàng</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="confirm-actions">
+                <button
+                  type="button"
+                  className="kiosk-action-btn primary-confirm"
+                  onClick={confirmPickup}
+                >
+                  ✅ XÁC NHẬN MỞ TỦ LẤY HÀNG
+                </button>
+                <button
+                  type="button"
+                  className="kiosk-action-btn cancel-btn"
+                  onClick={cancelPickup}
+                >
+                  ❌ Hủy bỏ
+                </button>
+              </div>
+            </>
           )}
-
-          <div className="confirm-actions">
-            <button
-              type="button"
-              className="kiosk-action-btn primary-confirm"
-              onClick={confirmPickup}
-            >
-              ✅ XÁC NHẬN MỞ TỦ LẤY HÀNG
-            </button>
-            <button
-              type="button"
-              className="kiosk-action-btn cancel-btn"
-              onClick={cancelPickup}
-            >
-              ❌ Hủy bỏ
-            </button>
-          </div>
         </section>
       )}
 

@@ -101,6 +101,25 @@ class OrderController {
     }
   }
 
+  async checkinOrder(req, res) {
+    try {
+      const payload = req.body;
+      if (!payload || (!payload.trackingCode && !payload.code)) {
+        return res.status(400).json({ success: false, message: "Thiếu mã vận đơn" });
+      }
+
+      const order = await orderService.checkinPackage(payload);
+      res.json({
+        success: true,
+        message: `Đã nạp kiện hàng ${order.trackingCode} vào trạm PODO cho Căn hộ ${order.apartment}`,
+        order
+      });
+    } catch (error) {
+      console.error("Lỗi checkinOrder:", error);
+      res.status(500).json({ success: false, message: error.message || "Không thể tiếp nhận kiện hàng" });
+    }
+  }
+
   async resetDemoOrder(req, res) {
     try {
       await orderService.resetDemoOrder();
