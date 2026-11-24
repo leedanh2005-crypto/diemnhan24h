@@ -1121,9 +1121,67 @@ body:not([data-view="location"]) .v-location { display: none !important; }
   background: #f0fdf4 !important;
 }
 
+/* Theme Toggle Button (Apple Glass Capsule) */
+.luxury-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  background: rgba(30, 41, 59, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #f8fafc;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.luxury-theme-toggle:hover {
+  background: rgba(51, 65, 85, 0.9);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+}
+.luxury-theme-toggle:active {
+  transform: translateY(0);
+}
+.luxury-theme-toggle .theme-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+@media (max-width: 600px) {
+  .luxury-theme-toggle {
+    padding: 6px 10px;
+    font-size: 11.5px;
+    gap: 4px;
+  }
+}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<link rel="stylesheet" href="/dark-luxury.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" id="themeStylesheet" href="/white-luxury.css">
+<script>
+  (function() {
+    try {
+      var saved = localStorage.getItem('podo_theme') || 'light';
+      if (saved === 'dark') {
+        var el = document.getElementById('themeStylesheet');
+        if (el) el.href = '/dark-luxury.css';
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch(e) {}
+  })();
+</script>
 </head>
 <body class="boot" data-view="orders">
 
@@ -1165,6 +1223,10 @@ body:not([data-view="location"]) .v-location { display: none !important; }
       <button class="icon-btn" data-dd="ddBell" aria-label="Thông báo"><svg class="ic"><use href="#i-bell"/></svg><b id="bellDot" hidden></b></button>
       <div class="pop n" id="bellList"></div>
     </div>
+    <button class="luxury-theme-toggle" id="themeToggleBtn" onclick="toggleLuxuryTheme()">
+      <span class="theme-icon">☀️</span>
+      <span class="theme-label">Trắng Xịn</span>
+    </button>
     <div class="dd" id="ddUser">
       <button class="user" data-dd="ddUser"><div class="avatar">A</div><span id="userName">Nguyễn Văn A</span><svg class="ic"><use href="#i-chev"/></svg></button>
       <div class="pop"><h4 id="userEmail"></h4>
@@ -3959,8 +4021,107 @@ document.addEventListener('click', e => {
 const _loadOrdersBase = loadOrders;
 loadOrders = function () { const p = _loadOrdersBase.apply(this, arguments); loadReturnsData(); return p; };
 
+/* ===== THEME SWITCHER (Apple Porcelain White Luxury & Dark Luxury) ===== */
+function updateChartColors(theme) {
+  const isDark = theme === 'dark';
+  const textColor = isDark ? '#94a3b8' : '#475569';
+  const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+
+  if (typeof Chart !== 'undefined') {
+    if (Chart.defaults) {
+      Chart.defaults.color = textColor;
+      Chart.defaults.borderColor = gridColor;
+      if (Chart.defaults.scale && Chart.defaults.scale.grid) {
+        Chart.defaults.scale.grid.color = gridColor;
+      }
+    }
+    if (Chart.instances) {
+      Object.values(Chart.instances).forEach(chart => {
+        if (chart.options) {
+          if (chart.options.scales) {
+            Object.values(chart.options.scales).forEach(scale => {
+              if (scale.ticks) scale.ticks.color = textColor;
+              if (scale.grid) scale.grid.color = gridColor;
+            });
+          }
+          if (chart.options.plugins && chart.options.plugins.legend && chart.options.plugins.legend.labels) {
+            chart.options.plugins.legend.labels.color = textColor;
+          }
+        }
+        chart.update();
+      });
+    }
+  }
+}
+
+function applyLuxuryTheme(theme) {
+  const isDark = theme === 'dark';
+  const effectiveTheme = isDark ? 'dark' : 'light';
+  const targetHref = isDark ? '/dark-luxury.css' : '/white-luxury.css';
+
+  const linkEl = document.getElementById('themeStylesheet');
+  if (linkEl && linkEl.getAttribute('href') !== targetHref) {
+    linkEl.setAttribute('href', targetHref);
+  }
+
+  document.documentElement.setAttribute('data-theme', effectiveTheme);
+  document.body.setAttribute('data-theme', effectiveTheme);
+  if (isDark) {
+    document.body.classList.remove('theme-light');
+    document.body.classList.add('theme-dark');
+  } else {
+    document.body.classList.remove('theme-dark');
+    document.body.classList.add('theme-light');
+  }
+
+  const btn = document.getElementById('themeToggleBtn');
+  if (btn) {
+    const iconEl = btn.querySelector('.theme-icon');
+    const labelEl = btn.querySelector('.theme-label');
+    if (isDark) {
+      if (iconEl) iconEl.textContent = '🌙';
+      if (labelEl) labelEl.textContent = 'Dark Luxury';
+      btn.setAttribute('title', 'Chuyển sang giao diện Trắng Xịn');
+      btn.setAttribute('aria-label', 'Đang dùng Dark Luxury. Bấm để đổi sang Trắng Xịn.');
+    } else {
+      if (iconEl) iconEl.textContent = '☀️';
+      if (labelEl) labelEl.textContent = 'Trắng Xịn';
+      btn.setAttribute('title', 'Chuyển sang giao diện Dark Luxury');
+      btn.setAttribute('aria-label', 'Đang dùng Trắng Xịn. Bấm để đổi sang Dark Luxury.');
+    }
+  }
+
+  updateChartColors(effectiveTheme);
+
+  if (document.body.dataset && document.body.dataset.view === 'reports' && typeof renderReport === 'function') {
+    renderReport();
+  }
+
+  return effectiveTheme;
+}
+
+function toggleLuxuryTheme() {
+  const currentTheme = localStorage.getItem('podo_theme') || 'light';
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  try {
+    localStorage.setItem('podo_theme', newTheme);
+  } catch (err) {
+    console.warn('Lỗi lưu theme vào localStorage:', err);
+  }
+  return applyLuxuryTheme(newTheme);
+}
+
+// Attach to window so it is accessible globally in onclick and test scripts
+window.toggleLuxuryTheme = toggleLuxuryTheme;
+window.applyLuxuryTheme = applyLuxuryTheme;
+window.updateChartColors = updateChartColors;
+
 /* ===== I. KHỞI TẠO ===== */
 (async function init() {
+  // Đọc giao diện người dùng lưu trong localStorage (mặc định 'light' / '/white-luxury.css')
+  const savedTheme = localStorage.getItem('podo_theme') || 'light';
+  applyLuxuryTheme(savedTheme);
+
   $('#acctForm').addEventListener('keydown', e => { if (e.key === 'Enter') submitAcct(); });
   document.addEventListener('input', e => {
     const el = e.target;
