@@ -11,6 +11,7 @@ router.post('/pickup-qr', orderController.generatePickupQR.bind(orderController)
 router.post('/verify-qr', orderController.verifyPickupQR.bind(orderController));
 router.post('/checkin', orderController.checkinOrder.bind(orderController));
 router.post('/reset-demo', orderController.resetDemoOrder.bind(orderController));
+router.post('/clear', orderController.clearAllOrders.bind(orderController));
 router.get('/:id', orderController.getOrderById.bind(orderController));
 
 module.exports = router;

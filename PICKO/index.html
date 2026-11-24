@@ -1676,6 +1676,14 @@ window.toggleOrderJourney = function(i) {
   if (row) {
     row.style.display = window.expandedJourneys[i] ? 'table-row' : 'none';
   }
+  const toggleEl = document.getElementById('jtoggle-' + i);
+  if (toggleEl) {
+    toggleEl.textContent = window.expandedJourneys[i] ? '▲ Thu gọn' : '▼ Hành trình Live';
+  }
+  const btn = document.getElementById('jbtn-' + i);
+  if (btn) {
+    btn.innerHTML = window.expandedJourneys[i] ? '▲ Thu gọn' : '🗺️ Hành trình';
+  }
 };
 
 window.jumpToLockerCell = function(slot, chip) {
@@ -1733,19 +1741,27 @@ function renderOrders() {
   const moreRow = $('#moreRow');
   if (moreRow) { moreRow.hidden = list.length <= shown; $('#moreBtn').textContent = `Xem thêm (${list.length - shown} đơn)`; }
   if (!list.length) {
-    const msg = q || tab !== 'all' ? 'Không có đơn hàng phù hợp.' : 'Chưa có đơn hàng. Hãy quét kiện hàng mới bằng App Shipper để trải nghiệm nhé.';
-    const emptyHTML = `<tr><td colspan="8"><div class="empty">${icon('inbox')}<div>${msg}</div></div></td></tr>`;
+    const isFiltered = !!(q || tab !== 'all');
+    const emptyHTML = `<tr><td colspan="8">
+      <div class="empty-state-luxury" style="padding:48px 20px;text-align:center;">
+        <div style="width:64px;height:64px;margin:0 auto 16px;border-radius:18px;background:rgba(16,185,129,0.1);display:grid;place-items:center;color:#059669;box-shadow:0 4px 14px rgba(16,185,129,0.15);">
+          <svg class="ic" style="width:32px;height:32px;" viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/></svg>
+        </div>
+        <h4 style="font-size:16.5px;font-weight:800;color:var(--ink);margin-bottom:6px;">${isFiltered ? 'Không tìm thấy đơn hàng phù hợp' : 'Trạm PODO Đang Sẵn Sàng'}</h4>
+        <p style="font-size:13.5px;color:var(--muted);max-width:460px;margin:0 auto 14px;line-height:1.55;">
+          ${isFiltered ? 'Vui lòng thử tìm kiếm với từ khóa hoặc bộ lọc khác.' : 'Chưa có đơn hàng nào tại trạm cho Căn hộ 1204. Hãy quét mã vận đơn tại Kiosk hoặc App Shipper để tiếp nhận kiện hàng mới!'}
+        </p>
+        ${!isFiltered ? `
+          <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(255,255,255,0.9);border:1px solid rgba(226,232,240,0.9);border-radius:999px;font-size:12px;font-weight:600;color:var(--ink2);box-shadow:0 2px 8px rgba(15,23,42,0.04);">
+            <span class="live-radar-dot" style="width:7px;height:7px;background:#10b981;border-radius:50%;box-shadow:0 0 0 3px rgba(16,185,129,0.25);"></span>
+            <span>Đang lắng nghe tiếp nhận kiện hàng trực tiếp từ Kiosk & Shipper (Polling 3.5s)</span>
+          </div>
+        ` : ''}
+      </div>
+    </td></tr>`;
     if ($('#ordersBody').innerHTML !== emptyHTML) $('#ordersBody').innerHTML = emptyHTML;
     return;
   }
-
-  // Tự động mở rộng hành trình cho các đơn đang tại trạm để cư dân dễ theo dõi
-  list.slice(0, shown).forEach(o => {
-    const i = orders.indexOf(o);
-    if (isAtStation(o) && window.expandedJourneys[i] === undefined) {
-      window.expandedJourneys[i] = true;
-    }
-  });
 
   const newHTML = list.slice(0, shown).map(o => {
     const i = orders.indexOf(o), st = statusInfo(o.displayStatus);
@@ -1762,7 +1778,7 @@ function renderOrders() {
           <div style="flex:1;min-width:0;">
             <b>${esc(o.product)}</b>${sub ? `<span>${esc(sub)}</span>` : ''}
             <!-- Mini Live Journey Stepper for Table Row -->
-            <div class="live-journey-mini" onclick="event.stopPropagation(); toggleOrderJourney(${i})" style="cursor:pointer;" title="Nhấn để mở hành trình trực tiếp Live Activities">
+            <div class="live-journey-mini" onclick="event.stopPropagation(); toggleOrderJourney(${i})" style="cursor:pointer;" title="Nhấn để mở / thu gọn hành trình trực tiếp Live Activities">
               <div class="mini-laser-track">
                 <span class="mini-dot ${st.step >= 0 ? 'done' : ''}"></span>
                 <span class="mini-dot ${st.step >= 1 ? (st.step === 1 ? 'active' : 'done') : ''}"></span>
@@ -1770,8 +1786,8 @@ function renderOrders() {
                 <span class="mini-dot ${st.step >= 3 ? (st.step === 3 ? 'active' : 'done') : ''}"></span>
                 <span class="mini-dot ${st.step >= 4 ? (st.step === 4 ? 'active' : 'done') : ''}"></span>
               </div>
-              <span style="font-size:11px;color:#94a3b8;font-weight:600;">${['Hủy', 'Xác nhận', 'Vận chuyển', 'Tại Trạm (A-03)', 'Đã nhận'][st.step] || esc(o.displayStatus)}</span>
-              <span style="font-size:10.5px;color:#38bdf8;margin-left:auto;font-weight:700;">${isExpanded ? '▲ Thu gọn' : '▼ Chi tiết Live'}</span>
+              <span style="font-size:11px;color:var(--muted);font-weight:600;">${['Hủy', 'Xác nhận', 'Vận chuyển', 'Tại Trạm (A-03)', 'Đã nhận'][st.step] || esc(o.displayStatus)}</span>
+              <span id="jtoggle-${i}" style="font-size:10.5px;color:var(--pri-l);margin-left:auto;font-weight:700;">${isExpanded ? '▲ Thu gọn' : '▼ Hành trình Live'}</span>
             </div>
           </div>
         </div>
@@ -1782,6 +1798,7 @@ function renderOrders() {
       <td>${when(o.updatedAt)}</td>
       <td><div class="row-act">
         <button class="btn btn-o" data-detail="${i}">Chi tiết</button>
+        <button class="btn btn-o btn-journey-toggle" id="jbtn-${i}" onclick="event.stopPropagation(); toggleOrderJourney(${i})" title="Bấm để xem hoặc thu gọn hành trình thời gian thực">${isExpanded ? '▲ Thu gọn' : '🗺️ Hành trình'}</button>
         ${o.trackingCode ? `<button class="btn btn-o" data-barcode="${esc(o.trackingCode)}" data-room="${esc(o.apartment || '1204')}" data-prod="${esc(o.product)}" title="Hiện mã vạch để Shipper quét">🏷️ Barcode</button>` : ''}
         ${o.stationStatus === 'AT_STATION' ? `
           <button class="journey-quick-btn btn-locate" onclick="event.stopPropagation(); jumpToLockerCell('A-03', 'CP-0186')" title="Xem vị trí ô kệ A-03 trên sơ đồ kệ hàng thông minh">
@@ -1797,11 +1814,7 @@ function renderOrders() {
           <button class="journey-quick-btn btn-qr" data-pk-view="${esc(o.orderId)}" onclick="event.stopPropagation()" title="Mở mã QR lấy hàng 1-chạm">
             <span>⚡ QR 1-chạm</span>
           </button>
-        ` : `
-          <button class="btn btn-o" onclick="event.stopPropagation(); toggleOrderJourney(${i})" style="font-size:11.5px;padding:5px 10px;">
-            Hành trình Live
-          </button>
-        `}
+        ` : ''}
       </div></td>
     </tr>
     <!-- Expandable Live Package Journey Row -->

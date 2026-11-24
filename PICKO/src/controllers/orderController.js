@@ -129,6 +129,16 @@ class OrderController {
       res.status(500).json({ success: false, message: "Không thể reset đơn" });
     }
   }
+
+  async clearAllOrders(req, res) {
+    try {
+      orderService.clearAllOrders();
+      res.json({ success: true, message: "Đã dọn sạch danh sách đơn hàng, sẵn sàng tiếp nhận đơn mới" });
+    } catch (error) {
+      console.error("Lỗi clearAllOrders:", error);
+      res.status(500).json({ success: false, message: "Lỗi dọn sạch đơn hàng" });
+    }
+  }
 }
 
 module.exports = new OrderController();

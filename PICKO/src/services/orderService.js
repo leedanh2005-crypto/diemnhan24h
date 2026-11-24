@@ -60,7 +60,8 @@ const createDefaultShopeeOrders = () => [
   }
 ];
 
-let localPackages = createDefaultShopeeOrders();
+let localPackages = []; // Khởi tạo danh sách rỗng theo yêu cầu (không tự động tải đơn hàng cũ trên Supabase)
+const sessionStartTime = new Date(); // Mốc thời gian chỉ nhận đơn mới kể từ khi phiên làm việc bắt đầu
 
 // Helper timeout 2.5s
 async function withTimeout(promise, ms = 2500) {
@@ -94,11 +95,12 @@ class OrderService {
   async getAllOrders(query = {}) {
     let supabaseRows = null;
 
-    // 1. Lấy dữ liệu thực tế từ Supabase (lấy toàn bộ các kiện để không bị sót đơn mới quét từ Kiosk)
+    // 1. Chỉ lấy các kiện hàng mới tiếp nhận từ Kiosk / Shipper trong phiên làm việc hiện tại (không tải tất cả đơn cũ trên Supabase)
     try {
       const dbQuery = supabase
         .from('packages')
         .select('*')
+        .or(`created_at.gte.${sessionStartTime.toISOString()},"Cập nhật gần nhất".gte.${sessionStartTime.toISOString()}`)
         .order('created_at', { ascending: false });
 
       const { data, error } = await withTimeout(dbQuery, 2500);
@@ -166,8 +168,15 @@ class OrderService {
 
     const room = String(payload.roomNumber || payload.apartment || '1204').trim();
     const market = String(payload.marketplace || 'Shopee').trim();
-    const productName = payload.productName || 'Kiện hàng nhập tại trạm PODO';
-    const amount = Number(payload.totalAmount) || 125000;
+    const defaultProducts = {
+      'SPXVN091234567': { name: 'Đèn bàn thông minh Rạng Đông LED 9W R-01', amount: 58000, qty: 2 },
+      'SPXVN086888204': { name: 'Bộ củ cáp sạc nhanh Anker GaN 65W Type-C', amount: 126000, qty: 2 },
+      'SPXVN077123999': { name: 'Chuột không dây Logitech MX Anywhere 3S', amount: 185000, qty: 1 }
+    };
+    const def = defaultProducts[code] || {};
+    const productName = payload.productName || def.name || 'Kiện hàng tiếp nhận tại trạm PODO';
+    const amount = Number(payload.totalAmount) || def.amount || 125000;
+    const qty = Number(payload.quantity) || def.qty || 1;
 
     const now = new Date().toISOString();
 
@@ -180,7 +189,7 @@ class OrderService {
       "Số căn hộ": room,
       "Trạng thái đơn trên sàn": "Đang giao",
       "Trạng thái tại trạm PICKO": "Hàng đã được giao đến trạm",
-      "Tổng số sản phẩm": 1,
+      "Tổng số sản phẩm": qty,
       "Tổng tiền đơn": amount,
       "Thời gian đặt đơn": now,
       "Cập nhật gần nhất": now,
@@ -385,6 +394,11 @@ class OrderService {
 
   setShopeeConnected(val) {
     isShopeeConnected = !!val;
+  }
+
+  clearAllOrders() {
+    localPackages = [];
+    return true;
   }
 
   getShopeeConnected() {
