@@ -526,11 +526,11 @@
         '</ol>' +
 
         '<div class="wf-actions">' +
-          '<button type="button" class="btn wf-btn-ping" onclick="pingLocationChip(\'' + safeEsc(pkg.chip) + '\', \'' + safeEsc(pkg.slot) + '\')">' +
+          '<button type="button" class="btn wf-btn-ping" onclick="pingLocationChip(\'' + safeEsc(pkg.chip) + '\', \'' + safeEsc(pkg.slot) + '\', \'' + safeEsc(pkg.key) + '\')">' +
             '<svg class="ic" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>' +
             '<span>Bíp bíp &amp; Nháy đèn</span>' +
           '</button>' +
-          '<button type="button" class="btn btn-o wf-btn-locate" onclick="highlightShelfSlot(\'' + safeEsc(pkg.slot) + '\')">' +
+          '<button type="button" class="btn btn-o wf-btn-locate" onclick="highlightShelfSlot(\'' + safeEsc(pkg.slot) + '\', \'' + safeEsc(pkg.key) + '\')">' +
             '<span>📍 Định vị ô ' + safeEsc(pkg.slot) + '</span>' +
           '</button>' +
           actionBtn +
@@ -683,34 +683,106 @@
     renderLocationView(true);
   }
 
-  function highlightShelfSlot(cellCode) {
-    var slot = String(cellCode || '').trim();
-    if (!slot) return;
-    var pkgs = collectActivePackages();
-    var match = pkgs.find(function (p) { return p.slot === slot; });
-    if (match && global._activeWayfindingKey !== match.key) {
-      global._activeWayfindingKey = match.key;
-      renderLocationView(true);
+  function getPackageWayfindingInfo(orderOrCode) {
+    var fallback = { slot: 'A-03', chip: 'CP-0186', pkgKey: '', rack: 'A' };
+    if (orderOrCode == null || orderOrCode === '') return fallback;
+
+    var candidates = [];
+    if (typeof orderOrCode === 'object') {
+      [orderOrCode.key, orderOrCode.orderId, orderOrCode.id, orderOrCode.orderCode, orderOrCode.trackingCode].forEach(function (v) {
+        var s = v != null ? String(v).trim() : '';
+        if (s && s !== '--') candidates.push(s);
+      });
+    } else {
+      var raw = String(orderOrCode).trim();
+      if (raw && raw !== '--') candidates.push(raw);
     }
-    pulseCellVisual(slot);
-    safeBeep();
-    safeToast('📍 Đã định vị Ô kệ ' + slot + '. Đèn LED định vị đang nhấp nháy!', 'ok');
+
+    if (!candidates.length) return fallback;
+
+    var pkgs = collectActivePackages();
+    var match = pkgs.find(function (p) {
+      var fields = [p.key, p.actionId, p.orderCode, p.trackingCode];
+      return candidates.some(function (c) {
+        return fields.some(function (f) {
+          return f && f !== '--' && String(f).trim() === c;
+        });
+      });
+    });
+
+    if (!match) return fallback;
+    return {
+      slot: match.slot,
+      chip: match.chip,
+      pkgKey: match.key,
+      rack: match.rackId
+    };
   }
 
-  function pingLocationChip(chipCode, slotName) {
+  function resolveMatchingPackage(pkgKey, slotName, chipCode) {
+    var pkgs = collectActivePackages();
+    var key = pkgKey != null ? String(pkgKey).trim() : '';
+    var slot = slotName != null ? String(slotName).trim() : '';
+    var chip = chipCode != null ? String(chipCode).trim() : '';
+
+    if (key) {
+      var byKey = pkgs.find(function (p) { return p.key === key; });
+      if (byKey) return byKey;
+    }
+    if (chip) {
+      var byChip = pkgs.find(function (p) { return p.chip === chip; });
+      if (byChip) return byChip;
+    }
+    if (slot) {
+      var bySlot = pkgs.find(function (p) { return p.slot === slot; });
+      if (bySlot) return bySlot;
+    }
+    return null;
+  }
+
+  function highlightShelfSlot(cellCode, pkgKey) {
+    var slot = String(cellCode || '').trim();
+    var match = resolveMatchingPackage(pkgKey, slot, '');
+    var targetSlot = match ? match.slot : slot;
+    if (!targetSlot) return;
+
+    var needsRender = !document.getElementById('wf-cell-' + cleanSlotId(targetSlot));
+    if (match && global._activeWayfindingKey !== match.key) {
+      global._activeWayfindingKey = match.key;
+      needsRender = true;
+    }
+    if (needsRender) {
+      renderLocationView(true);
+    }
+
+    pulseCellVisual(targetSlot);
+    safeBeep();
+    safeToast('📍 Đã định vị Ô kệ ' + targetSlot + '. Đèn LED định vị đang nhấp nháy!', 'ok');
+  }
+
+  function pingLocationChip(chipCode, slotName, pkgKey) {
     var slot = String(slotName || '').trim();
     var chip = String(chipCode || '').trim();
-    if (slot) {
-      var pkgs = collectActivePackages();
-      var match = pkgs.find(function (p) { return p.slot === slot; });
-      if (match && global._activeWayfindingKey !== match.key) {
+    var match = resolveMatchingPackage(pkgKey, slot, chip);
+    var targetSlot = match ? match.slot : slot;
+    var targetChip = match ? match.chip : chip;
+
+    if (match) {
+      var needsRender = !document.getElementById('wf-cell-' + cleanSlotId(targetSlot));
+      if (global._activeWayfindingKey !== match.key) {
         global._activeWayfindingKey = match.key;
+        needsRender = true;
+      }
+      if (needsRender) {
         renderLocationView(true);
       }
-      pulseCellVisual(slot);
+    }
+
+    if (targetSlot) {
+      pulseCellVisual(targetSlot);
     }
     safeBeep();
-    safeToast('🔊 Đang phát tín hiệu đến chip ' + chip + ' tại Ô kệ ' + slot + '! Đèn LED thẻ iTag đang nhấp nháy.', 'ok');
+    safeToast('🔊 Đang phát tín hiệu đến chip ' + targetChip + ' tại Ô kệ ' + targetSlot + '! Đèn LED thẻ iTag đang nhấp nháy.', 'ok');
   }
 
   function pingAllChips() {
@@ -725,6 +797,7 @@
   }
 
   // Expose public globals expected by PICKO/index.html
+  global.getPackageWayfindingInfo = getPackageWayfindingInfo;
   global.renderLocationView = renderLocationView;
   global.selectWayfindingPackage = selectWayfindingPackage;
   global.highlightShelfSlot = highlightShelfSlot;

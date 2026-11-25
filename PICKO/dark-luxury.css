@@ -3901,6 +3901,10 @@ tbody tr:hover {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
+.live-journey-card {
+  animation: journey-card-reveal 0.28s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
 .live-journey-card:hover,
 .live-journey-track:hover {
   border-color: rgba(56, 189, 248, 0.35) !important;
@@ -3966,18 +3970,27 @@ tbody tr:hover {
   align-items: flex-start !important;
   position: relative !important;
   margin: 26px 0 18px !important;
-  padding: 0 10px !important;
+  padding: 0 !important;
   gap: 6px !important;
   z-index: 2 !important;
+}
+
+.journey-track-rail {
+  position: absolute !important;
+  top: 19px !important;
+  left: 10% !important;
+  right: 10% !important;
+  height: 3px !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
 }
 
 /* Background Connecting Line */
 .journey-line-bg {
   position: absolute !important;
-  top: 19px !important;
-  left: 28px !important;
-  right: 28px !important;
-  height: 3px !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
   background: rgba(255, 255, 255, 0.08) !important;
   border-radius: 999px !important;
   z-index: 1 !important;
@@ -3986,10 +3999,10 @@ tbody tr:hover {
 /* Connecting Laser Beam Progress Line */
 .journey-laser-line {
   position: absolute !important;
-  top: 19px !important;
-  left: 28px !important;
+  top: 0 !important;
+  left: 0 !important;
   width: var(--journey-progress, 75%) !important;
-  height: 3px !important;
+  height: 100% !important;
   border-radius: 999px !important;
   background: linear-gradient(90deg, #10b981 0%, #38bdf8 50%, #10b981 100%) !important;
   background-size: 200% 100% !important;
@@ -4033,9 +4046,25 @@ tbody tr:hover {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-.node-dot svg {
-  width: 17px !important;
-  height: 17px !important;
+.node-dot svg,
+.node-dot .ic {
+  width: 16px !important;
+  height: 16px !important;
+  display: block !important;
+  flex-shrink: 0 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+.btn-journey-toggle .ic,
+.journey-quick-btn .ic {
+  width: 14px !important;
+  height: 14px !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  flex-shrink: 0 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
 }
 
 /* Completed Stage */
@@ -4222,6 +4251,14 @@ tbody tr:hover {
   word-break: break-word !important;
 }
 
+.live-journey-mini .mini-toggle-label {
+  color: #34d399 !important;
+  font-weight: 700 !important;
+  margin-left: auto !important;
+  font-size: 11px !important;
+  letter-spacing: 0.01em !important;
+}
+
 .mini-laser-track {
   display: flex !important;
   align-items: center !important;
@@ -4251,36 +4288,81 @@ tbody tr:hover {
 /* Media Query cho Mobile Live Stepper */
 @media (max-width: 640px) {
   .journey-stepper {
-    padding: 0 4px !important;
-    gap: 4px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    padding: 4px 0 4px 8px !important;
+    margin: 18px 0 14px !important;
+  }
+  .journey-track-rail {
+    left: 23px !important;
+    top: 16px !important;
+    bottom: 16px !important;
+    right: auto !important;
+    width: 3px !important;
+    height: auto !important;
+  }
+  .journey-line-bg {
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  .journey-laser-line {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: var(--journey-progress, 75%) !important;
+    transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  .journey-node {
+    flex-direction: row !important;
+    align-items: center !important;
+    text-align: left !important;
+    gap: 12px !important;
+    padding: 0 !important;
   }
   .node-dot {
     width: 32px !important;
     height: 32px !important;
     font-size: 11px !important;
   }
-  .node-dot svg {
+  .node-dot svg,
+  .node-dot .ic {
     width: 15px !important;
     height: 15px !important;
   }
-  .journey-line-bg,
-  .journey-laser-line {
-    top: 16px !important;
-    left: 20px !important;
-    right: 20px !important;
-  }
-  .node-title {
-    font-size: 10.5px !important;
-    line-height: 1.25 !important;
+  .node-title,
+  .journey-node .node-title {
+    max-width: none !important;
+    text-align: left !important;
+    margin: 0 !important;
+    flex: 1 1 auto !important;
+    font-size: 12px !important;
+    line-height: 1.35 !important;
   }
   .node-time,
+  .journey-node .node-time,
   .journey-time-badge {
-    font-size: 9.5px !important;
-    padding: 1px 4px !important;
+    margin-top: 0 !important;
+    margin-left: auto !important;
+    flex-shrink: 0 !important;
+    font-size: 10.5px !important;
+    padding: 2px 7px !important;
   }
 }
 
 /* Keyframes for Live Journey */
+@keyframes journey-card-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @keyframes laser-beam-glow {
   0% { background-position: 0% 50%; }
   100% { background-position: 200% 50%; }

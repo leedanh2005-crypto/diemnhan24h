@@ -1608,33 +1608,55 @@ async function loadOrders() {
   }
 }
 /* ===== D1. LIVE PACKAGE JOURNEY (Apple Live Activities Style) ===== */
+const JOURNEY_STAGE_ICONS = [
+  '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>',
+  '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m9 14 2 2 4-4"/></svg>',
+  '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+  '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>',
+  '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg>'
+];
+const JOURNEY_CHECK_SVG = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+const JOURNEY_LOCATE_SVG = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>';
+const JOURNEY_QR_SVG = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>';
+const JOURNEY_CLOCK_SVG = '<svg class="ic" style="width:13px;height:13px;vertical-align:-2px;margin-right:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>';
+const JOURNEY_BARCODE_SVG = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5v14"/><path d="M8 5v14"/><path d="M12 5v14"/><path d="M17 5v14"/><path d="M21 5v14"/></svg>';
+const JOURNEY_BTN_EXPAND_HTML = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg> Hành trình';
+const JOURNEY_BTN_COLLAPSE_HTML = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Thu gọn';
+
+function getOrderJourneyKey(o, i) {
+  return String((o && (o.orderCode || o.trackingCode || o.orderId)) || ('idx-' + i));
+}
+
+function getOrderWayfinding(o) {
+  return typeof window.getPackageWayfindingInfo === 'function'
+    ? window.getPackageWayfindingInfo(o)
+    : { slot: 'A-03', chip: 'CP-0186', pkgKey: '' };
+}
+
 function renderLiveJourneyCard(o, i) {
   const st = statusInfo(o.displayStatus);
+  const wf = getOrderWayfinding(o);
+  const clampedStep = Math.max(0, Math.min(4, Number(st.step) || 0));
+  const progressPct = [0, 25, 50, 75, 100][clampedStep];
+
   const stages = [
     { title: 'Đặt hàng', time: o.createdAt ? when(o.createdAt) : 'Hôm qua' },
     { title: 'Sàn xác nhận', time: o.createdAt ? when(new Date(new Date(o.createdAt).getTime() + 1800000)) : 'Hoàn tất' },
     { title: 'Đang vận chuyển', time: o.updatedAt ? when(o.updatedAt) : 'Đang giao' },
-    { title: isAtStation(o) ? 'Tại Trạm PODO (Ô A-03)' : 'Tại Trạm PODO', time: isAtStation(o) ? when(o.updatedAt) : (st.step >= 3 ? when(o.updatedAt) : 'Dự kiến hôm nay') },
+    { title: isAtStation(o) ? `Tại Trạm PODO (Ô ${wf.slot})` : 'Tại Trạm PODO', time: isAtStation(o) ? when(o.updatedAt) : (st.step >= 3 ? when(o.updatedAt) : 'Dự kiến hôm nay') },
     { title: 'Đã nhận hàng', time: st.step === 4 ? when(o.updatedAt) : 'Đang chờ' }
   ];
-
-  let progressPct = 12;
-  if (st.step === 1) progressPct = 25;
-  else if (st.step === 2) progressPct = 50;
-  else if (st.step === 3) progressPct = 78;
-  else if (st.step === 4) progressPct = 100;
 
   const nodesHtml = stages.map((stage, idx) => {
     let nodeCls = 'pending';
     if (idx < st.step || st.step === 4) nodeCls = 'done';
     else if (idx === st.step) nodeCls = 'active now';
 
-    const icons = ['🛒', '📋', '🚚', '📍', '📦'];
     return `
       <div class="journey-node ${nodeCls}">
         <div class="node-dot">
           ${nodeCls.includes('active') ? '<span class="beacon-halo"></span>' : ''}
-          ${nodeCls.includes('done') ? '✓' : icons[idx]}
+          ${nodeCls.includes('done') ? JOURNEY_CHECK_SVG : JOURNEY_STAGE_ICONS[idx]}
         </div>
         <p class="node-title">${esc(stage.title)}</p>
         <span class="node-time">${esc(stage.time)}</span>
@@ -1657,32 +1679,36 @@ function renderLiveJourneyCard(o, i) {
       </div>
 
       <div class="journey-stepper">
-        <div class="journey-line-bg"></div>
-        <div class="journey-laser-line" style="--journey-progress: ${progressPct}%; width: ${progressPct}%;"></div>
+        <div class="journey-track-rail">
+          <div class="journey-line-bg"></div>
+          <div class="journey-laser-line" style="--journey-progress: ${progressPct}%; width: ${progressPct}%;"></div>
+        </div>
         ${nodesHtml}
       </div>
 
       <div class="journey-actions-row">
         <div class="journey-footer-info">
-          <span>🕒 Cập nhật tự động qua PODO Hub · Căn hộ ${esc(o.apartment || '1204')}</span>
+          <span>${JOURNEY_CLOCK_SVG}Cập nhật tự động qua PODO Hub · Căn hộ ${esc(o.apartment || '1204')}</span>
+          <span class="journey-step-badge" style="margin-left:8px;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;background:rgba(16,185,129,0.12);color:#047857;border:1px solid rgba(16,185,129,0.22);">Bước ${clampedStep + 1}/5</span>
         </div>
         <div style="margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
           ${o.stationStatus === 'AT_STATION' ? `
-            <button class="journey-quick-btn btn-locate" onclick="jumpToLockerCell('A-03', 'CP-0186')" title="Xem vị trí ô kệ trên sơ đồ kệ hàng thông minh">
-              <svg class="ic" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
-              <span>📍 Xem ô kệ A-03</span>
+            <button class="journey-quick-btn btn-locate" onclick="jumpToLockerCell('${esc(wf.slot)}', '${esc(wf.chip)}', '${esc(wf.pkgKey || '')}')" title="Xem vị trí ô kệ ${esc(wf.slot)} trên sơ đồ kệ hàng thông minh">
+              ${JOURNEY_LOCATE_SVG}
+              <span>Xem ô kệ ${esc(wf.slot)}</span>
             </button>
             <button class="journey-quick-btn btn-qr" data-pk-one="${esc(o.orderId)}" title="Mở mã QR lấy hàng 1-chạm">
-              <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-              <span>⚡ QR Lấy hàng 1-chạm</span>
+              ${JOURNEY_QR_SVG}
+              <span>QR Lấy hàng 1-chạm</span>
             </button>
           ` : o.stationStatus === 'PICKUP_REQUESTED' ? `
-            <button class="journey-quick-btn btn-locate" onclick="jumpToLockerCell('A-03', 'CP-0186')" title="Xem vị trí ô kệ trên sơ đồ kệ hàng thông minh">
-              <svg class="ic" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
-              <span>📍 Xem ô kệ A-03</span>
+            <button class="journey-quick-btn btn-locate" onclick="jumpToLockerCell('${esc(wf.slot)}', '${esc(wf.chip)}', '${esc(wf.pkgKey || '')}')" title="Xem vị trí ô kệ ${esc(wf.slot)} trên sơ đồ kệ hàng thông minh">
+              ${JOURNEY_LOCATE_SVG}
+              <span>Xem ô kệ ${esc(wf.slot)}</span>
             </button>
             <button class="journey-quick-btn btn-qr" data-pk-view="${esc(o.orderId)}" title="Mở mã QR lấy hàng 1-chạm">
-              <span>⚡ QR Lấy hàng 1-chạm</span>
+              ${JOURNEY_QR_SVG}
+              <span>QR Lấy hàng 1-chạm</span>
             </button>
           ` : (i >= 0 ? `
             <button class="btn btn-o" data-detail="${i}" style="font-size:12px;padding:6px 14px;">Xem chi tiết đầy đủ</button>
@@ -1693,30 +1719,35 @@ function renderLiveJourneyCard(o, i) {
   `;
 }
 
-window.toggleOrderJourney = function(i) {
-  window.expandedJourneys[i] = !window.expandedJourneys[i];
-  const row = document.getElementById('jrow-' + i);
+window.toggleOrderJourney = function(key, rowIdx) {
+  const k = String(key);
+  window.expandedJourneys[k] = !window.expandedJourneys[k];
+  const expanded = !!window.expandedJourneys[k];
+  const row = (rowIdx != null ? document.getElementById('jrow-' + rowIdx) : null)
+    || document.querySelector(`.journey-expand-row[data-jkey="${CSS.escape(k)}"]`);
   if (row) {
-    row.style.display = window.expandedJourneys[i] ? 'table-row' : 'none';
+    row.style.display = expanded ? 'table-row' : 'none';
   }
-  const toggleEl = document.getElementById('jtoggle-' + i);
+  const toggleEl = (rowIdx != null ? document.getElementById('jtoggle-' + rowIdx) : null)
+    || document.querySelector(`.mini-toggle-label[data-jkey="${CSS.escape(k)}"]`);
   if (toggleEl) {
-    toggleEl.textContent = window.expandedJourneys[i] ? '▲ Thu gọn' : '▼ Hành trình Live';
+    toggleEl.textContent = expanded ? '▲ Thu gọn' : '▼ Hành trình Live';
   }
-  const btn = document.getElementById('jbtn-' + i);
+  const btn = (rowIdx != null ? document.getElementById('jbtn-' + rowIdx) : null)
+    || document.querySelector(`.btn-journey-toggle[data-jkey="${CSS.escape(k)}"]`);
   if (btn) {
-    btn.innerHTML = window.expandedJourneys[i] ? '▲ Thu gọn' : '🗺️ Hành trình';
+    btn.innerHTML = expanded ? JOURNEY_BTN_COLLAPSE_HTML : JOURNEY_BTN_EXPAND_HTML;
   }
 };
 
-window.jumpToLockerCell = function(slot, chip) {
+window.jumpToLockerCell = function(slot, chip, pkgKey) {
   closeAll();
   go('location');
   setTimeout(() => {
-    if (typeof window.pingLocationChip === 'function' && chip && slot) {
-      window.pingLocationChip(chip, slot);
+    if (typeof window.pingLocationChip === 'function' && (chip || slot || pkgKey)) {
+      window.pingLocationChip(chip, slot, pkgKey);
     } else if (typeof window.highlightShelfSlot === 'function' && slot) {
-      window.highlightShelfSlot(slot);
+      window.highlightShelfSlot(slot, pkgKey);
     }
   }, 250);
 };
@@ -1781,7 +1812,9 @@ function renderOrders() {
   const newHTML = list.slice(0, shown).map(o => {
     const i = orders.indexOf(o), st = statusInfo(o.displayStatus);
     const sub = [o.variant, o.extra].filter(Boolean).join(' · ');
-    const isExpanded = !!window.expandedJourneys[i];
+    const orderKey = getOrderJourneyKey(o, i);
+    const wf = getOrderWayfinding(o);
+    const isExpanded = !!window.expandedJourneys[orderKey];
     const journeyCardHtml = renderLiveJourneyCard(o, i);
 
     return `<tr class="clk" data-detail="${i}">
@@ -1793,7 +1826,7 @@ function renderOrders() {
           <div style="flex:1;min-width:0;">
             <b>${esc(o.product)}</b>${sub ? `<span>${esc(sub)}</span>` : ''}
             <!-- Mini Live Journey Stepper for Table Row -->
-            <div class="live-journey-mini" onclick="event.stopPropagation(); toggleOrderJourney(${i})" style="cursor:pointer;" title="Nhấn để mở / thu gọn hành trình trực tiếp Live Activities">
+            <div class="live-journey-mini" data-jkey="${esc(orderKey)}" onclick="event.stopPropagation(); toggleOrderJourney(this.dataset.jkey, ${i})" style="cursor:pointer;" title="Nhấn để mở / thu gọn hành trình trực tiếp Live Activities">
               <div class="mini-laser-track">
                 <span class="mini-dot ${st.step >= 0 ? 'done' : ''}"></span>
                 <span class="mini-dot ${st.step >= 1 ? (st.step === 1 ? 'active' : 'done') : ''}"></span>
@@ -1801,8 +1834,8 @@ function renderOrders() {
                 <span class="mini-dot ${st.step >= 3 ? (st.step === 3 ? 'active' : 'done') : ''}"></span>
                 <span class="mini-dot ${st.step >= 4 ? (st.step === 4 ? 'active' : 'done') : ''}"></span>
               </div>
-              <span style="font-size:11px;color:var(--muted);font-weight:600;">${['Hủy', 'Xác nhận', 'Vận chuyển', 'Tại Trạm (A-03)', 'Đã nhận'][st.step] || esc(o.displayStatus)}</span>
-              <span id="jtoggle-${i}" style="font-size:10.5px;color:var(--pri-l);margin-left:auto;font-weight:700;">${isExpanded ? '▲ Thu gọn' : '▼ Hành trình Live'}</span>
+              <span style="font-size:11px;color:var(--muted);font-weight:600;">${['Hủy', 'Xác nhận', 'Vận chuyển', `Tại Trạm (${wf.slot})`, 'Đã nhận'][st.step] || esc(o.displayStatus)}</span>
+              <span id="jtoggle-${i}" class="mini-toggle-label" data-jkey="${esc(orderKey)}">${isExpanded ? '▲ Thu gọn' : '▼ Hành trình Live'}</span>
             </div>
           </div>
         </div>
@@ -1813,27 +1846,31 @@ function renderOrders() {
       <td>${when(o.updatedAt)}</td>
       <td><div class="row-act">
         <button class="btn btn-o" data-detail="${i}">Chi tiết</button>
-        <button class="btn btn-o btn-journey-toggle" id="jbtn-${i}" onclick="event.stopPropagation(); toggleOrderJourney(${i})" title="Bấm để xem hoặc thu gọn hành trình thời gian thực">${isExpanded ? '▲ Thu gọn' : '🗺️ Hành trình'}</button>
-        ${o.trackingCode ? `<button class="btn btn-o" data-barcode="${esc(o.trackingCode)}" data-room="${esc(o.apartment || '1204')}" data-prod="${esc(o.product)}" title="Hiện mã vạch để Shipper quét">🏷️ Barcode</button>` : ''}
+        <button class="btn btn-o btn-journey-toggle" id="jbtn-${i}" data-jkey="${esc(orderKey)}" onclick="event.stopPropagation(); toggleOrderJourney(this.dataset.jkey, ${i})" title="Bấm để xem hoặc thu gọn hành trình thời gian thực">${isExpanded ? JOURNEY_BTN_COLLAPSE_HTML : JOURNEY_BTN_EXPAND_HTML}</button>
+        ${o.trackingCode ? `<button class="btn btn-o" data-barcode="${esc(o.trackingCode)}" data-room="${esc(o.apartment || '1204')}" data-prod="${esc(o.product)}" title="Hiện mã vạch để Shipper quét">${JOURNEY_BARCODE_SVG} Barcode</button>` : ''}
         ${o.stationStatus === 'AT_STATION' ? `
-          <button class="journey-quick-btn btn-locate" onclick="event.stopPropagation(); jumpToLockerCell('A-03', 'CP-0186')" title="Xem vị trí ô kệ A-03 trên sơ đồ kệ hàng thông minh">
-            <span>📍 Ô A-03</span>
+          <button class="journey-quick-btn btn-locate" onclick="event.stopPropagation(); jumpToLockerCell('${esc(wf.slot)}', '${esc(wf.chip)}', '${esc(wf.pkgKey || '')}')" title="Xem vị trí ô kệ ${esc(wf.slot)} trên sơ đồ kệ hàng thông minh">
+            ${JOURNEY_LOCATE_SVG}
+            <span>Ô ${esc(wf.slot)}</span>
           </button>
           <button class="journey-quick-btn btn-qr" data-pk-one="${esc(o.orderId)}" onclick="event.stopPropagation()" title="Mở mã QR lấy hàng 1-chạm">
-            <span>⚡ QR 1-chạm</span>
+            ${JOURNEY_QR_SVG}
+            <span>QR 1-chạm</span>
           </button>
         ` : o.stationStatus === 'PICKUP_REQUESTED' ? `
-          <button class="journey-quick-btn btn-locate" onclick="event.stopPropagation(); jumpToLockerCell('A-03', 'CP-0186')" title="Xem vị trí ô kệ A-03 trên sơ đồ kệ hàng thông minh">
-            <span>📍 Ô A-03</span>
+          <button class="journey-quick-btn btn-locate" onclick="event.stopPropagation(); jumpToLockerCell('${esc(wf.slot)}', '${esc(wf.chip)}', '${esc(wf.pkgKey || '')}')" title="Xem vị trí ô kệ ${esc(wf.slot)} trên sơ đồ kệ hàng thông minh">
+            ${JOURNEY_LOCATE_SVG}
+            <span>Ô ${esc(wf.slot)}</span>
           </button>
           <button class="journey-quick-btn btn-qr" data-pk-view="${esc(o.orderId)}" onclick="event.stopPropagation()" title="Mở mã QR lấy hàng 1-chạm">
-            <span>⚡ QR 1-chạm</span>
+            ${JOURNEY_QR_SVG}
+            <span>QR 1-chạm</span>
           </button>
         ` : ''}
       </div></td>
     </tr>
     <!-- Expandable Live Package Journey Row -->
-    <tr class="journey-expand-row" id="jrow-${i}" style="display:${isExpanded ? 'table-row' : 'none'};">
+    <tr class="journey-expand-row" id="jrow-${i}" data-jkey="${esc(orderKey)}" style="display:${isExpanded ? 'table-row' : 'none'};">
       <td colspan="8" style="padding:4px 18px 18px;border-top:none;">
         ${journeyCardHtml}
       </td>
