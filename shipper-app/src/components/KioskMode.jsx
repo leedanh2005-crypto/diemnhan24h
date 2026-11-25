@@ -183,6 +183,9 @@ export function KioskMode() {
     const unsub = bleTagService.subscribe((status) => {
       setBleStatus(status)
     })
+    if (bleTagService.isSupported() && typeof bleTagService.tryAutoReconnect === 'function') {
+      bleTagService.tryAutoReconnect().catch(() => {})
+    }
     return () => unsub()
   }, [])
 
@@ -329,6 +332,11 @@ export function KioskMode() {
     const token = pendingToken || lastScannedRef.current
     if (!token) return
 
+    // Kích hoạt còi & đèn thẻ BLE NGAY LẬP TỨC khi bấm xác nhận (không chờ API/Supabase)
+    const blePromise = (bleTagService.isConnected || bleTagService.device)
+      ? bleTagService.triggerAlert(5000).catch(() => false)
+      : Promise.resolve(false)
+
     setScanResult({ type: 'loading', text: 'Đang xử lý mở khóa tủ...', detail: 'Vui lòng chờ giây lát' })
     setPendingToken(null)
 
@@ -336,28 +344,35 @@ export function KioskMode() {
     let successMsg = ''
     let detailMsg = ''
 
-    // 1. Thử gọi API backend PICKO trước
+    // 1. Thử gọi API backend PICKO trước (timeout 2000ms để fallback Supabase nhanh trên web deploy)
     const apiBase = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location.port !== '3000' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:3000' : '')
     try {
-      const res = await fetch(`${apiBase}/api/orders/verify-qr`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token })
-      })
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 2000)
+      try {
+        const res = await fetch(`${apiBase}/api/orders/verify-qr`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+          signal: controller.signal
+        })
 
-      if (res.ok) {
-        const data = await res.json()
-        if (data.success) {
-          isSuccess = true
-          successMsg = data.message || 'Mở tủ thành công!'
-          if (data.data?.apartment) {
-            detailMsg = `Căn hộ: ${data.data.apartment} • ${data.data.packagesCount || 1} kiện hàng`
+        if (res.ok) {
+          const data = await res.json()
+          if (data.success) {
+            isSuccess = true
+            successMsg = data.message || 'Mở tủ thành công!'
+            if (data.data?.apartment) {
+              detailMsg = `Căn hộ: ${data.data.apartment} • ${data.data.packagesCount || 1} kiện hàng`
+            }
+          } else {
+            successMsg = data.message || 'Mã QR không hợp lệ'
           }
         } else {
-          successMsg = data.message || 'Mã QR không hợp lệ'
+          throw new Error('API server unreachable')
         }
-      } else {
-        throw new Error('API server unreachable')
+      } finally {
+        clearTimeout(timeoutId)
       }
     } catch {
       // 2. FALLBACK trực tiếp qua Supabase (Đảm bảo 100% không bao giờ gián đoạn)
@@ -399,16 +414,16 @@ export function KioskMode() {
     }
 
     if (isSuccess) {
+      const bleTriggered = await blePromise
       playBeep('success')
-      // Tự động kích hoạt thẻ BLE bíp + nháy đèn trong 5 giây cho khách hàng nhận diện
-      bleTagService.triggerAlert(5000).catch(() => {})
 
       setScanResult({
         type: 'success',
         text: successMsg,
-        detail: (detailMsg || 'Cửa tủ đã mở. Chúc bạn một ngày tốt lành!') + (bleStatus.isConnected ? ' • 🔔 Thẻ trên gói hàng đang phát sáng & bíp!' : '')
+        detail: (detailMsg || 'Cửa tủ đã mở. Chúc bạn một ngày tốt lành!') + (bleTriggered ? ' • 🔔 Thẻ trên gói hàng đang phát sáng & bíp!' : '')
       })
     } else {
+      bleTagService.stopAlert().catch(() => {})
       playBeep('error')
       setScanResult({
         type: 'error',
@@ -494,6 +509,8 @@ export function KioskMode() {
           <span className="ble-text">
             {bleStatus.isConnected ? (
               <>Thẻ Smart Tag: <strong>{bleStatus.deviceName}</strong> (Sẵn sàng)</>
+            ) : !bleTagService.isSupported() ? (
+              <>Thẻ Smart Tag: <em>Cần Chrome/Edge (HTTPS/localhost) để dùng BLE</em></>
             ) : (
               <>Thẻ Smart Tag: <em>Chưa kết nối</em></>
             )}
@@ -505,7 +522,7 @@ export function KioskMode() {
               type="button"
               className="ble-btn ble-connect-btn"
               onClick={handleConnectBle}
-              disabled={bleLoading}
+              disabled={bleLoading || !bleTagService.isSupported()}
             >
               {bleLoading ? '⏳ Đang quét...' : '⚡ Kết nối Thẻ (BLE)'}
             </button>
