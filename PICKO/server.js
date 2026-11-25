@@ -21,6 +21,8 @@ app.get("/favicon.ico", (req, res) => res.sendFile(path.join(__dirname, "logos",
 app.get("/favicon.png", (req, res) => res.sendFile(path.join(__dirname, "logos", "favicon.png")));
 app.get('/dark-luxury.css', (req, res) => res.sendFile(path.join(__dirname, 'dark-luxury.css')));
 app.get('/white-luxury.css', (req, res) => res.sendFile(path.join(__dirname, 'white-luxury.css')));
+app.get('/location-map.css', (req, res) => res.sendFile(path.join(__dirname, 'location-map.css')));
+app.get('/location-map.js', (req, res) => res.sendFile(path.join(__dirname, 'location-map.js')));
 
 // API Routes
 app.get("/api/health", (req, res) => {
