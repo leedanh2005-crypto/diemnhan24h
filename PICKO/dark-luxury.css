@@ -4467,3 +4467,29 @@ tbody tr:hover {
   color: #34d399 !important;
   border-color: rgba(52, 211, 153, 0.5) !important;
 }
+
+/* Quick Reset Button & Floating Dock in Corner for Dark Luxury */
+.luxury-reset-btn {
+  background: rgba(30, 41, 59, 0.85) !important;
+  border: 1px solid rgba(51, 65, 85, 0.9) !important;
+  color: #f8fafc !important;
+}
+
+.luxury-reset-btn:hover {
+  background: rgba(51, 65, 85, 0.95) !important;
+  color: #34d399 !important;
+  border-color: rgba(52, 211, 153, 0.5) !important;
+}
+
+.floating-reset-btn {
+  background: rgba(15, 23, 42, 0.92) !important;
+  border: 1.5px solid rgba(52, 211, 153, 0.4) !important;
+  color: #f8fafc !important;
+  box-shadow: 0 8px 25px -4px rgba(0, 0, 0, 0.5), 0 0 15px rgba(16, 185, 129, 0.2) !important;
+}
+
+.floating-reset-btn:hover {
+  background: rgba(30, 41, 59, 0.96) !important;
+  color: #34d399 !important;
+  border-color: #10b981 !important;
+}

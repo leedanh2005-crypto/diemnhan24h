@@ -1227,6 +1227,10 @@ body:not([data-view="location"]) .v-location { display: none !important; }
       <span class="theme-icon">☀️</span>
       <span class="theme-label">Trắng Xịn</span>
     </button>
+    <button class="luxury-reset-btn" id="navResetBtn" onclick="quickResetAllOrders()" title="Bấm để đưa ngay tất cả đơn hàng về trạng thái Chờ cư dân nhận tại trạm">
+      <span class="reset-icon">🔄</span>
+      <span class="reset-label">Reset về trạm</span>
+    </button>
     <div class="dd" id="ddUser">
       <button class="user" data-dd="ddUser"><div class="avatar">A</div><span id="userName">Nguyễn Văn A</span><svg class="ic"><use href="#i-chev"/></svg></button>
       <div class="pop"><h4 id="userEmail"></h4>
@@ -3410,17 +3414,23 @@ async function confirmPickup(btn) {
   }
 }
 
-window.resetDemoPkg = async function() {
+window.quickResetAllOrders = async function() {
+  const btns = document.querySelectorAll('.luxury-reset-btn, .floating-reset-btn');
+  btns.forEach(b => b.classList.add('spinning'));
   try {
     const res = await api('/api/orders/reset-demo', { method: 'POST' });
-    toast(res.message || 'Đã reset kiện Đèn bàn LED về trạng thái chờ lấy hàng!', 'ok');
+    toast(res.message || '🔄 Đã đưa các đơn hàng về trạng thái: Chờ cư dân nhận tại trạm!', 'ok');
+    try { playBeeperSound(); } catch(e) {}
     await loadOrders();
     loadStats();
     if (document.body.dataset.view === 'location') renderLocationView();
   } catch (e) {
-    toast('Không thể reset đơn', 'err');
+    toast('Không thể reset đơn hàng', 'err');
+  } finally {
+    setTimeout(() => btns.forEach(b => b.classList.remove('spinning')), 600);
   }
 };
+window.resetDemoPkg = window.quickResetAllOrders;
 
 function pickCode(list) {
   const s = list.map(o => o.orderCode).sort().join('|');
@@ -4198,5 +4208,13 @@ window.updateChartColors = updateChartColors;
   }, { passive: true });
 })();
 </script>
+
+<!-- Floating Quick Reset Dock in Corner -->
+<div class="quick-reset-floating-dock" id="floatingResetDock">
+  <button class="floating-reset-btn" onclick="quickResetAllOrders()" title="Bấm để đưa ngay tất cả đơn hàng về trạng thái: Chờ cư dân nhận tại trạm">
+    <span class="reset-spin-icon">🔄</span>
+    <span class="reset-pill-text">Reset đơn về trạm</span>
+  </button>
+</div>
 </body>
 </html>

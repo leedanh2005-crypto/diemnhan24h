@@ -5720,6 +5720,82 @@ select:focus,
   letter-spacing: 0.1px !important;
 }
 
+/* Quick Reset Button & Floating Dock in Corner */
+.luxury-reset-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  height: 38px !important;
+  padding: 0 14px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  color: #0f172a !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.luxury-reset-btn:hover {
+  background: #ffffff !important;
+  color: #059669 !important;
+  border-color: rgba(16, 185, 129, 0.45) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.18) !important;
+}
+
+.luxury-reset-btn.spinning .reset-icon,
+.floating-reset-btn.spinning .reset-spin-icon {
+  animation: reset-spin-anim 0.6s ease-in-out !important;
+}
+
+@keyframes reset-spin-anim {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.quick-reset-floating-dock {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 999 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.floating-reset-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px 18px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1.5px solid rgba(16, 185, 129, 0.35) !important;
+  color: #0f172a !important;
+  cursor: pointer !important;
+  box-shadow: 0 8px 25px -4px rgba(16, 185, 129, 0.25), 0 2px 10px rgba(15, 23, 42, 0.08) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.floating-reset-btn:hover {
+  background: #ffffff !important;
+  color: #059669 !important;
+  border-color: #10b981 !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 12px 30px -4px rgba(16, 185, 129, 0.35), 0 4px 12px rgba(15, 23, 42, 0.1) !important;
+}
+
+.floating-reset-btn .reset-spin-icon {
+  font-size: 15px !important;
+  display: inline-block !important;
+}
+
 /* ==========================================================================
    END OF APPLE PORCELAIN & LIQUID GLASS WHITE LUXURY THEME
    ========================================================================== */

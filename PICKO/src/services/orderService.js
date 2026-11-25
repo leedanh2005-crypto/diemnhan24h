@@ -397,19 +397,28 @@ class OrderService {
   }
 
   /**
-   * Đưa trạng thái SPXVN091234567 về trạng thái chờ cư dân lấy hàng tại trạm
+   * Đưa tất cả đơn hàng hiện tại về trạng thái "Hàng đã được giao đến trạm" (chờ cư dân quét mã lấy hàng)
    */
   async resetDemoOrder() {
-    let hadChange = false;
+    const now = new Date().toISOString();
+    let affectedCodes = [];
+
+    // Nếu localPackages đang rỗng (chưa có đơn nào), nạp sẵn đơn mẫu ĐÈN BÀN LED để người dùng thử nghiệm ngay
+    if (!localPackages || localPackages.length === 0) {
+      localPackages = createDefaultShopeeOrders().slice(0, 1);
+    }
+
     localPackages.forEach(p => {
-      if (p["Mã vận đơn"] === 'SPXVN091234567') {
-        if (p["Trạng thái tại trạm PICKO"] !== "Hàng đã được giao đến trạm") {
-          hadChange = true;
-        }
-        p["Trạng thái tại trạm PICKO"] = "Hàng đã được giao đến trạm";
-        p["Mã lấy hàng"] = null;
-      }
+      p["Trạng thái tại trạm PICKO"] = "Hàng đã được giao đến trạm";
+      p["Trạng thái đơn trên sàn"] = "Đang giao";
+      p["Mã lấy hàng"] = null;
+      p["Cập nhật gần nhất"] = now;
+      if (p["Mã vận đơn"]) affectedCodes.push(p["Mã vận đơn"]);
     });
+
+    if (affectedCodes.length === 0) {
+      affectedCodes = ['SPXVN091234567'];
+    }
 
     try {
       await withTimeout(
@@ -417,15 +426,24 @@ class OrderService {
           .from('packages')
           .update({
             "Trạng thái tại trạm PICKO": "Hàng đã được giao đến trạm",
-            "Mã lấy hàng": null
+            "Trạng thái đơn trên sàn": "Đang giao",
+            "Mã lấy hàng": null,
+            "Cập nhật gần nhất": now
           })
-          .eq('Mã vận đơn', 'SPXVN091234567'),
-        2000
+          .in('Mã vận đơn', affectedCodes),
+        2500
       );
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Lỗi cập nhật reset lên Supabase:', e.message);
+    }
 
-    console.log(`🔄 [Auto-Reset 1 Phút] Đã tự động reset trạng thái đơn hàng về "Hàng đã được giao đến trạm" (${new Date().toLocaleTimeString('vi-VN')})`);
-    return true;
+    console.log(`🔄 [Reset Đơn Hàng] Đã đưa ${affectedCodes.length} đơn hàng (${affectedCodes.join(', ')}) về trạng thái "Hàng đã được giao đến trạm" (${new Date().toLocaleTimeString('vi-VN')})`);
+    return {
+      success: true,
+      message: `Đã đưa ${affectedCodes.length} đơn hàng về trạng thái chờ cư dân lấy hàng tại trạm!`,
+      count: affectedCodes.length,
+      codes: affectedCodes
+    };
   }
 
   /**

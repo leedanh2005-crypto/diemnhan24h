@@ -122,8 +122,8 @@ class OrderController {
 
   async resetDemoOrder(req, res) {
     try {
-      await orderService.resetDemoOrder();
-      res.json({ success: true, message: "Đã đưa kiện ĐÈN BÀN LED về trạng thái sẵn sàng tại trạm PODO!" });
+      const result = await orderService.resetDemoOrder();
+      res.json(result || { success: true, message: "Đã đưa tất cả đơn hàng về trạng thái sẵn sàng tại trạm PICKO!" });
     } catch (error) {
       console.error("Lỗi resetDemoOrder:", error);
       res.status(500).json({ success: false, message: "Không thể reset đơn" });
