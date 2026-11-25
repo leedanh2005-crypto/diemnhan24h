@@ -278,21 +278,25 @@
     var cell = CELLS[pkg.slot] || CELLS['A-03'];
     var rack = RACKS[cell.rack] || RACKS.A;
     var dest = getCellCenter(cell);
+    var isLeftCol = dest.x < rack.aisleX;
+    var entryX = rack.aisleX;
+    var edgeX = isLeftCol ? (cell.x + cell.w) : cell.x;
+
+    if (rack.id === 'E') {
+      entryX = isLeftCol ? (rack.x - 10) : (rack.x + rack.w + 10);
+      edgeX = isLeftCol ? cell.x : (cell.x + cell.w);
+    }
+
+    var routeEnd = { x: edgeX, y: dest.y };
+    var pinPos = { x: cell.x + cell.w - 6, y: cell.y + 6 };
 
     var points = [
       KIOSK_ORIGIN,
       { x: KIOSK_ORIGIN.x, y: AISLE_Y },
-      { x: rack.aisleX, y: AISLE_Y }
+      { x: entryX, y: AISLE_Y },
+      { x: entryX, y: dest.y },
+      routeEnd
     ];
-
-    if (rack.id === 'E') {
-      points.push({ x: rack.aisleX, y: rack.entryY });
-      points.push({ x: dest.x, y: rack.entryY });
-      points.push(dest);
-    } else {
-      points.push({ x: rack.aisleX, y: dest.y });
-      points.push(dest);
-    }
 
     // Deduplicate consecutive identical points
     var cleanPts = [points[0]];
@@ -306,7 +310,7 @@
     var pathD = roundedPolylinePath(cleanPts, 14);
     var totalPx = computePathLength(cleanPts);
     var totalMeters = Math.max(2.5, Number((totalPx * METERS_PER_PX).toFixed(1)));
-    var aislePx = Math.abs(rack.aisleX - KIOSK_ORIGIN.x);
+    var aislePx = Math.abs(entryX - KIOSK_ORIGIN.x);
     var aisleMeters = Math.max(1.5, Number((aislePx * METERS_PER_PX).toFixed(1)));
     var walkSeconds = Math.max(4, Math.round(totalMeters / WALK_SPEED_MPS));
 
@@ -314,6 +318,8 @@
       rack: rack,
       cell: cell,
       dest: dest,
+      routeEnd: routeEnd,
+      pinPos: pinPos,
       pathD: pathD,
       totalMeters: totalMeters,
       aisleMeters: aisleMeters,
@@ -377,10 +383,11 @@
           '<path class="wf-route-glow" d="' + route.pathD + '" fill="none" />' +
           '<path class="wf-route-line" d="' + route.pathD + '" fill="none" />' +
           '<circle class="wf-route-start" cx="' + KIOSK_ORIGIN.x + '" cy="' + KIOSK_ORIGIN.y + '" r="7" />' +
-          '<g class="wf-dest-marker" id="wfDestMarker" transform="translate(' + route.dest.x + ',' + route.dest.y + ')">' +
-            '<circle class="wf-dest-ring" cx="0" cy="0" r="22" />' +
-            '<circle class="wf-dest-pulse" cx="0" cy="0" r="14" />' +
-            '<circle class="wf-dest-pin" cx="0" cy="0" r="7.5" />' +
+          '<circle class="wf-route-end" cx="' + route.routeEnd.x + '" cy="' + route.routeEnd.y + '" r="4" />' +
+          '<g class="wf-dest-marker" id="wfDestMarker" transform="translate(' + route.pinPos.x + ',' + route.pinPos.y + ')">' +
+            '<circle class="wf-dest-ring" cx="0" cy="0" r="14" />' +
+            '<circle class="wf-dest-pulse" cx="0" cy="0" r="9" />' +
+            '<circle class="wf-dest-pin" cx="0" cy="0" r="5.5" />' +
           '</g>' +
         '</g>';
     }
@@ -399,10 +406,10 @@
 
           '<!-- Cửa vào sảnh & Cánh cửa kiến trúc -->' +
           '<g class="wf-entrance">' +
-            '<rect class="wf-entrance-pad" x="54" y="458" width="72" height="22" rx="6" />' +
-            '<path class="wf-door-arc" d="M 60 474 A 34 34 0 0 1 94 440" fill="none" />' +
-            '<line class="wf-door-leaf" x1="60" y1="474" x2="60" y2="440" />' +
-            '<text class="wf-svg-label" x="90" y="473" text-anchor="middle">CỬA SẢNH</text>' +
+            '<rect class="wf-entrance-pad" x="58" y="458" width="76" height="22" rx="6" />' +
+            '<path class="wf-door-arc" d="M 48 474 A 30 30 0 0 1 78 444" fill="none" />' +
+            '<line class="wf-door-leaf" x1="48" y1="474" x2="48" y2="444" />' +
+            '<text class="wf-svg-label" x="96" y="473" text-anchor="middle">CỬA SẢNH</text>' +
           '</g>' +
 
           '<!-- Điểm Check-in Kiosk -->' +

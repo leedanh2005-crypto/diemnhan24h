@@ -132,6 +132,7 @@ body.theme-dark .wf-shell[data-wf-kind="return"] {
   flex-direction: column;
   gap: 18px;
   padding-top: 24px;
+  padding-bottom: 24px;
   color: var(--wf-ink);
   font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
@@ -246,8 +247,13 @@ body.theme-dark .wf-shell[data-wf-kind="return"] {
   align-items: stretch;
   gap: 10px;
   overflow-x: auto;
-  padding: 4px 2px 6px;
-  scrollbar-width: thin;
+  padding: 6px 12px 8px 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.wf-pkg-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .wf-pkg-tab {
@@ -582,7 +588,7 @@ body.theme-dark .wf-pkg-tab.is-return .wf-tab-slot {
 .wf-rack-label {
   fill: var(--wf-ink-2);
   font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
-  font-size: 10.8px;
+  font-size: 10.2px;
   font-weight: 700;
   letter-spacing: 0.01em;
   pointer-events: none;
@@ -632,10 +638,16 @@ body.theme-dark .wf-pkg-tab.is-return .wf-tab-slot {
   stroke-width: 2.5;
 }
 
+.wf-route-end {
+  fill: var(--wf-accent-bright);
+  stroke: #ffffff;
+  stroke-width: 1.8;
+}
+
 .wf-dest-ring {
   fill: none;
   stroke: var(--wf-accent-bright);
-  stroke-width: 2.5;
+  stroke-width: 2;
   transform-box: fill-box;
   transform-origin: center;
   animation: wf-sonar-ring 1.9s cubic-bezier(0.16, 1, 0.3, 1) infinite;
@@ -651,7 +663,7 @@ body.theme-dark .wf-pkg-tab.is-return .wf-tab-slot {
 .wf-dest-pin {
   fill: var(--wf-accent-bright);
   stroke: #ffffff;
-  stroke-width: 2.5;
+  stroke-width: 2;
   filter: drop-shadow(0 3px 8px var(--wf-accent-glow));
 }
 
@@ -938,11 +950,18 @@ body.theme-dark .wf-pkg-tab.is-return .wf-tab-slot {
 }
 
 .wf-btn-ping:hover {
-  background: var(--wf-accent-bright);
-  border-color: var(--wf-accent-bright);
+  background: var(--wf-accent);
+  border-color: var(--wf-accent);
   color: #ffffff;
   transform: translateY(-1px);
   box-shadow: 0 8px 20px -4px var(--wf-accent-glow);
+}
+
+[data-theme="dark"] .wf-btn-ping:hover,
+body.theme-dark .wf-btn-ping:hover {
+  background: var(--wf-accent-bright);
+  border-color: var(--wf-accent-bright);
+  color: #0f172a;
 }
 
 .wf-btn-locate {

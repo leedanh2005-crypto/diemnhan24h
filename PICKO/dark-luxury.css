@@ -118,23 +118,48 @@ body {
 }
 
 .nav .wrap {
-  height: 68px !important;
+  display: flex !important;
+  align-items: center !important;
+  max-width: 1360px !important;
+  height: 64px !important;
+  gap: 12px !important;
 }
 
-.logo {
-  filter: drop-shadow(0 2px 8px rgba(16, 185, 129, 0.3));
+.nav .logo {
+  background: rgba(255, 255, 255, 0.94) !important;
+  padding: 4px 10px !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  flex-shrink: 0 !important;
+  filter: none !important;
 }
 
 .podo-nav-logo {
-  filter: brightness(1.08) contrast(1.05);
+  height: 32px !important;
+  width: auto !important;
+  filter: none !important;
+}
+
+.menu, #menu {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex-shrink: 0 !important;
 }
 
 .menu button, #menu button {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
   color: #94a3b8 !important;
   border-radius: 999px !important;
-  padding: 8px 16px !important;
-  font-size: 14px !important;
+  padding: 7px 11px !important;
+  font-size: 13px !important;
   font-weight: 600 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
   border: 1px solid transparent !important;
 }
@@ -178,12 +203,40 @@ body {
 }
 
 .icon-btn b#bellDot {
+  position: absolute !important;
+  top: -3px !important;
+  right: -3px !important;
+  width: auto !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  padding: 0 5px !important;
+  border-radius: 999px !important;
+  font-size: 10.5px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  color: #ffffff !important;
+  display: grid !important;
+  place-items: center !important;
+  font-style: normal !important;
+  box-sizing: border-box !important;
   background: #f43f5e !important;
   box-shadow: 0 0 10px rgba(244, 63, 94, 0.8) !important;
-  border-color: #0f172a !important;
+  border: 2px solid #0f172a !important;
+}
+
+.icon-btn b#bellDot[hidden] {
+  display: none !important;
 }
 
 .user {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 4px 10px 4px 5px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
   background: rgba(30, 41, 59, 0.4) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   color: #f8fafc !important;
@@ -4469,10 +4522,28 @@ tbody tr:hover {
 }
 
 /* Quick Reset Button & Floating Dock in Corner for Dark Luxury */
+.luxury-theme-toggle {
+  padding: 6px 11px !important;
+  font-size: 12.5px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
 .luxury-reset-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  height: 36px !important;
+  padding: 0 11px !important;
+  border-radius: 999px !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
   background: rgba(30, 41, 59, 0.85) !important;
   border: 1px solid rgba(51, 65, 85, 0.9) !important;
   color: #f8fafc !important;
+  cursor: pointer !important;
 }
 
 .luxury-reset-btn:hover {
@@ -4481,7 +4552,43 @@ tbody tr:hover {
   border-color: rgba(52, 211, 153, 0.5) !important;
 }
 
+main#overview {
+  padding-bottom: 92px !important;
+}
+
+.sec-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.quick-reset-floating-dock {
+  position: fixed !important;
+  bottom: 16px !important;
+  left: 16px !important;
+  right: auto !important;
+  z-index: 45 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+body:not(.authed) .quick-reset-floating-dock,
+body[data-view="location"] .quick-reset-floating-dock,
+body[data-view="returns"] .quick-reset-floating-dock {
+  display: none !important;
+}
+
 .floating-reset-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 7px 13px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
   background: rgba(15, 23, 42, 0.92) !important;
   border: 1.5px solid rgba(52, 211, 153, 0.4) !important;
   color: #f8fafc !important;
@@ -4492,4 +4599,115 @@ tbody tr:hover {
   background: rgba(30, 41, 59, 0.96) !important;
   color: #34d399 !important;
   border-color: #10b981 !important;
+}
+
+@media (max-width: 900px) {
+  .nav .wrap {
+    height: auto !important;
+    min-height: 58px !important;
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    padding: 8px 14px !important;
+    gap: 8px !important;
+  }
+  .nav .logo {
+    order: 1 !important;
+    padding: 3px 8px !important;
+  }
+  .podo-nav-logo {
+    height: 24px !important;
+    max-width: 112px !important;
+  }
+  .nav-right {
+    order: 2 !important;
+    margin-left: auto !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+  }
+  .menu, #menu {
+    order: 3 !important;
+    flex: 1 0 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    min-width: 0 !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    gap: 4px !important;
+    padding: 4px 0 2px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+  .menu::-webkit-scrollbar,
+  #menu::-webkit-scrollbar {
+    display: none !important;
+  }
+  .menu button, #menu button {
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+  .rt-steps {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  .rt-steps::before {
+    display: none !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .quick-reset-floating-dock {
+    display: none !important;
+  }
+  .menu button .ic, #menu button .ic {
+    display: none !important;
+  }
+  .icon-btn {
+    width: 34px !important;
+    height: 34px !important;
+  }
+  .user {
+    padding: 3px !important;
+    gap: 0 !important;
+  }
+  .avatar {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .luxury-reset-btn {
+    width: 34px !important;
+    height: 34px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+  }
+  .luxury-reset-btn .reset-label {
+    display: none !important;
+  }
+  .luxury-theme-toggle {
+    padding: 5px 9px !important;
+    font-size: 11.5px !important;
+    gap: 4px !important;
+  }
+  .concierge-tag {
+    flex-wrap: wrap !important;
+    max-width: 100% !important;
+    border-radius: 14px !important;
+    padding: 8px 12px !important;
+    gap: 6px 8px !important;
+    line-height: 1.4 !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .rt-steps {
+    grid-template-columns: 1fr !important;
+  }
+  .rt-meta {
+    grid-template-columns: 1fr !important;
+  }
 }
