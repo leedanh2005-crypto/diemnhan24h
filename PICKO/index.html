@@ -1573,6 +1573,21 @@ async function loadOrders() {
       toast('📦 Trạm PODO vừa tiếp nhận kiện hàng mới từ Kiosk!', 'ok');
       try { playBeeperSound(); } catch(e) {}
     }
+
+    // Phát hiện kiện hàng vừa được xác nhận nhận tại Kiosk
+    if (orders && orders.length > 0) {
+      newOrders.forEach(no => {
+        const old = orders.find(oo => (oo.orderCode === no.orderCode) || (oo.trackingCode && oo.trackingCode === no.trackingCode));
+        if (old && old.stationStatus !== 'RECEIVED' && no.stationStatus === 'RECEIVED') {
+          toast(`🎉 Kiện hàng ${no.trackingCode || no.orderCode} đã được nhận thành công tại Kiosk!`, 'ok');
+          try { playBeeperSound(); } catch(e) {}
+          if (document.getElementById('mPickup')?.classList.contains('on')) {
+            closeAll();
+          }
+        }
+      });
+    }
+
     _prevOrderCount = newOrders.length;
     orders = newOrders;
     renderOrders(); renderBell(); if (document.body.dataset.view === 'reports') renderReport();

@@ -95,12 +95,18 @@ class OrderService {
   async getAllOrders(query = {}) {
     let supabaseRows = null;
 
-    // 1. Chỉ lấy các kiện hàng mới tiếp nhận từ Kiosk / Shipper trong phiên làm việc hiện tại (không tải tất cả đơn cũ trên Supabase)
+    // 1. Chỉ lấy các kiện hàng mới tiếp nhận từ Kiosk / Shipper trong phiên làm việc hiện tại hoặc các kiện đã có trong bộ nhớ
     try {
+      const localCodes = localPackages.map(p => p["Mã vận đơn"]).filter(Boolean);
+      let filterExp = `created_at.gte.${sessionStartTime.toISOString()},"Cập nhật gần nhất".gte.${sessionStartTime.toISOString()}`;
+      if (localCodes.length > 0) {
+        filterExp += `,"Mã vận đơn".in.(${localCodes.join(',')})`;
+      }
+
       const dbQuery = supabase
         .from('packages')
         .select('*')
-        .or(`created_at.gte.${sessionStartTime.toISOString()},"Cập nhật gần nhất".gte.${sessionStartTime.toISOString()}`)
+        .or(filterExp)
         .order('created_at', { ascending: false });
 
       const { data, error } = await withTimeout(dbQuery, 2500);
@@ -111,7 +117,7 @@ class OrderService {
       console.warn('⚠️ Supabase timeout/offline, sử dụng dữ liệu PODO nội bộ');
     }
 
-    // 2. Hợp nhất giữa localPackages (dữ liệu mẫu) và Supabase (dữ liệu thật từ Kiosk / Shipper)
+    // 2. Hợp nhất giữa localPackages (dữ liệu mẫu/bộ nhớ) và Supabase (dữ liệu thật từ Kiosk / Shipper)
     const pkgMap = new Map();
 
     // Nạp localPackages trước
@@ -126,7 +132,14 @@ class OrderService {
         const key = r["Mã vận đơn"] || r.id;
         if (key) {
           const existing = pkgMap.get(key) || {};
-          pkgMap.set(key, { ...existing, ...r });
+          const merged = { ...existing, ...r };
+          pkgMap.set(key, merged);
+
+          // Cập nhật ngược lại localPackages để giữ đồng bộ trạng thái mới nhất (VD: Kiosk đã đổi sang "Đã nhận")
+          const lIdx = localPackages.findIndex(lp => (lp["Mã vận đơn"] || lp.id) === key);
+          if (lIdx >= 0) {
+            localPackages[lIdx] = { ...localPackages[lIdx], ...r };
+          }
         }
       }
     }
@@ -230,27 +243,51 @@ class OrderService {
   }
 
   /**
-   * Khi cư dân bấm "Lấy hàng", gán mã token QR vào kiện SPXVN091234567
+   * Khi cư dân bấm "Lấy hàng", gán mã token QR vào tất cả các kiện đang tại trạm
    */
   async assignPickupToken(token) {
-    // Cập nhật kiện SPXVN091234567 ở bộ nhớ cục bộ
+    const now = new Date().toISOString();
+    let assignedCodes = [];
+
+    // Cập nhật tất cả kiện đang tại trạm ở bộ nhớ cục bộ
     localPackages.forEach(p => {
-      if (p["Mã vận đơn"] === 'SPXVN091234567' && p["Trạng thái tại trạm PICKO"] === 'Hàng đã được giao đến trạm') {
+      if (p["Trạng thái tại trạm PICKO"] === 'Hàng đã được giao đến trạm') {
         p["Mã lấy hàng"] = token;
+        p["Cập nhật gần nhất"] = now;
+        if (p["Mã vận đơn"]) assignedCodes.push(p["Mã vận đơn"]);
       }
     });
 
-    // Thử đồng bộ lên Supabase nếu có mạng
+    // Đồng bộ lên Supabase cho các kiện tại trạm
     try {
-      await withTimeout(
-        supabase
-          .from('packages')
-          .update({ "Mã lấy hàng": token })
-          .eq('Mã vận đơn', 'SPXVN091234567'),
-        1500
-      );
-    } catch (e) {}
+      if (assignedCodes.length > 0) {
+        await withTimeout(
+          supabase
+            .from('packages')
+            .update({
+              "Mã lấy hàng": token,
+              "Cập nhật gần nhất": now
+            })
+            .in('Mã vận đơn', assignedCodes),
+          2000
+        );
+      } else {
+        await withTimeout(
+          supabase
+            .from('packages')
+            .update({
+              "Mã lấy hàng": token,
+              "Cập nhật gần nhất": now
+            })
+            .eq('Trạng thái tại trạm PICKO', 'Hàng đã được giao đến trạm'),
+          2000
+        );
+      }
+    } catch (e) {
+      console.warn('Lỗi gán mã token lên Supabase:', e.message);
+    }
 
+    console.log(`🔑 [Assign Pickup Token] Gán mã token lấy hàng ${token} cho ${assignedCodes.length || 'các'} kiện hàng tại trạm`);
     return true;
   }
 
@@ -286,6 +323,16 @@ class OrderService {
       }
     } catch (e) {}
 
+    // Fallback: nếu có kiện đang tại trạm trong localPackages
+    const atStation = localPackages.filter(p => p["Trạng thái tại trạm PICKO"] === 'Hàng đã được giao đến trạm');
+    if (atStation.length > 0) {
+      return {
+        count: atStation.length,
+        apartment: atStation[0]["Số căn hộ"] || '1204',
+        trackingCode: atStation[0]["Mã vận đơn"]
+      };
+    }
+
     return { count: 1, apartment: '1204', trackingCode: 'SPXVN091234567' };
   }
 
@@ -293,44 +340,59 @@ class OrderService {
    * Kiosk xác nhận mã QR -> Thẻ iTag kêu + Đổi trạng thái sang "Đã nhận"
    */
   async verifyPickupQR(token) {
-    let affectedCode = 'SPXVN091234567';
+    const now = new Date().toISOString();
+    let affectedCodes = [];
     let apt = '1204';
 
-    // Cập nhật local
+    // 1. Cập nhật localPackages
     localPackages.forEach(p => {
-      if (p["Mã lấy hàng"] === token || p["Mã vận đơn"] === token || p["Mã vận đơn"] === 'SPXVN091234567') {
+      const matchToken = p["Mã lấy hàng"] === token;
+      const matchTracking = p["Mã vận đơn"] === token;
+      const matchAtStation = (token && token.startsWith('PICKO-')) && p["Trạng thái tại trạm PICKO"] === 'Hàng đã được giao đến trạm';
+
+      if (matchToken || matchTracking || matchAtStation) {
         p["Trạng thái tại trạm PICKO"] = "Đã nhận";
         p["Mã lấy hàng"] = null;
-        affectedCode = p["Mã vận đơn"];
+        p["Cập nhật gần nhất"] = now;
+        if (p["Mã vận đơn"]) affectedCodes.push(p["Mã vận đơn"]);
         if (p["Số căn hộ"]) apt = p["Số căn hộ"];
       }
     });
 
-    // Cập nhật Supabase
+    if (affectedCodes.length === 0) {
+      affectedCodes.push('SPXVN091234567');
+    }
+
+    // 2. Cập nhật Supabase
     try {
       await withTimeout(
         supabase
           .from('packages')
           .update({
             "Trạng thái tại trạm PICKO": "Đã nhận",
-            "Mã lấy hàng": null
+            "Mã lấy hàng": null,
+            "Cập nhật gần nhất": now
           })
-          .or(`"Mã lấy hàng".eq.${token},"Mã vận đơn".eq.${affectedCode}`),
+          .or(`"Mã lấy hàng".eq.${token},"Mã vận đơn".in.(${affectedCodes.join(',')})`),
         2000
       );
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Lỗi cập nhật Supabase khi verify QR:', e.message);
+    }
+
+    console.log(`✅ [Verify Pickup QR] Đã chuyển trạng thái sang Đã nhận cho kiện: ${affectedCodes.join(', ')}`);
 
     // 🔄 TỰ ĐỘNG RESET SAU 1 PHÚT (60 GIÂY)
     setTimeout(async () => {
       await this.resetDemoOrder();
-      console.log('🔄 [Tự động reset] Đã đưa kiện ĐÈN BÀN LED về trạng thái sẵn sàng tại trạm sau 1 phút!');
+      console.log('🔄 [Tự động reset] Đã đưa kiện về trạng thái sẵn sàng tại trạm sau 1 phút!');
     }, 60000);
 
     return {
       success: true,
-      packagesCount: 1,
+      packagesCount: affectedCodes.length,
       apartment: apt,
-      trackingCode: affectedCode
+      trackingCode: affectedCodes[0]
     };
   }
 

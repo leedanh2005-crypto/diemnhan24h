@@ -337,7 +337,7 @@ export function KioskMode() {
     let detailMsg = ''
 
     // 1. Thử gọi API backend PICKO trước
-    const apiBase = import.meta.env.VITE_API_URL || ''
+    const apiBase = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location.port !== '3000' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:3000' : '')
     try {
       const res = await fetch(`${apiBase}/api/orders/verify-qr`, {
         method: 'POST',
@@ -365,7 +365,7 @@ export function KioskMode() {
         const { data: pkgs, error: findError } = await supabase
           .from('packages')
           .select('*')
-          .eq('Mã lấy hàng', token)
+          .or(`"Mã lấy hàng".eq.${token},"Mã vận đơn".eq.${token}`)
           .eq('Trạng thái tại trạm PICKO', 'Hàng đã được giao đến trạm')
 
         if (findError) throw findError
@@ -374,13 +374,15 @@ export function KioskMode() {
           isSuccess = false
           successMsg = 'Mã QR không hợp lệ hoặc đã được sử dụng trước đó.'
         } else {
+          const now = new Date().toISOString()
           const { error: updateError } = await supabase
             .from('packages')
             .update({
               'Trạng thái tại trạm PICKO': 'Đã nhận',
+              'Cập nhật gần nhất': now,
               'Mã lấy hàng': null
             })
-            .eq('Mã lấy hàng', token)
+            .or(`"Mã lấy hàng".eq.${token},"Mã vận đơn".eq.${token}`)
 
           if (updateError) throw updateError
 
