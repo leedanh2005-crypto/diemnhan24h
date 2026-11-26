@@ -251,24 +251,32 @@ export function ShipperMode() {
     setStatusMessage('Đang nạp kiện hàng vào hệ thống...')
 
     try {
-      // 1. Gửi lên PICKO Backend API trước để đồng bộ ngay tức thì với web Cư Dân
-      const apiBase = import.meta.env.VITE_API_URL || ''
-      try {
-        await fetch(`${apiBase}/api/orders/checkin`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            trackingCode: code,
-            roomNumber: room,
-            productName: `Kiện hàng ${code.slice(-4)}`,
-            marketplace: 'Shopee'
+      const nowIso = new Date().toISOString()
+
+      // 1. Gửi lên PICKO Backend API trước để đồng bộ ngay tức thì với web Cư Dân (nếu cùng host hoặc qua VITE_API_URL)
+      const apiBase = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location.port !== '3000' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:3000' : '')
+      if (apiBase) {
+        try {
+          const ctrl = new AbortController()
+          const tid = setTimeout(() => ctrl.abort(), 2000)
+          await fetch(`${apiBase}/api/orders/checkin`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            signal: ctrl.signal,
+            body: JSON.stringify({
+              trackingCode: code,
+              roomNumber: room,
+              productName: `Kiện hàng ${code.slice(-4)}`,
+              marketplace: 'Shopee'
+            })
           })
-        })
-      } catch (apiErr) {
-        console.warn('API check-in không phản hồi, fallback trực tiếp qua Supabase:', apiErr)
+          clearTimeout(tid)
+        } catch (apiErr) {
+          console.warn('API check-in không phản hồi, fallback trực tiếp qua Supabase:', apiErr)
+        }
       }
 
-      // 2. Ghi/đồng bộ trực tiếp lên Supabase
+      // 2. Ghi/đồng bộ trực tiếp lên Supabase (đảm bảo luôn có "Cập nhật gần nhất" để web công khai nhận ngay)
       const { data: existingList } = await supabase
         .from('packages')
         .select('id, "Mã vận đơn"')
@@ -282,13 +290,15 @@ export function ShipperMode() {
           .update({
             "Số căn hộ": room,
             "Trạng thái tại trạm PICKO": 'Hàng đã được giao đến trạm',
-            "Cập nhật gần nhất": new Date().toISOString()
+            "Trạng thái đơn trên sàn": 'Đang giao',
+            "Mã lấy hàng": null,
+            "Cập nhật gần nhất": nowIso
           })
           .eq('id', existingList[0].id)
 
         if (updateError) throw updateError
       } else {
-        // Tạo mới kiện hàng nếu chưa có
+        // Tạo mới kiện hàng nếu chưa có (ghi đầy đủ timestamp "Cập nhật gần nhất" & "Thời gian đặt đơn")
         const { error: insertError } = await supabase
           .from('packages')
           .insert([
@@ -296,7 +306,9 @@ export function ShipperMode() {
               "Mã vận đơn": code,
               "Số căn hộ": room,
               "Trạng thái tại trạm PICKO": 'Hàng đã được giao đến trạm',
-              "Trạng thái đơn trên sàn": 'Đang giao'
+              "Trạng thái đơn trên sàn": 'Đang giao',
+              "Thời gian đặt đơn": nowIso,
+              "Cập nhật gần nhất": nowIso
             }
           ])
 

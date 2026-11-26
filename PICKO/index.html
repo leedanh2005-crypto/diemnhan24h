@@ -1555,13 +1555,59 @@ var orders = [];
 let connections = {}, tab = 'all', shown = 10;
 window.expandedJourneys = window.expandedJourneys || {};
 
-/* ===== C. THỐNG KÊ ===== */
-async function loadStats() {
+const BASELINE_STORAGE_KEY = 'podo_baseline_versions_v2';
+function readBaselineVersions() {
   try {
-    const d = await api('/api/stats');
-    const s = d.stats || d;
-    $$('[data-stat]').forEach(el => { el.textContent = s[el.dataset.stat] ?? '--'; });
-  } catch { $$('[data-stat]').forEach(el => el.textContent = '--'); }
+    const raw = sessionStorage.getItem(BASELINE_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return window._podoBaselineFallback || null;
+  }
+}
+function writeBaselineVersions(map) {
+  window._podoBaselineFallback = map;
+  try { sessionStorage.setItem(BASELINE_STORAGE_KEY, JSON.stringify(map)); } catch (e) {}
+}
+function getOrderSnapshotKey(o) {
+  return String((o && (o.trackingCode || o.orderCode || o.orderId)) || '');
+}
+function getOrderSnapshotVer(o) {
+  return String((o && (o.updatedAt || o.createdAt)) || '');
+}
+function filterOrdersForWebSession(rawList) {
+  const baseline = readBaselineVersions();
+  if (!baseline) {
+    // Lần đầu mở tab web mới: ghi nhận toàn bộ đơn cũ làm mốc nền và trả về mảng rỗng (0 đơn) để tránh rối
+    const initialMap = {};
+    rawList.forEach(o => {
+      const k = getOrderSnapshotKey(o);
+      if (k) initialMap[k] = getOrderSnapshotVer(o);
+    });
+    writeBaselineVersions(initialMap);
+    return [];
+  }
+  // Từ các lần poll tiếp theo (hoặc sau F5 cùng tab): chỉ giữ đơn mới xuất hiện hoặc mới có cập nhật (Shipper vừa quét / Reset thủ công)
+  return rawList.filter(o => {
+    const k = getOrderSnapshotKey(o);
+    if (!k) return true;
+    if (!(k in baseline)) return true;
+    return getOrderSnapshotVer(o) !== baseline[k];
+  });
+}
+
+/* ===== C. THỐNG KÊ ===== */
+function syncStatsFromOrders(list) {
+  const s = {
+    total: list.length,
+    totalProducts: list.reduce((sum, o) => sum + (Number(o.quantity || o.totalQuantity) || 0), 0),
+    shipping: list.filter(o => o.status === 'Đang giao' || statusInfo(o.displayStatus).tab === 'ship').length,
+    atStation: list.filter(isAtStation).length,
+    received: list.filter(o => o.stationStatus === 'RECEIVED' || statusInfo(o.displayStatus).tab === 'done').length
+  };
+  $$('[data-stat]').forEach(el => { el.textContent = s[el.dataset.stat] ?? '0'; });
+}
+async function loadStats() {
+  syncStatsFromOrders(orders);
 }
 
 /* ===== D. ĐƠN HÀNG ===== */
@@ -1573,12 +1619,13 @@ function renderSkeleton() {
 }
 let _prevOrderCount = -1;
 async function loadOrders() {
-  if (!orders.length) renderSkeleton();
+  if (!orders.length && _prevOrderCount === -1) renderSkeleton();
   try {
     const d = await api('/api/orders');
-    const newOrders = (Array.isArray(d) ? d : (d.orders || [])).map(normalize);
+    const rawOrders = (Array.isArray(d) ? d : (d.orders || [])).map(normalize);
+    const newOrders = filterOrdersForWebSession(rawOrders);
     if (_prevOrderCount !== -1 && newOrders.length > _prevOrderCount) {
-      toast('📦 Trạm PODO vừa tiếp nhận kiện hàng mới từ Kiosk!', 'ok');
+      toast('📦 Trạm PODO vừa tiếp nhận kiện hàng mới từ Kiosk / Shipper!', 'ok');
       try { playBeeperSound(); } catch(e) {}
     }
 
@@ -1598,6 +1645,7 @@ async function loadOrders() {
 
     _prevOrderCount = newOrders.length;
     orders = newOrders;
+    syncStatsFromOrders(orders);
     renderOrders(); renderBell(); if (document.body.dataset.view === 'reports') renderReport();
     if (document.body.dataset.view === 'location') renderLocationView();
   } catch {
@@ -2762,6 +2810,11 @@ window.quickResetAllOrders = async function() {
   btns.forEach(b => b.classList.add('spinning'));
   try {
     const res = await api('/api/orders/reset-demo', { method: 'POST' });
+    const base = readBaselineVersions();
+    if (base && Array.isArray(res.codes)) {
+      res.codes.forEach(c => { delete base[c]; });
+      writeBaselineVersions(base);
+    }
     toast(res.message || '🔄 Đã đưa các đơn hàng về trạng thái: Chờ cư dân nhận tại trạm!', 'ok');
     try { playBeeperSound(); } catch(e) {}
     await loadOrders();

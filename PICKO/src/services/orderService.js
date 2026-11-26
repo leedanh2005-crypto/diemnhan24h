@@ -81,7 +81,7 @@ class OrderService {
     // 🔄 TỰ ĐỘNG RESET TRẠNG THÁI ĐƠN HÀNG SAU MỖI 1 PHÚT (60 GIÂY)
     this._autoResetTimer = setInterval(async () => {
       try {
-        await this.resetDemoOrder({ allowCreateSample: false });
+        await this.resetDemoOrder({ allowCreateSample: false, onlyRevertReceived: true });
       } catch (err) {
         console.error('Lỗi auto-reset 1 phút:', err);
       }
@@ -94,11 +94,13 @@ class OrderService {
    */
   async getAllOrders(query = {}) {
     let supabaseRows = null;
+    const lookbackIso = new Date(Date.now() - 24 * 3600000).toISOString();
 
-    // 1. Chỉ lấy các kiện hàng mới tiếp nhận từ Kiosk / Shipper trong phiên làm việc hiện tại hoặc các kiện đã có trong bộ nhớ
+    // 1. Lấy từ Supabase tất cả kiện hàng trong 24h gần nhất hoặc đang ở trạng thái chờ tại trạm
+    // (không phụ thuộc thời điểm server khởi động/cold-start trên cloud hay lệch giờ máy khách)
     try {
       const localCodes = localPackages.map(p => p["Mã vận đơn"]).filter(Boolean);
-      let filterExp = `created_at.gte.${sessionStartTime.toISOString()},"Cập nhật gần nhất".gte.${sessionStartTime.toISOString()}`;
+      let filterExp = `created_at.gte.${lookbackIso},"Cập nhật gần nhất".gte.${lookbackIso},"Trạng thái tại trạm PICKO".in.("Hàng đã được giao đến trạm","Đang yêu cầu lấy hàng")`;
       if (localCodes.length > 0) {
         filterExp += `,"Mã vận đơn".in.(${localCodes.join(',')})`;
       }
@@ -163,8 +165,8 @@ class OrderService {
     return orders.find(o => o.orderId === id || o.trackingCode === id) || null;
   }
 
-  async getStats() {
-    const orders = await this.getAllOrders();
+  async getStats(query = {}) {
+    const orders = await this.getAllOrders(query);
     return {
       total: orders.length,
       totalProducts: orders.reduce((sum, o) => sum + o.totalQuantity, 0),
@@ -254,7 +256,7 @@ class OrderService {
 
     // Đảm bảo localPackages đã đồng bộ các kiện mới từ Supabase (nếu Shipper vừa check-in trực tiếp lên Supabase)
     try {
-      await this.getAllOrders();
+      await this.getAllOrders({ since: new Date(Date.now() - 3600000).toISOString() });
     } catch (e) {}
 
     // Cập nhật kiện đang tại trạm ở bộ nhớ cục bộ
@@ -357,9 +359,9 @@ class OrderService {
     let affectedCodes = [];
     let apt = '1204';
 
-    // 0. Đồng bộ đơn mới từ Supabase trước để tránh thiếu đơn vừa quét từ Shipper/Kiosk
+    // 0. Đồng bộ đơn mới từ Supabase trước để tránh thiếu đơn vừa quét từ Shipper/Kiosk (bất kể server cold-start)
     try {
-      await this.getAllOrders();
+      await this.getAllOrders({ since: new Date(Date.now() - 3600000).toISOString() });
     } catch (e) {}
 
     // 1. Ưu tiên khớp chính xác token ("Mã lấy hàng") hoặc mã vận đơn ("Mã vận đơn") trong localPackages
@@ -455,9 +457,9 @@ class OrderService {
 
     console.log(`✅ [Verify Pickup QR] Đã chuyển trạng thái sang Đã nhận cho kiện: ${affectedCodes.join(', ')}`);
 
-    // 🔄 TỰ ĐỘNG RESET SAU 1 PHÚT (60 GIÂY) - chỉ reset các đơn hiện có, không tự bơm đơn mẫu
+    // 🔄 TỰ ĐỘNG RESET SAU 1 PHÚT (60 GIÂY) - chỉ reset các đơn đã nhận về trạm, không tự bơm đơn mẫu
     setTimeout(async () => {
-      await this.resetDemoOrder({ allowCreateSample: false });
+      await this.resetDemoOrder({ allowCreateSample: false, onlyRevertReceived: true });
       console.log('🔄 [Tự động reset] Đã đưa kiện về trạng thái sẵn sàng tại trạm sau 1 phút!');
     }, 60000);
 
@@ -470,9 +472,9 @@ class OrderService {
   }
 
   /**
-   * Đưa tất cả đơn hàng hiện tại về trạng thái "Hàng đã được giao đến trạm" (chờ cư dân quét mã lấy hàng)
+   * Đưa các đơn hàng hiện tại về trạng thái "Hàng đã được giao đến trạm" (chờ cư dân quét mã lấy hàng)
    */
-  async resetDemoOrder({ allowCreateSample = true } = {}) {
+  async resetDemoOrder({ allowCreateSample = true, onlyRevertReceived = false } = {}) {
     const now = new Date().toISOString();
     let affectedCodes = [];
 
@@ -490,6 +492,9 @@ class OrderService {
     }
 
     localPackages.forEach(p => {
+      if (onlyRevertReceived && p["Trạng thái tại trạm PICKO"] !== "Đã nhận") {
+        return;
+      }
       p["Trạng thái tại trạm PICKO"] = "Hàng đã được giao đến trạm";
       p["Trạng thái đơn trên sàn"] = "Đang giao";
       p["Mã lấy hàng"] = null;
@@ -498,6 +503,9 @@ class OrderService {
     });
 
     if (affectedCodes.length === 0) {
+      if (onlyRevertReceived) {
+        return { success: true, count: 0, codes: [] };
+      }
       affectedCodes = ['SPXVN091234567'];
     }
 

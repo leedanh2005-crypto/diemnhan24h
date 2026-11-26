@@ -4,7 +4,7 @@ class OrderController {
   
   async getOrders(req, res) {
     try {
-      const orders = await orderService.getAllOrders();
+      const orders = await orderService.getAllOrders({ since: req.query.since });
       res.json({ success: true, orders });
     } catch (error) {
       console.error("Lỗi getOrders:", error);
@@ -38,7 +38,7 @@ class OrderController {
 
   async getStats(req, res) {
     try {
-      const stats = await orderService.getStats();
+      const stats = await orderService.getStats({ since: req.query.since });
       res.json({ success: true, stats });
     } catch (error) {
       console.error("Lỗi getStats:", error);
