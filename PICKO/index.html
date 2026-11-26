@@ -2742,7 +2742,12 @@ async function confirmPickup(btn) {
   if (!list.length || btn.disabled) return;
   const old = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Đang tạo mã...';
   try {
-    const data = await api('/api/orders/pickup-qr', { method: 'POST' });
+    const trackingCodes = list.map(o => o.trackingCode || o.orderCode).filter(Boolean);
+    const data = await api('/api/orders/pickup-qr', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ trackingCodes })
+    });
     if (!data.success) { btn.disabled = false; btn.innerHTML = old; return toast(data.message || 'Không thể gửi yêu cầu lấy hàng', 'err'); }
     showTicket(list, data.token, data.expiresAt);
     toast(`Đã tạo mã lấy ${list.length} đơn`, 'ok');

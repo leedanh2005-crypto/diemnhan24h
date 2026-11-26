@@ -50,9 +50,10 @@ class OrderController {
     try {
       const token = 'PICKO-' + Math.random().toString(36).substring(2, 8).toUpperCase();
       const expiresAt = new Date(Date.now() + 15 * 60000).toISOString(); 
+      const trackingCodes = Array.isArray(req.body?.trackingCodes) ? req.body.trackingCodes : [];
 
-      // Ghi mã này vào Supabase cho các đơn đang chờ
-      await orderService.assignPickupToken(token);
+      // Ghi mã này vào Supabase cho đúng các đơn đang chờ được chọn
+      await orderService.assignPickupToken(token, trackingCodes);
 
       res.json({
         success: true,

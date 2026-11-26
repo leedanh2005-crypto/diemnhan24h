@@ -81,7 +81,7 @@ class OrderService {
     // 🔄 TỰ ĐỘNG RESET TRẠNG THÁI ĐƠN HÀNG SAU MỖI 1 PHÚT (60 GIÂY)
     this._autoResetTimer = setInterval(async () => {
       try {
-        await this.resetDemoOrder();
+        await this.resetDemoOrder({ allowCreateSample: false });
       } catch (err) {
         console.error('Lỗi auto-reset 1 phút:', err);
       }
@@ -135,10 +135,12 @@ class OrderService {
           const merged = { ...existing, ...r };
           pkgMap.set(key, merged);
 
-          // Cập nhật ngược lại localPackages để giữ đồng bộ trạng thái mới nhất (VD: Kiosk đã đổi sang "Đã nhận")
+          // Cập nhật ngược lại localPackages để giữ đồng bộ trạng thái mới nhất (và nạp đơn mới từ Supabase vào RAM)
           const lIdx = localPackages.findIndex(lp => (lp["Mã vận đơn"] || lp.id) === key);
           if (lIdx >= 0) {
             localPackages[lIdx] = { ...localPackages[lIdx], ...r };
+          } else {
+            localPackages.push({ ...r });
           }
         }
       }
@@ -243,22 +245,33 @@ class OrderService {
   }
 
   /**
-   * Khi cư dân bấm "Lấy hàng", gán mã token QR vào tất cả các kiện đang tại trạm
+   * Khi cư dân bấm "Lấy hàng", gán mã token QR vào đúng kiện được chọn (hoặc tất cả kiện đang tại trạm)
    */
-  async assignPickupToken(token) {
+  async assignPickupToken(token, targetCodes = []) {
     const now = new Date().toISOString();
+    const filterSet = new Set((Array.isArray(targetCodes) ? targetCodes : []).map(c => String(c).trim()).filter(Boolean));
     let assignedCodes = [];
 
-    // Cập nhật tất cả kiện đang tại trạm ở bộ nhớ cục bộ
+    // Đảm bảo localPackages đã đồng bộ các kiện mới từ Supabase (nếu Shipper vừa check-in trực tiếp lên Supabase)
+    try {
+      await this.getAllOrders();
+    } catch (e) {}
+
+    // Cập nhật kiện đang tại trạm ở bộ nhớ cục bộ
     localPackages.forEach(p => {
       if (p["Trạng thái tại trạm PICKO"] === 'Hàng đã được giao đến trạm') {
-        p["Mã lấy hàng"] = token;
-        p["Cập nhật gần nhất"] = now;
-        if (p["Mã vận đơn"]) assignedCodes.push(p["Mã vận đơn"]);
+        const matchTarget = filterSet.size === 0 ||
+          filterSet.has(p["Mã vận đơn"]) ||
+          filterSet.has(p["Mã đơn hàng trên sàn"]);
+        if (matchTarget) {
+          p["Mã lấy hàng"] = token;
+          p["Cập nhật gần nhất"] = now;
+          if (p["Mã vận đơn"]) assignedCodes.push(p["Mã vận đơn"]);
+        }
       }
     });
 
-    // Đồng bộ lên Supabase cho các kiện tại trạm
+    // Đồng bộ lên Supabase cho các kiện đã chọn tại trạm
     try {
       if (assignedCodes.length > 0) {
         await withTimeout(
@@ -287,7 +300,7 @@ class OrderService {
       console.warn('Lỗi gán mã token lên Supabase:', e.message);
     }
 
-    console.log(`🔑 [Assign Pickup Token] Gán mã token lấy hàng ${token} cho ${assignedCodes.length || 'các'} kiện hàng tại trạm`);
+    console.log(`🔑 [Assign Pickup Token] Gán mã token lấy hàng ${token} cho ${assignedCodes.length > 0 ? assignedCodes.join(', ') : 'các kiện tại trạm'}`);
     return true;
   }
 
@@ -344,13 +357,17 @@ class OrderService {
     let affectedCodes = [];
     let apt = '1204';
 
-    // 1. Cập nhật localPackages
+    // 0. Đồng bộ đơn mới từ Supabase trước để tránh thiếu đơn vừa quét từ Shipper/Kiosk
+    try {
+      await this.getAllOrders();
+    } catch (e) {}
+
+    // 1. Ưu tiên khớp chính xác token ("Mã lấy hàng") hoặc mã vận đơn ("Mã vận đơn") trong localPackages
     localPackages.forEach(p => {
       const matchToken = p["Mã lấy hàng"] === token;
       const matchTracking = p["Mã vận đơn"] === token;
-      const matchAtStation = (token && token.startsWith('PICKO-')) && p["Trạng thái tại trạm PICKO"] === 'Hàng đã được giao đến trạm';
 
-      if (matchToken || matchTracking || matchAtStation) {
+      if (matchToken || matchTracking) {
         p["Trạng thái tại trạm PICKO"] = "Đã nhận";
         p["Mã lấy hàng"] = null;
         p["Cập nhật gần nhất"] = now;
@@ -359,11 +376,67 @@ class OrderService {
       }
     });
 
+    // 2. Nếu localPackages chưa thấy khớp chính xác, truy vấn trực tiếp từ Supabase theo token/mã vận đơn
     if (affectedCodes.length === 0) {
-      affectedCodes.push('SPXVN091234567');
+      try {
+        const { data: sbMatches } = await withTimeout(
+          supabase
+            .from('packages')
+            .select('*')
+            .or(`"Mã lấy hàng".eq.${token},"Mã vận đơn".eq.${token}`),
+          2000
+        );
+
+        let rowsToClaim = Array.isArray(sbMatches) ? sbMatches : [];
+
+        // Chỉ fallback sang các kiện đang tại trạm nếu không có kiện nào gắn token cụ thể (VD: QR offline)
+        if (rowsToClaim.length === 0 && token && token.startsWith('PICKO-')) {
+          const localAtStation = localPackages.filter(
+            p => p["Trạng thái tại trạm PICKO"] === 'Hàng đã được giao đến trạm' && !p["Mã lấy hàng"]
+          );
+          if (localAtStation.length > 0) {
+            rowsToClaim = localAtStation;
+          } else {
+            const { data: atStationRows } = await withTimeout(
+              supabase
+                .from('packages')
+                .select('*')
+                .eq('Trạng thái tại trạm PICKO', 'Hàng đã được giao đến trạm')
+                .is('Mã lấy hàng', null),
+              2000
+            );
+            if (Array.isArray(atStationRows)) rowsToClaim = atStationRows;
+          }
+        }
+
+        for (const r of rowsToClaim) {
+          if (r["Mã vận đơn"]) {
+            affectedCodes.push(r["Mã vận đơn"]);
+            if (r["Số căn hộ"]) apt = r["Số căn hộ"];
+            const updatedRow = {
+              ...r,
+              "Trạng thái tại trạm PICKO": "Đã nhận",
+              "Mã lấy hàng": null,
+              "Cập nhật gần nhất": now
+            };
+            const lIdx = localPackages.findIndex(lp => lp["Mã vận đơn"] === r["Mã vận đơn"]);
+            if (lIdx >= 0) localPackages[lIdx] = { ...localPackages[lIdx], ...updatedRow };
+            else localPackages.push(updatedRow);
+          }
+        }
+      } catch (e) {
+        console.warn('Lỗi truy vấn Supabase khi verify QR:', e.message);
+      }
     }
 
-    // 2. Cập nhật Supabase
+    if (affectedCodes.length === 0) {
+      return {
+        success: false,
+        message: 'Mã QR không hợp lệ hoặc không có kiện hàng đang chờ nhận tại trạm.'
+      };
+    }
+
+    // 3. Cập nhật trạng thái Đã nhận lên Supabase
     try {
       await withTimeout(
         supabase
@@ -373,7 +446,7 @@ class OrderService {
             "Mã lấy hàng": null,
             "Cập nhật gần nhất": now
           })
-          .or(`"Mã lấy hàng".eq.${token},"Mã vận đơn".in.(${affectedCodes.join(',')})`),
+          .in('Mã vận đơn', affectedCodes),
         2000
       );
     } catch (e) {
@@ -382,9 +455,9 @@ class OrderService {
 
     console.log(`✅ [Verify Pickup QR] Đã chuyển trạng thái sang Đã nhận cho kiện: ${affectedCodes.join(', ')}`);
 
-    // 🔄 TỰ ĐỘNG RESET SAU 1 PHÚT (60 GIÂY)
+    // 🔄 TỰ ĐỘNG RESET SAU 1 PHÚT (60 GIÂY) - chỉ reset các đơn hiện có, không tự bơm đơn mẫu
     setTimeout(async () => {
-      await this.resetDemoOrder();
+      await this.resetDemoOrder({ allowCreateSample: false });
       console.log('🔄 [Tự động reset] Đã đưa kiện về trạng thái sẵn sàng tại trạm sau 1 phút!');
     }, 60000);
 
@@ -399,12 +472,20 @@ class OrderService {
   /**
    * Đưa tất cả đơn hàng hiện tại về trạng thái "Hàng đã được giao đến trạm" (chờ cư dân quét mã lấy hàng)
    */
-  async resetDemoOrder() {
+  async resetDemoOrder({ allowCreateSample = true } = {}) {
     const now = new Date().toISOString();
     let affectedCodes = [];
 
-    // Nếu localPackages đang rỗng (chưa có đơn nào), nạp sẵn đơn mẫu ĐÈN BÀN LED để người dùng thử nghiệm ngay
+    // Nếu localPackages đang rỗng: chỉ nạp đơn mẫu ĐÈN BÀN LED khi người dùng chủ động bấm Reset/Tạo mẫu
     if (!localPackages || localPackages.length === 0) {
+      if (!allowCreateSample) {
+        return {
+          success: true,
+          message: 'Chưa có đơn hàng nào để reset.',
+          count: 0,
+          codes: []
+        };
+      }
       localPackages = createDefaultShopeeOrders().slice(0, 1);
     }
 
